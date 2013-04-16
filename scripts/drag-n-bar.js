@@ -50,6 +50,17 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 };
 
 /**
+ * Change container.
+ * 
+ * @param {jQuery} $container
+ * @returns {undefined} 
+ */
+H5P.DragNBar.prototype.setContainer = function ($container) {
+  this.$container = $container;
+  this.dnd.$container = $container;
+};
+
+/**
  * Handler for when the dragging stops. Makes sure the element is inside its container.
  * 
  * @param {Object} event
