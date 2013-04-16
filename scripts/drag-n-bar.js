@@ -13,16 +13,20 @@ H5P.DragNBar = function (buttons, $container) {
   this.buttons = buttons;
   this.$container = $container;
   this.dnd = new H5P.DragNDrop($container);
+  this.newElement = false;
   
   this.dnd.startMovingCallback = function (event) {
-    that.dnd.adjust.x = 10;
-    that.dnd.adjust.y = 10;
+    if (that.newElement) {
+      that.dnd.adjust.x = 10;
+      that.dnd.adjust.y = 10;
+    }
     
     return true;
   };
   
   this.dnd.stopMovingCallback = function (event) {
     that.stopMoving(event);
+    that.newElement = false;
   };
 };
 
@@ -43,6 +47,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>').appendTo($list).children().click(function () {
       return false;
     }).mousedown(function (event) {
+      that.newElement = true;
       that.dnd.press(that.buttons[H5P.jQuery(this).data('id')].createElement().appendTo(that.$container), event.pageX, event.pageY);
       return false;
     }).data('id', i);
@@ -67,10 +72,16 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @returns {undefined} 
  */
 H5P.DragNBar.prototype.stopMoving = function (event) {
-  var top, left;
+  var x, y, top, left;
   
-  var x = event.pageX - 10;
-  var y = event.pageY - 10;
+  if (this.newElement) {
+    x = event.pageX - 10;
+    y = event.pageY - 10;
+  }
+  else {
+    x = event.pageX - this.dnd.adjust.x;
+    y = event.pageY - this.dnd.adjust.y;
+  }
     
   var offset = this.$container.offset();
     
