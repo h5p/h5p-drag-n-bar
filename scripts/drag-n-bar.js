@@ -10,6 +10,8 @@ var H5P = H5P || {};
 H5P.DragNBar = function (buttons, $container) {
   var that = this;
   
+  this.overflowThreshold = 5; // How many buttons to display before we add the more button.
+  
   this.buttons = buttons;
   this.$container = $container;
   this.dnd = new H5P.DragNDrop($container);
@@ -44,7 +46,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 
-    if (i === 5) {
+    if (i === this.overflowThreshold) {
       var $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>').appendTo($list).children(':first').click(function () {
         $list.slideToggle(200);
         return false;
