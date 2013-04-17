@@ -37,21 +37,34 @@ H5P.DragNBar = function (buttons, $container) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
-  var that = this;
   $wrapper.html('');
   
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
     
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
-    H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>').appendTo($list).children().click(function () {
-      return false;
-    }).mousedown(function (event) {
-      that.newElement = true;
-      that.dnd.press(that.buttons[H5P.jQuery(this).data('id')].createElement().appendTo(that.$container), event.pageX, event.pageY);
-      return false;
-    }).data('id', i);
+
+    if (i === 4) {
+      var $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>').appendTo($list).children(':first').click(function () {
+        $list.slideToggle(200);
+        return false;
+      }).next();
+    }
+    
+    this.addButton(button, $list);
   }
+};
+
+H5P.DragNBar.prototype.addButton = function (button, $list) {
+  var that = this;
+
+  H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>').appendTo($list).children().click(function () {
+    return false;
+  }).mousedown(function (event) {
+    that.newElement = true;
+    that.dnd.press(button.createElement().appendTo(that.$container), event.pageX, event.pageY);
+    return false;
+  });
 };
 
 /**
