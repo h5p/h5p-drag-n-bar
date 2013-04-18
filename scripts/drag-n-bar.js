@@ -2,30 +2,30 @@ var H5P = H5P || {};
 
 /**
  * Constructor. Initializes the drag and drop menu bar.
- * 
+ *
  * @param {Array} buttons
  * @param {jQuery} $container
  * @returns {undefined}
  */
 H5P.DragNBar = function (buttons, $container) {
   var that = this;
-  
+
   this.overflowThreshold = 5; // How many buttons to display before we add the more button.
-  
+
   this.buttons = buttons;
   this.$container = $container;
-  this.dnd = new H5P.DragNDrop($container);
+  this.dnd = new H5P.DragNDrop($container, true);
   this.newElement = false;
-  
+
   this.dnd.startMovingCallback = function (event) {
     if (that.newElement) {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
     }
-    
+
     return true;
   };
-  
+
   this.dnd.stopMovingCallback = function (event) {
     that.stopMoving(event);
     that.newElement = false;
@@ -34,15 +34,15 @@ H5P.DragNBar = function (buttons, $container) {
 
 /**
  * Attaches the menu bar to the given wrapper.
- * 
+ *
  * @param {jQuery} $wrapper
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
   $wrapper.html('');
-  
+
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
-    
+
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 
@@ -52,7 +52,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
         return false;
       }).next();
     }
-    
+
     this.addButton(button, $list);
   }
 };
@@ -71,9 +71,9 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
 
 /**
  * Change container.
- * 
+ *
  * @param {jQuery} $container
- * @returns {undefined} 
+ * @returns {undefined}
  */
 H5P.DragNBar.prototype.setContainer = function ($container) {
   this.$container = $container;
@@ -82,13 +82,13 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
 
 /**
  * Handler for when the dragging stops. Makes sure the element is inside its container.
- * 
+ *
  * @param {Object} event
- * @returns {undefined} 
+ * @returns {undefined}
  */
 H5P.DragNBar.prototype.stopMoving = function (event) {
   var x, y, top, left;
-  
+
   if (this.newElement) {
     x = event.pageX - 10;
     y = event.pageY - 10;
@@ -97,9 +97,9 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
     x = event.pageX - this.dnd.adjust.x;
     y = event.pageY - this.dnd.adjust.y;
   }
-    
+
   var offset = this.$container.offset();
-    
+
   // Check if element is above or below the container.
   var containerHeight = this.$container.height();
   var elementHeight = this.dnd.$element.height() + 3;
@@ -112,12 +112,12 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
   else {
     top = y - offset.top;
   }
-    
+
   // Check if element is to the left or to the right of the container.
   var paddingLeft = parseInt(this.$container.css('padding-left'));
   var containerWidth = this.$container.width() + paddingLeft;
   var elementWidth = this.dnd.$element.width() + 2;
-  
+
   if (x < offset.left + paddingLeft) {
     left = paddingLeft;
   }
@@ -127,13 +127,13 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
   else {
     left = x - offset.left;
   }
-  
+
   // Calculate percentage
   top = top / (containerHeight / 100);
   left = left / (containerWidth / 100);
-  
+
   this.dnd.$element.css({top: top + '%', left: left + '%'});
-  
+
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
     paddingLeft = paddingLeft / (containerWidth / 100);
