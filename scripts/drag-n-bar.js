@@ -10,7 +10,7 @@ var H5P = H5P || {};
 H5P.DragNBar = function (buttons, $container) {
   var that = this;
 
-  this.overflowThreshold = 5; // How many buttons to display before we add the more button.
+  this.overflowThreshold = 11; // How many buttons to display before we add the more button.
 
   this.buttons = buttons;
   this.$container = $container;
