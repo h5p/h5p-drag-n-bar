@@ -57,6 +57,13 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   }
 };
 
+/**
+ * Add button.
+ *
+ * @param {type} button
+ * @param {type} $list
+ * @returns {undefined}
+ */
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
@@ -102,7 +109,7 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
 
   // Check if element is above or below the container.
   var containerHeight = this.$container.height();
-  var elementHeight = this.dnd.$element.height() + 3;
+  var elementHeight = this.dnd.$element.outerHeight() + 3;
   if (y < offset.top) {
     top = 0;
   }
@@ -116,7 +123,7 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
   // Check if element is to the left or to the right of the container.
   var paddingLeft = parseInt(this.$container.css('padding-left'));
   var containerWidth = this.$container.width() + paddingLeft;
-  var elementWidth = this.dnd.$element.width() + 2;
+  var elementWidth = this.dnd.$element.outerWidth() + 2;
 
   if (x < offset.left + paddingLeft) {
     left = paddingLeft;
