@@ -15,6 +15,7 @@ H5P.DragNBar = function (buttons, $container) {
   this.buttons = buttons;
   this.$container = $container;
   this.dnd = new H5P.DragNDrop($container, true);
+  that.dnd.snap = 10;
   this.newElement = false;
 
   this.dnd.startMovingCallback = function (event) {
@@ -30,6 +31,16 @@ H5P.DragNBar = function (buttons, $container) {
     that.stopMoving(event);
     that.newElement = false;
   };
+
+  H5P.$body.keydown(function (event) {
+    if (event.keyCode === 17 && that.dnd.snap !== undefined) {
+      delete that.dnd.snap;
+    }
+  }).keyup(function (event) {
+    if (event.keyCode === 17) {
+      that.dnd.snap = 10;
+    }
+  });
 };
 
 /**
@@ -133,6 +144,11 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
   }
   else {
     left = x - offset.left;
+  }
+
+  if (this.dnd.snap !== undefined) {
+    left = Math.round(left / this.dnd.snap) * this.dnd.snap;
+    top = Math.round(top / this.dnd.snap) * this.dnd.snap;
   }
 
   // Calculate percentage
