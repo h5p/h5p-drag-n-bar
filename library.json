@@ -1,16 +1,21 @@
 {
   "title": "Drag N Bar",
   "contentType": "API",
-  "description": "A library that creates a menu bar with items that can be dropped into the specified container.",
+  "description": "Creates a menu bar with items that can be dropped into the specified container.",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 12,
+  "patchVersion": 13,
   "runnable": 0,
   "machineName": "H5P.DragNBar",
   "author": "Amendor AS",
   "preloadedJs": [
     {
-      "path": "scripts/drag-n-bar.js"
+      "path": "drag-n-bar.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "drag-n-bar.css"
     }
   ],
   "preloadedDependencies": [

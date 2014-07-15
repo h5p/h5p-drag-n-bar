@@ -15,7 +15,7 @@ H5P.DragNBar = function (buttons, $container) {
   this.buttons = buttons;
   this.$container = $container;
   this.dnd = new H5P.DragNDrop($container, true);
-  that.dnd.snap = 10;
+  this.dnd.snap = 10;
   this.newElement = false;
 
   this.dnd.startMovingCallback = function (event) {
@@ -27,9 +27,21 @@ H5P.DragNBar = function (buttons, $container) {
     return true;
   };
 
+  this.dnd.moveCallback = function (x, y) {
+    var paddingLeft = parseInt(that.$container.css('padding-left'));
+    var left = parseInt(that.$element.css('left'));
+    var top = parseInt(that.$element.css('top'));
+    if (that.dnd.snap !== undefined) {
+      x = Math.round(x / that.dnd.snap) * that.dnd.snap;
+      y = Math.round(y / that.dnd.snap) * that.dnd.snap;
+    }
+    that.updateCoordinates(x, y, left - paddingLeft, top);
+  };
+
   this.dnd.stopMovingCallback = function (event) {
     that.stopMoving(event);
     that.newElement = false;
+    that.focus(that.$element);
   };
 
   H5P.$body.keydown(function (event) {
@@ -39,6 +51,14 @@ H5P.DragNBar = function (buttons, $container) {
   }).keyup(function (event) {
     if (event.keyCode === 17) {
       that.dnd.snap = 10;
+    }
+  }).click(function () {
+    // Remove coordinates picker if we didn't press an element.
+    if (that.pressed !== undefined) {
+      delete that.pressed;
+    }
+    else {
+      that.blur();
     }
   });
 };
@@ -50,6 +70,7 @@ H5P.DragNBar = function (buttons, $container) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var self = this;
   $wrapper.html('');
 
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
@@ -66,6 +87,24 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
     this.addButton(button, $list);
   }
+  
+  // Add coordinates picker
+  this.$coordinates = H5P.jQuery('<div class="h5p-dragnbar-coordinates" style="display:none"><input class="h5p-dragnbar-x" type="text" value="0">, <input class="h5p-dragnbar-y" type="text" value="0"></div>').appendTo(H5P.$body);
+  this.$x = this.$coordinates.find('.h5p-dragnbar-x');
+  this.$y = this.$coordinates.find('.h5p-dragnbar-y');
+  
+  this.$x.add(this.$y).on('change keydown', function(event) {
+    if (event.type === 'change' || event.which === 13) {
+      var x = parseInt(self.$x.val());
+      var y = parseInt(self.$y.val());
+      if (!isNaN(x) && !isNaN(y)) {
+        self.dnd.stopMovingCallback({
+          pageX: x + self.dnd.adjust.x + self.dnd.containerOffset.left + self.dnd.scrollLeft + parseInt(self.$container.css('padding-left')),
+          pageY: y + self.dnd.adjust.y + self.dnd.containerOffset.top + self.dnd.scrollTop
+        });
+      }
+    }
+  });
 };
 
 /**
@@ -81,6 +120,10 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>').appendTo($list).children().click(function () {
     return false;
   }).mousedown(function (event) {
+    if (event.which !== 1) {
+      return;
+    }
+    
     that.newElement = true;
     that.dnd.press(button.createElement().appendTo(that.$container), event.pageX, event.pageY);
     return false;
@@ -162,4 +205,89 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
     paddingLeft = paddingLeft / (containerWidth / 100);
     this.stopMovingCallback(left - paddingLeft, top);
   }
+};
+
+/**
+ * Makes it possible to focus and move the element around.
+ * Must be inside $container.
+ * 
+ * @param {jQuery} $element
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.add = function ($element) {
+  var self = this;
+  
+  if ($element.attr('tabindex') === undefined) {
+    // Make it possible to tab between elements.
+    $element.attr('tabindex', 1);
+  }
+  
+  $element.mousedown(function (event) {
+    if (event.which !== 1) {
+      return;
+    }
+
+    self.pressed = true;
+    self.focus($element);
+    self.dnd.press($element, event.pageX, event.pageY);
+  }).focus(function () {
+    self.focus($element);
+  });
+  
+  // TODO: Should the form dialog be added to this library? Seems like there's lot of similarities between CP, IV and DQ.
+  // TODO: It would also be great if we could get resize in here.
+};
+
+/**
+ * Select the given element in the UI.
+ * 
+ * @param {jQuery} $element
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.focus = function ($element) {
+  var self = this;
+  
+  // Keep track of the element we have in focus
+  self.$element = $element;
+  
+  // Show and update coordinates picker
+  self.$coordinates.show();
+  var offset = $element.offset();
+  var position = $element.position();
+  self.updateCoordinates(offset.left, offset.top, position.left, position.top);
+};
+
+/**
+ * Deselect any elements in the UI.
+ * 
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.blur = function () {
+  var self = this;
+  
+  self.$coordinates.hide();
+};
+
+
+/**
+ * Update the coordinates picker.
+ * 
+ * @param {Number} left
+ * @param {Number} top
+ * @param {Number} x
+ * @param {Number} y
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
+  var self = this;
+  
+  // Move it
+  self.$coordinates.css({
+    left: left,
+    top: top
+  });
+  
+  // Set pos
+  self.$x.val(Math.round(x));
+  self.$y.val(Math.round(y));
 };

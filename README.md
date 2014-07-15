@@ -1,7 +1,7 @@
 H5P Drag 'n Bar
 ==========
 
-A library that creates a menu bar with items that can be dropped into a specified container.
+Creates a menu bar with items that can be dropped into a specified container.
 
 ## License
 
