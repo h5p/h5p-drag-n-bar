@@ -89,7 +89,11 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   }
   
   // Add coordinates picker
-  this.$coordinates = H5P.jQuery('<div class="h5p-dragnbar-coordinates" style="display:none"><input class="h5p-dragnbar-x" type="text" value="0">, <input class="h5p-dragnbar-y" type="text" value="0"></div>').appendTo(H5P.$body);
+  this.$coordinates = H5P.jQuery('<div class="h5p-dragnbar-coordinates" style="display:none"><input class="h5p-dragnbar-x" type="text" value="0">, <input class="h5p-dragnbar-y" type="text" value="0"></div>')
+    .appendTo(H5P.$body)
+    .mousedown(function () {
+      self.pressed = true;
+    });
   this.$x = this.$coordinates.find('.h5p-dragnbar-x');
   this.$y = this.$coordinates.find('.h5p-dragnbar-y');
   
@@ -98,10 +102,13 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
       var x = parseInt(self.$x.val());
       var y = parseInt(self.$y.val());
       if (!isNaN(x) && !isNaN(y)) {
+        var snap = self.dnd.snap;
+        delete self.dnd.snap;
         self.dnd.stopMovingCallback({
           pageX: x + self.dnd.adjust.x + self.dnd.containerOffset.left + self.dnd.scrollLeft + parseInt(self.$container.css('padding-left')),
           pageY: y + self.dnd.adjust.y + self.dnd.containerOffset.top + self.dnd.scrollTop
         });
+        self.dnd.snap = snap;
       }
     }
   });
@@ -125,8 +132,10 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     }
     
     that.newElement = true;
-    that.dnd.press(button.createElement().appendTo(that.$container), event.pageX, event.pageY);
-    return false;
+    that.pressed = true;
+    var $element = button.createElement().appendTo(that.$container);
+    that.focus($element);
+    that.dnd.press($element, event.pageX, event.pageY);
   });
 };
 
@@ -229,7 +238,9 @@ H5P.DragNBar.prototype.add = function ($element) {
 
     self.pressed = true;
     self.focus($element);
-    self.dnd.press($element, event.pageX, event.pageY);
+    if (event.result !== false) { // Moving can be stopped if the mousedown is doing something else
+      self.dnd.press($element, event.pageX, event.pageY);
+    }
   }).focus(function () {
     self.focus($element);
   });
@@ -246,7 +257,7 @@ H5P.DragNBar.prototype.add = function ($element) {
  */
 H5P.DragNBar.prototype.focus = function ($element) {
   var self = this;
-  
+
   // Keep track of the element we have in focus
   self.$element = $element;
   
