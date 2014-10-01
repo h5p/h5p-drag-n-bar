@@ -79,7 +79,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      var $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>').appendTo($list).children(':first').click(function () {
+      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>').appendTo($list).children(':first').click(function () {
         $list.slideToggle(200);
         return false;
       }).next();
@@ -87,7 +87,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
     this.addButton(button, $list);
   }
-  
+
   // Add coordinates picker
   this.$coordinates = H5P.jQuery('<div class="h5p-dragnbar-coordinates" style="display:none"><input class="h5p-dragnbar-x" type="text" value="0">, <input class="h5p-dragnbar-y" type="text" value="0"></div>')
     .appendTo(H5P.$body)
@@ -96,7 +96,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     });
   this.$x = this.$coordinates.find('.h5p-dragnbar-x');
   this.$y = this.$coordinates.find('.h5p-dragnbar-y');
-  
+
   this.$x.add(this.$y).on('change keydown', function(event) {
     if (event.type === 'change' || event.which === 13) {
       var x = parseInt(self.$x.val());
@@ -130,7 +130,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     if (event.which !== 1) {
       return;
     }
-    
+
     that.newElement = true;
     that.pressed = true;
     var $element = button.createElement().appendTo(that.$container);
@@ -219,18 +219,18 @@ H5P.DragNBar.prototype.stopMoving = function (event) {
 /**
  * Makes it possible to focus and move the element around.
  * Must be inside $container.
- * 
+ *
  * @param {jQuery} $element
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.add = function ($element) {
   var self = this;
-  
+
   if ($element.attr('tabindex') === undefined) {
     // Make it possible to tab between elements.
     $element.attr('tabindex', 1);
   }
-  
+
   $element.mousedown(function (event) {
     if (event.which !== 1) {
       return;
@@ -244,14 +244,14 @@ H5P.DragNBar.prototype.add = function ($element) {
   }).focus(function () {
     self.focus($element);
   });
-  
+
   // TODO: Should the form dialog be added to this library? Seems like there's lot of similarities between CP, IV and DQ.
   // TODO: It would also be great if we could get resize in here.
 };
 
 /**
  * Select the given element in the UI.
- * 
+ *
  * @param {jQuery} $element
  * @returns {undefined}
  */
@@ -260,7 +260,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
   // Keep track of the element we have in focus
   self.$element = $element;
-  
+
   // Show and update coordinates picker
   self.$coordinates.show();
   var offset = $element.offset();
@@ -270,19 +270,19 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
 /**
  * Deselect any elements in the UI.
- * 
+ *
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.blur = function () {
   var self = this;
-  
+
   self.$coordinates.hide();
 };
 
 
 /**
  * Update the coordinates picker.
- * 
+ *
  * @param {Number} left
  * @param {Number} top
  * @param {Number} x
@@ -291,13 +291,13 @@ H5P.DragNBar.prototype.blur = function () {
  */
 H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
   var self = this;
-  
+
   // Move it
   self.$coordinates.css({
     left: left,
     top: top
   });
-  
+
   // Set pos
   self.$x.val(Math.round(x));
   self.$y.val(Math.round(y));
