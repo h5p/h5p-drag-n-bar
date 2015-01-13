@@ -79,10 +79,18 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>').appendTo($list).children(':first').click(function () {
-        $list.slideToggle(200);
-        return false;
-      }).next();
+      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>')
+        .appendTo($list)
+        .click(function () {
+          return false;
+        })
+        .hover(function () {
+          $list.stop().slideToggle(300);
+        }, function () {
+          $list.stop().slideToggle(300);
+        })
+        .children(':first')
+        .next();
     }
 
     this.addButton(button, $list);
