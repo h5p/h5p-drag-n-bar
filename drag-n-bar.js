@@ -18,11 +18,15 @@ H5P.DragNBar = function (buttons, $container) {
   this.dnd.snap = 10;
   this.newElement = false;
 
-  this.dnd.startMovingCallback = function (event) {
+  var startX, startY;
+  this.dnd.startMovingCallback = function (x, y) {
     if (that.newElement) {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
     }
+
+    startX = x;
+    startY = y;
 
     return true;
   };
@@ -39,7 +43,21 @@ H5P.DragNBar = function (buttons, $container) {
   };
 
   this.dnd.stopMovingCallback = function (event) {
-    that.stopMoving(event);
+    var x = event.pageX;
+    var y = event.pageY;
+
+    if (that.newElement) {
+      that.$container.css('overflow', '');
+
+      if (parseInt(that.$element.css('top')) < 0) {
+        that.center(that.$element);
+        var off = this.$container.offset();
+        x = off.left + ((that.$container.width() - that.$element.width()) / 2);
+        y = off.top + ((that.$container.height() - that.$element.height()) / 2);
+      }
+    }
+
+    that.stopMoving(x, y);
     that.newElement = false;
     that.focus(that.$element);
   };
@@ -142,6 +160,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     that.newElement = true;
     that.pressed = true;
     var $element = button.createElement().appendTo(that.$container);
+    that.$container.css('overflow', 'visible');
     that.focus($element);
     that.dnd.press($element, event.pageX, event.pageY);
   });
@@ -164,16 +183,16 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @param {Object} event
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.stopMoving = function (event) {
-  var x, y, top, left;
+H5P.DragNBar.prototype.stopMoving = function (x, y) {
+  var top, left;
 
   if (this.newElement) {
-    x = event.pageX - 10;
-    y = event.pageY - 10;
+    x -= 10;
+    y -= 10;
   }
   else {
-    x = event.pageX - this.dnd.adjust.x;
-    y = event.pageY - this.dnd.adjust.y;
+    x -= this.dnd.adjust.x;
+    y -= this.dnd.adjust.y;
   }
 
   var offset = this.$container.offset();
