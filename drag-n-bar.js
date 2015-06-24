@@ -48,9 +48,7 @@ H5P.DragNBar = function (buttons, $container) {
 
     if (that.newElement) {
       that.$container.css('overflow', '');
-
       if (parseInt(that.$element.css('top')) < 0) {
-        that.center(that.$element);
         var off = this.$container.offset();
         x = off.left + ((that.$container.width() - that.$element.width()) / 2);
         y = off.top + ((that.$container.height() - that.$element.height()) / 2);
