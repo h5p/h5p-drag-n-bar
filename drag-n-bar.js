@@ -20,9 +20,16 @@ H5P.DragNBar = function (buttons, $container) {
 
   var startX, startY;
   this.dnd.startMovingCallback = function (x, y) {
+    that.dnd.min = {x: 0 , y: 0};
+    that.dnd.max = {
+      x: $container.width() - that.$element.outerWidth(),
+      y: $container.height() - that.$element.outerHeight()
+    };
+
     if (that.newElement) {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
+      that.dnd.min.y -= that.$list.height();
     }
 
     startX = x;
@@ -50,14 +57,17 @@ H5P.DragNBar = function (buttons, $container) {
       that.$container.css('overflow', '');
       if (parseInt(that.$element.css('top')) < 0) {
         var off = this.$container.offset();
-        x = off.left + ((that.$container.width() - that.$element.width()) / 2);
-        y = off.top + ((that.$container.height() - that.$element.height()) / 2);
+        x = off.left + (that.dnd.max.x / 2);
+        y = off.top + (that.dnd.max.y / 2);
       }
     }
 
     that.stopMoving(x, y);
     that.newElement = false;
     that.focus(that.$element);
+
+    delete that.dnd.min;
+    delete that.dnd.max;
   };
 
   H5P.$body.keydown(function (event) {
@@ -90,6 +100,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   $wrapper.html('');
 
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
+  this.$list = $list;
 
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
