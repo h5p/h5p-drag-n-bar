@@ -198,62 +198,17 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.stopMoving = function (x, y) {
-  var top, left;
-
-  if (this.newElement) {
-    x -= 10;
-    y -= 10;
-  }
-  else {
-    x -= this.dnd.adjust.x;
-    y -= this.dnd.adjust.y;
-  }
-
-  var offset = this.$container.offset();
-
-  // Check if element is above or below the container.
-  var containerHeight = this.$container.height();
-  var elementHeight = this.dnd.$element.outerHeight() + 3;
-  if (y < offset.top) {
-    top = 0;
-  }
-  else if (y + elementHeight > offset.top + containerHeight) {
-    top = containerHeight - elementHeight;
-  }
-  else {
-    top = y - offset.top;
-  }
-
-  // Check if element is to the left or to the right of the container.
-  var paddingLeft = parseInt(this.$container.css('padding-left'));
-  var containerWidth = this.$container.width() + paddingLeft;
-  var elementWidth = this.dnd.$element.outerWidth() + 2;
-
-  if (x < offset.left + paddingLeft) {
-    left = paddingLeft;
-  }
-  else if (x + elementWidth > offset.left + containerWidth) {
-    left = containerWidth - elementWidth;
-  }
-  else {
-    left = x - offset.left;
-  }
-
-  if (this.dnd.snap !== undefined) {
-    left = Math.round(left / this.dnd.snap) * this.dnd.snap;
-    top = Math.round(top / this.dnd.snap) * this.dnd.snap;
-  }
+  var left = parseInt(this.$element.css('left'));
+  var top = parseInt(this.$element.css('top'));
 
   // Calculate percentage
-  top = top / (containerHeight / 100);
-  left = left / (containerWidth / 100);
-
+  top = top / (this.$container.height() / 100);
+  left = left / (this.$container.width() / 100);
   this.dnd.$element.css({top: top + '%', left: left + '%'});
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
-    paddingLeft = paddingLeft / (containerWidth / 100);
-    this.stopMovingCallback(left - paddingLeft, top);
+    this.stopMovingCallback(left, top);
   }
 };
 
