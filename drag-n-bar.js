@@ -47,6 +47,11 @@ H5P.DragNBar = function (buttons, $container) {
       y = Math.round(y / that.dnd.snap) * that.dnd.snap;
     }
     that.updateCoordinates(x, y, left - paddingLeft, top);
+
+    if (that.newElement && top >= 0) {
+      // Do not allow dragging back up
+      that.dnd.min.y = 0;
+    }
   };
 
   this.dnd.stopMovingCallback = function (event) {
