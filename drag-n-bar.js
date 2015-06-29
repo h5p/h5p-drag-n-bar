@@ -55,8 +55,7 @@ H5P.DragNBar = function (buttons, $container) {
   };
 
   this.dnd.stopMovingCallback = function (event) {
-    var x = event.pageX;
-    var y = event.pageY;
+    var x, y;
 
     if (that.newElement) {
       that.$container.css('overflow', '');
@@ -64,6 +63,11 @@ H5P.DragNBar = function (buttons, $container) {
         x = (that.dnd.max.x / 2);
         y = (that.dnd.max.y / 2);
       }
+    }
+
+    if (x === undefined || y === undefined) {
+      x = parseInt(that.$element.css('left'));
+      y = parseInt(that.$element.css('top'));
     }
 
     that.stopMoving(x, y);
