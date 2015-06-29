@@ -61,9 +61,8 @@ H5P.DragNBar = function (buttons, $container) {
     if (that.newElement) {
       that.$container.css('overflow', '');
       if (parseInt(that.$element.css('top')) < 0) {
-        var off = this.$container.offset();
-        x = off.left + (that.dnd.max.x / 2);
-        y = off.top + (that.dnd.max.y / 2);
+        x = (that.dnd.max.x / 2);
+        y = (that.dnd.max.y / 2);
       }
     }
 
@@ -197,10 +196,7 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @param {Object} event
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.stopMoving = function (x, y) {
-  var left = parseInt(this.$element.css('left'));
-  var top = parseInt(this.$element.css('top'));
-
+H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
