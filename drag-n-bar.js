@@ -1,101 +1,129 @@
+/*global H5PEditor */
 var H5P = H5P || {};
 
 /**
- * Constructor. Initializes the drag and drop menu bar.
- *
- * @param {Array} buttons
- * @param {jQuery} $container
- * @returns {undefined}
+ * Drag n bar class
+ * @param {H5P.jQuery} $
+ * @class
  */
-H5P.DragNBar = function (buttons, $container) {
-  var that = this;
+H5P.DragNBar = (function ($) {
 
-  this.overflowThreshold = 13; // How many buttons to display before we add the more button.
+  /**
+   * Constructor. Initializes the drag and drop menu bar.
+   *
+   * @param {Array} buttons
+   * @param {jQuery} $container
+   * @returns {undefined}
+   */
+  function DragNBar (buttons, $container) {
+    var that = this;
 
-  this.buttons = buttons;
-  this.$container = $container;
-  this.dnd = new H5P.DragNDrop($container, true);
-  this.dnd.snap = 10;
-  this.newElement = false;
+    this.overflowThreshold = 13; // How many buttons to display before we add the more button.
 
-  var startX, startY;
-  this.dnd.startMovingCallback = function (x, y) {
-    that.dnd.min = {x: 0 , y: 0};
-    that.dnd.max = {
-      x: $container.width() - that.$element.outerWidth(),
-      y: $container.height() - that.$element.outerHeight()
+    this.buttons = buttons;
+    this.$container = $container;
+    this.dnd = new H5P.DragNDrop($container, true);
+    this.dnd.snap = 10;
+    this.newElement = false;
+
+    var startX, startY;
+    this.contextMenu = new H5P.DragNBar.ContextMenu(this);
+    this.dnr = new H5P.DragNResize($container);
+
+    // Update coordinates when element is resized
+    this.dnr.on('moveResizing', function () {
+      var offset = that.$element.offset();
+      var position = that.$element.position();
+      that.updateCoordinates(offset.left, offset.top, position.left, position.top);
+    });
+
+    this.dnr.on('stoppedResizing',function () {
+      // Queue refocus of element, since mousedown does not propagate
+      setTimeout(function () {
+        that.focus(that.$element);
+      }, 0);
+    });
+
+    this.dnd.startMovingCallback = function (x, y) {
+      that.dnd.min = {x: 0, y: 0};
+      that.dnd.max = {
+        x: $container.width() - that.$element.outerWidth(),
+        y: $container.height() - that.$element.outerHeight()
+      };
+
+      if (that.newElement) {
+        that.dnd.adjust.x = 10;
+        that.dnd.adjust.y = 10;
+        that.dnd.min.y -= that.$list.height();
+      }
+
+      startX = x;
+      startY = y;
+
+      return true;
     };
 
-    if (that.newElement) {
-      that.dnd.adjust.x = 10;
-      that.dnd.adjust.y = 10;
-      that.dnd.min.y -= that.$list.height();
-    }
-
-    startX = x;
-    startY = y;
-
-    return true;
-  };
-
-  this.dnd.moveCallback = function (x, y) {
-    var paddingLeft = parseInt(that.$container.css('padding-left'));
-    var left = parseInt(that.$element.css('left'));
-    var top = parseInt(that.$element.css('top'));
-    if (that.dnd.snap !== undefined) {
-      x = Math.round(x / that.dnd.snap) * that.dnd.snap;
-      y = Math.round(y / that.dnd.snap) * that.dnd.snap;
-    }
-    that.updateCoordinates(x, y, left - paddingLeft, top);
-
-    if (that.newElement && top >= 0) {
-      // Do not allow dragging back up
-      that.dnd.min.y = 0;
-    }
-  };
-
-  this.dnd.stopMovingCallback = function (event) {
-    var x, y;
-
-    if (that.newElement) {
-      that.$container.css('overflow', '');
-      if (parseInt(that.$element.css('top')) < 0) {
-        x = (that.dnd.max.x / 2);
-        y = (that.dnd.max.y / 2);
+    this.dnd.moveCallback = function (x, y) {
+      var paddingLeft = parseInt(that.$container.css('padding-left'));
+      var left = parseInt(that.$element.css('left'));
+      var top = parseInt(that.$element.css('top'));
+      if (that.dnd.snap !== undefined) {
+        x = Math.round(x / that.dnd.snap) * that.dnd.snap;
+        y = Math.round(y / that.dnd.snap) * that.dnd.snap;
       }
-    }
+      that.updateCoordinates(x, y, left - paddingLeft, top);
 
-    if (x === undefined || y === undefined) {
-      x = parseInt(that.$element.css('left'));
-      y = parseInt(that.$element.css('top'));
-    }
+      if (that.newElement && top >= 0) {
+        // Do not allow dragging back up
+        that.dnd.min.y = 0;
+      }
+    };
 
-    that.stopMoving(x, y);
-    that.newElement = false;
-    that.focus(that.$element);
+    this.dnd.stopMovingCallback = function (event) {
+      var x, y;
 
-    delete that.dnd.min;
-    delete that.dnd.max;
-  };
+      if (that.newElement) {
+        that.$container.css('overflow', '');
+        if (parseInt(that.$element.css('top')) < 0) {
+          x = (that.dnd.max.x / 2);
+          y = (that.dnd.max.y / 2);
+        }
+      }
 
-  H5P.$body.keydown(function (event) {
-    if (event.keyCode === 17 && that.dnd.snap !== undefined) {
-      delete that.dnd.snap;
-    }
-  }).keyup(function (event) {
-    if (event.keyCode === 17) {
-      that.dnd.snap = 10;
-    }
-  }).click(function () {
-    // Remove coordinates picker if we didn't press an element.
-    if (that.pressed !== undefined) {
-      delete that.pressed;
-    }
-    else {
-      that.blur();
-    }
-  });
-};
+      if (x === undefined || y === undefined) {
+        x = parseInt(that.$element.css('left'));
+        y = parseInt(that.$element.css('top'));
+      }
+
+      that.stopMoving(x, y);
+      that.newElement = false;
+      that.focus(that.$element);
+
+      delete that.dnd.min;
+      delete that.dnd.max;
+    };
+
+    H5P.$body.keydown(function (event) {
+      if (event.keyCode === 17 && that.dnd.snap !== undefined) {
+        delete that.dnd.snap;
+      }
+    }).keyup(function (event) {
+      if (event.keyCode === 17) {
+        that.dnd.snap = 10;
+      }
+    }).click(function () {
+      // Remove coordinates picker if we didn't press an element.
+      if (that.pressed !== undefined) {
+        delete that.pressed;
+      }
+      else {
+        that.blur();
+      }
+    });
+  }
+
+  return DragNBar;
+})(H5P.jQuery);
 
 /**
  * Attaches the menu bar to the given wrapper.
@@ -110,6 +138,14 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
   this.$list = $list;
 
+  /**
+   * Stops current list animation, and toggles slide animation for 300ms
+   * @param {H5P.jQuery} $list List element
+   */
+  var toggleListAnimation = function ($list) {
+    $list.stop().slideToggle(300);
+  };
+
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 
@@ -119,42 +155,13 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
         .click(function () {
           return false;
         })
-        .hover(function () {
-          $list.stop().slideToggle(300);
-        }, function () {
-          $list.stop().slideToggle(300);
-        })
+        .hover(toggleListAnimation($list), toggleListAnimation($list))
         .children(':first')
         .next();
     }
 
     this.addButton(button, $list);
   }
-
-  // Add coordinates picker
-  this.$coordinates = H5P.jQuery('<div class="h5p-dragnbar-coordinates" style="display:none"><input class="h5p-dragnbar-x" type="text" value="0">, <input class="h5p-dragnbar-y" type="text" value="0"></div>')
-    .appendTo(H5P.$body)
-    .mousedown(function () {
-      self.pressed = true;
-    });
-  this.$x = this.$coordinates.find('.h5p-dragnbar-x');
-  this.$y = this.$coordinates.find('.h5p-dragnbar-y');
-
-  this.$x.add(this.$y).on('change keydown', function(event) {
-    if (event.type === 'change' || event.which === 13) {
-      var x = parseInt(self.$x.val());
-      var y = parseInt(self.$y.val());
-      if (!isNaN(x) && !isNaN(y)) {
-        var snap = self.dnd.snap;
-        delete self.dnd.snap;
-        self.dnd.stopMovingCallback({
-          pageX: x + self.dnd.adjust.x + self.dnd.containerOffset.left + self.dnd.scrollLeft + parseInt(self.$container.css('padding-left')),
-          pageY: y + self.dnd.adjust.y + self.dnd.containerOffset.top + self.dnd.scrollTop
-        });
-        self.dnd.snap = snap;
-      }
-    }
-  });
 };
 
 /**
@@ -167,20 +174,23 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>').appendTo($list).children().click(function () {
-    return false;
-  }).mousedown(function (event) {
-    if (event.which !== 1) {
-      return;
-    }
+  H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + button.title + '" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>')
+    .appendTo($list)
+    .children()
+    .click(function () {
+      return false;
+    }).mousedown(function (event) {
+      if (event.which !== 1) {
+        return;
+      }
 
-    that.newElement = true;
-    that.pressed = true;
-    var $element = button.createElement().appendTo(that.$container);
-    that.$container.css('overflow', 'visible');
-    that.focus($element);
-    that.dnd.press($element, event.pageX, event.pageY);
-  });
+      that.newElement = true;
+      that.pressed = true;
+      var $element = button.createElement().appendTo(that.$container);
+      that.$container.css('overflow', 'visible');
+      that.focus($element);
+      that.dnd.press($element, event.pageX, event.pageY);
+    });
 };
 
 /**
@@ -217,10 +227,16 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * Must be inside $container.
  *
  * @param {jQuery} $element
+ * @param {Object} [options]
+ * @param {boolean} [options.disableResize] Resize disabled
+ * @param {boolean} [options.lock] Lock ratio during resize
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.add = function ($element) {
+H5P.DragNBar.prototype.add = function ($element, options) {
   var self = this;
+  this.dnr.add($element, options);
+
+  $element.addClass('h5p-dragnbar-element');
 
   if ($element.attr('tabindex') === undefined) {
     // Make it possible to tab between elements.
@@ -258,7 +274,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
   self.$element = $element;
 
   // Show and update coordinates picker
-  self.$coordinates.show();
+  self.contextMenu.show();
   var offset = $element.offset();
   var position = $element.position();
   self.updateCoordinates(offset.left, offset.top, position.left, position.top);
@@ -272,7 +288,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 H5P.DragNBar.prototype.blur = function () {
   var self = this;
 
-  self.$coordinates.hide();
+  self.contextMenu.hide();
 };
 
 
@@ -286,15 +302,5 @@ H5P.DragNBar.prototype.blur = function () {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
-  var self = this;
-
-  // Move it
-  self.$coordinates.css({
-    left: left,
-    top: top
-  });
-
-  // Set pos
-  self.$x.val(Math.round(x));
-  self.$y.val(Math.round(y));
+  this.contextMenu.updateCoordinates(left, top, x, y);
 };

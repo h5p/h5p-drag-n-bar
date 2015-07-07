@@ -3,14 +3,17 @@
   "contentType": "API",
   "description": "Creates a menu bar with items that can be dropped into the specified container.",
   "majorVersion": 1,
-  "minorVersion": 0,
-  "patchVersion": 16,
+  "minorVersion": 1,
+  "patchVersion": 0,
   "runnable": 0,
   "machineName": "H5P.DragNBar",
   "author": "Amendor AS",
   "preloadedJs": [
     {
       "path": "drag-n-bar.js"
+    },
+    {
+      "path": "context-menu.js"
     }
   ],
   "preloadedCss": [
@@ -23,6 +26,11 @@
       "machineName": "H5P.DragNDrop",
       "majorVersion": 1,
       "minorVersion": 0
+    },
+    {
+      "machineName": "H5P.DragNResize",
+      "majorVersion": 1,
+      "minorVersion": 1
     }
   ]
 }
