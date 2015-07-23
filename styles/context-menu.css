@@ -1,0 +1,133 @@
+.h5p-dragnbar-context-menu {
+  background-color: #c4e3f7;
+  height: 36px;
+  margin-top: -51px;
+  position: absolute;
+  z-index: 50;
+  border: 1px solid #0099ff;
+  line-height: 36px;
+  -webkit-filter: drop-shadow(0px 0px 0.25em #2c2c2c);
+  filter: drop-shadow(16px 16px 10px rgba(0,0,0,0.9));
+}
+
+.h5p-dragnbar-context-menu.left-aligned {
+  -webkit-transform: translateX(-100%);
+  -moz-transform: translateX(-100%);
+  -ms-transform: translateX(-100%);
+  -o-transform: translateX(-100%);
+  transform: translateX(-100%);
+}
+
+.h5p-dragnbar-context-menu.left-aligned:after {
+  position: absolute;
+  display: block;
+  content: "";
+  border-style: solid;
+  border-width: 7px 7px 0 0;
+  border-color: #fff transparent transparent transparent;
+  bottom: -6px;
+  right: 1px;
+  left: initial;
+  z-index: 1;
+  transform: scaleX(-1);
+}
+
+.h5p-dragnbar-context-menu.left-aligned:before {
+  position: absolute;
+  display: block;
+  content: "";
+  border-style: solid;
+  border-width: 10px 10px 0 0;
+  border-color: #0099ff transparent transparent transparent;
+  bottom: -10px;
+  left: initial;
+  right: -0.75px;
+  transform: scaleX(-1);
+}
+
+.h5p-dragnbar-context-menu.left-aligned .h5p-context-menu-buttons {
+  float: left;
+}
+
+.h5p-dragnbar-context-menu:before {
+  position: absolute;
+  display: block;
+  content: "";
+  border-style: solid;
+  border-width: 9px 9px 0 0;
+  border-color: #0099ff transparent transparent transparent;
+  bottom: -9px;
+  left: -1px;
+}
+
+.h5p-dragnbar-context-menu:after {
+  position: absolute;
+  display: block;
+  content: "";
+  border-style: solid;
+  border-width: 7px 7px 0 0;
+  border-color: #fff transparent transparent transparent;
+  bottom: -7px;
+  left: 0;
+  z-index: 1;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button,
+.h5p-dragnbar-context-menu .h5p-context-menu-buttons,
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates {
+  display: inline-block;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates {
+  padding: 0 0.75em;
+  background-color: #fff;
+  color: #0061a2;
+  border-right: 1px solid #0099ff;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button {
+  width: 37px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Button stylings */
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:before {
+  background-color: #000;
+  color: #fff;
+  opacity: 0.75;
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 42px;
+  padding: 0 0.5em;
+  transform: translateX(-50%);
+  left: 50%;
+  font-size: 14px;
+  line-height: 2;
+  border-radius: 4px;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:after {
+  font-family: "H5PFontAwesome4";
+  content: '\f059';
+  color: #003c65;
+  padding: 3px 5px;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:after {
+  border: 1px solid #61bfff;
+  border-radius: 2px;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.edit:after {
+  content: '\f040';
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.delete:after {
+  content: '\f014';
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.bringToFront:after {
+
+}

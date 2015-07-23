@@ -4,25 +4,56 @@
  * Create context menu
  * @class
  */
-H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
+H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
   /**
    * Constructor for context menu
-   * @param {H5P.DragNBar} dragNBar
+   * @param {H5P.DragNBarElement} DragNBarElement
    * @param {Boolean} [hasCoordinates] Decides if coordinates will be displayed
    * @constructor
    */
-  function ContextMenu(dragNBar, hasCoordinates) {
-
+  function ContextMenu(DragNBarElement, hasCoordinates) {
     EventDispatcher.call(this);
 
-    this.dnb = dragNBar;
+    /**
+     * Keeps track of DragNBar object
+     * @type {H5P.DragNBar}
+     */
+    this.dnb = DragNBarElement.dnb;
+
+    /**
+     * Keeps track of context menu container
+     * @type {H5P.jQuery}
+     */
     this.$contextMenu = $('<div>', {
       'class': 'h5p-dragnbar-context-menu'
-    }).appendTo(H5P.$body);
+    });
 
-    // Default buttons
+    /**
+     * Keeps track of buttons container
+     * @type {H5P.jQuery}
+     */
+    this.$buttons = $('<div>', {
+      'class': 'h5p-context-menu-buttons'
+    });
+
+    /**
+     * Keeps track of whether the context menu should display coordinates
+     * @type {Boolean}
+     */
     this.hasCoordinates = (hasCoordinates !== undefined ? hasCoordinates : true);
+
+    /**
+     * Button containing button name and event name that will be fired.
+     * @typedef {Object} ContextMenuButton
+     * @property {String} buttonName - Name of the button and title
+     * @property {String} eventName - Name of the event that will be fired upon click
+     */
+
+    /**
+     * Keeps track of button objects
+     * @type {ContextMenuButton[]}
+     */
     this.buttons = [
       {buttonName: 'edit', eventName: 'contextMenuEdit'},
       {buttonName: 'delete', eventName: 'contextMenuDelete'}
@@ -32,7 +63,7 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
     this.updateContextMenu();
   }
 
-  // Inheritance
+  // Inherit event dispatcher
   ContextMenu.prototype = Object.create(EventDispatcher.prototype);
   ContextMenu.prototype.constructor = ContextMenu;
 
@@ -50,13 +81,13 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
     // Add coordinates picker
     this.$coordinates = $(
       '<div class="h5p-dragnbar-coordinates">' +
-      '<input class="h5p-dragnbar-x" type="text" value="0">' +
-      '<span class="h5p-dragnbar-coordinates-separater">,</span>' +
-      '<input class="h5p-dragnbar-y" type="text" value="0">' +
+        '<input class="h5p-dragnbar-x" type="text" value="0">' +
+        '<span class="h5p-dragnbar-coordinates-separater">,</span>' +
+        '<input class="h5p-dragnbar-y" type="text" value="0">' +
       '</div>'
     ).mousedown(function () {
-        self.dnb.pressed = true;
-      }).appendTo(this.$contextMenu);
+      self.dnb.pressed = true;
+    }).appendTo(this.$contextMenu);
 
     this.$x = this.$coordinates.find('.h5p-dragnbar-x');
     this.$y = this.$coordinates.find('.h5p-dragnbar-y');
@@ -81,11 +112,10 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
   /**
    * Update the coordinates picker.
    *
-   * @param {Number} left
-   * @param {Number} top
-   * @param {Number} x
-   * @param {Number} y
-   * @returns {undefined}
+   * @param {Number} left Left pos of context menu
+   * @param {Number} top Top pos of context menu
+   * @param {Number} x X value in coordinates
+   * @param {Number} y Y value in coordinates
    */
   ContextMenu.prototype.updateCoordinates = function (left, top, x, y) {
     // Move it
@@ -102,7 +132,7 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
   };
 
   /**
-   * Add button to context menu
+   * Create button and add it to context menu element
    * @param {String} buttonName
    * @param {String} eventName
    */
@@ -114,10 +144,11 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
       'class': 'h5p-dragnbar-context-menu-button ' + buttonName,
       'role': 'button',
       'tabindex': 0,
-      'title': buttonName
+      'aria-label': buttonName
     }).click(function () {
+      self.dnb.pressed = true;
       self.trigger(eventName);
-    }).appendTo(this.$contextMenu);
+    }).appendTo(this.$buttons);
   };
 
   /**
@@ -125,18 +156,18 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
    * @param {String} buttonName
    */
   ContextMenu.prototype.removeFromMenu = function (buttonName) {
-    var $removeButton = this.$contextMenu.children('.h5p-context-menu-button-' + buttonName);
+    var $removeButton = this.$buttons.children('.h5p-context-menu-button-' + buttonName);
     $removeButton.remove();
   };
 
   /**
-   * Update context menu with current buttons
+   * Update context menu with current buttons. Useful when having added or removed buttons.
    */
   ContextMenu.prototype.updateContextMenu = function () {
     var self = this;
 
     // Clear context menu
-    this.$contextMenu.children().remove();
+    this.$buttons.children().remove();
 
     // Add coordinates
     if (this.hasCoordinates) {
@@ -147,10 +178,12 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
     this.buttons.forEach(function (button) {
       self.addToMenu(button.buttonName, button.eventName);
     });
+
+    this.$buttons.appendTo(this.$contextMenu);
   };
 
   /**
-   * Add button to context menu
+   * Add button and update context menu.
    * @param {String} buttonName
    * @param {String} eventName
    */
@@ -190,17 +223,17 @@ H5P.DragNBar.ContextMenu = (function ($, EventDispatcher) {
   };
 
   /**
-   * Hide context menu
+   * Attach context menu to body.
    */
-  ContextMenu.prototype.hide = function () {
-    this.$contextMenu.hide();
+  ContextMenu.prototype.attach = function () {
+    this.$contextMenu.appendTo(H5P.$body);
   };
 
   /**
-   * Show context menu
+   * Detach context menu from DOM.
    */
-  ContextMenu.prototype.show = function () {
-    this.$contextMenu.show();
+  ContextMenu.prototype.detach = function () {
+    this.$contextMenu.detach();
   };
 
   return ContextMenu;

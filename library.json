@@ -10,15 +10,27 @@
   "author": "Amendor AS",
   "preloadedJs": [
     {
-      "path": "drag-n-bar.js"
+      "path": "scripts/drag-n-bar.js"
     },
     {
-      "path": "context-menu.js"
+      "path": "scripts/context-menu.js"
+    },
+    {
+      "path": "scripts/dialog.js"
+    },
+    {
+      "path": "scripts/drag-n-bar-element.js"
     }
   ],
   "preloadedCss": [
     {
-      "path": "drag-n-bar.css"
+      "path": "styles/drag-n-bar.css"
+    },
+    {
+      "path": "styles/dialog.css"
+    },
+    {
+      "path": "styles/context-menu.css"
     }
   ],
   "preloadedDependencies": [
