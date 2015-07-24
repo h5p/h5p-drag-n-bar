@@ -139,7 +139,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         var buttonsHeight = (($buttons.outerHeight() + 1) / fontSize);
         $inner.css({
           width: '100%',
-          height: (($inner.height() / fontSize) - buttonsHeight) + 'em',
+          height: (($dialog.height() / fontSize) - buttonsHeight) + 'em',
           marginTop: buttonsHeight + 'em'
         });
       }
