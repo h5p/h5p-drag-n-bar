@@ -54,7 +54,7 @@ H5P.DragNBar = function (buttons, $container) {
     }
   };
 
-  this.dnd.stopMovingCallback = function (event) {
+  this.dnd.stopMovingCallback = function () {
     var x, y;
 
     if (that.newElement) {
@@ -142,16 +142,40 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
   this.$x.add(this.$y).on('change keydown', function(event) {
     if (event.type === 'change' || event.which === 13) {
-      var x = parseInt(self.$x.val());
-      var y = parseInt(self.$y.val());
+
+      // Get input
+      var x = Number(self.$x.val());
+      var y = Number(self.$y.val());
+
+      // Make sure input is valid
       if (!isNaN(x) && !isNaN(y)) {
-        var snap = self.dnd.snap;
-        delete self.dnd.snap;
-        self.dnd.stopMovingCallback({
-          pageX: x + self.dnd.adjust.x + self.dnd.containerOffset.left + self.dnd.scrollLeft + parseInt(self.$container.css('padding-left')),
-          pageY: y + self.dnd.adjust.y + self.dnd.containerOffset.top + self.dnd.scrollTop
-        });
-        self.dnd.snap = snap;
+
+        // Do not move outside of container
+        var min = {x: 0 , y: 0};
+        var max = {
+          x: self.$container.width() - self.$element.outerWidth(),
+          y: self.$container.height() - self.$element.outerHeight()
+        };
+
+        // Check min values
+        if (x < 0) {
+          x = min.x;
+        }
+        if (y < 0) {
+          y = min.y;
+        }
+
+        // Check max values
+        if (x > max.x) {
+          x = max.x;
+        }
+        if (y > max.y) {
+          y = max.y;
+        }
+
+        // Update and store location
+        self.stopMoving(x, y);
+        self.focus(self.$element);
       }
     }
   });
