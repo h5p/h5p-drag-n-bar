@@ -94,16 +94,39 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     this.$x.add(this.$y).on('change keydown', function(event) {
       if (event.type === 'change' || event.which === 13) {
-        var x = parseInt(self.$x.val());
-        var y = parseInt(self.$y.val());
+
+        // Get input
+        var x = Number(self.$x.val());
+        var y = Number(self.$y.val());
+
         if (!isNaN(x) && !isNaN(y)) {
-          var snap = self.dnb.dnd.snap;
-          delete self.dnb.dnd.snap;
-          self.dnb.dnd.stopMovingCallback({
-            pageX: x + self.dnb.dnd.adjust.x + self.dnb.dnd.containerOffset.left + self.dnb.dnd.scrollLeft + parseInt(self.dnb.$container.css('padding-left')),
-            pageY: y + self.dnb.dnd.adjust.y + self.dnb.dnd.containerOffset.top + self.dnb.dnd.scrollTop
-          });
-          self.dnb.dnd.snap = snap;
+
+          // Do not move outside of container
+          var min = {x: 0 , y: 0};
+          var max = {
+            x: self.$container.width() - self.$element.outerWidth(),
+            y: self.$container.height() - self.$element.outerHeight()
+          };
+
+          // Check min values
+          if (x < 0) {
+            x = min.x;
+          }
+          if (y < 0) {
+            y = min.y;
+          }
+
+          // Check max values
+          if (x > max.x) {
+            x = max.x;
+          }
+          if (y > max.y) {
+            y = max.y;
+          }
+
+          // Update and store location
+          self.stopMoving(x, y);
+          self.focus(self.$element);
         }
       }
     });
