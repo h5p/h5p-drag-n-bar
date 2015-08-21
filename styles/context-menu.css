@@ -111,13 +111,14 @@
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:after {
   font-family: "H5PFontAwesome4";
   content: '\f059';
-  color: #003c65;
+  color: #0061a2;
   padding: 3px 5px;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:after {
   border: 1px solid #61bfff;
   border-radius: 2px;
+  color: #000;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.edit:after {
@@ -125,7 +126,7 @@
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.delete:after {
-  content: '\f014';
+  content: '\f1f8';
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.bringToFront:after {

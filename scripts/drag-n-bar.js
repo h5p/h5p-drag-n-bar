@@ -83,20 +83,10 @@ H5P.DragNBar.prototype.initEditor = function () {
     return true;
   };
 
-  this.dnd.moveCallback = function (x, y) {
-    var paddingLeft = Math.round(parseFloat(that.$container.css('padding-left')));
-    var left = Math.round(parseFloat(that.$element.css('left')));
-    var top = Math.round(parseFloat(that.$element.css('top')));
-    if (that.dnd.snap !== undefined) {
-      x = Math.round(x / that.dnd.snap) * that.dnd.snap;
-      y = Math.round(y / that.dnd.snap) * that.dnd.snap;
-    }
-    that.updateCoordinates(x, y, left - paddingLeft, top);
-
-    if (that.newElement && top >= 0) {
-      // Do not allow dragging back up
-      that.dnd.min.y = 0;
-    }
+  this.dnd.moveCallback = function (x, y, $element) {
+    var offset = $element.offset();
+    var position = $element.position();
+    that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   };
 
   this.dnd.stopMovingCallback = function (event) {
