@@ -17,12 +17,21 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     /**
      * Keeps track of DragNBar object
+     *
      * @type {H5P.DragNBar}
      */
     this.dnb = DragNBarElement.dnb;
 
     /**
+     * Keeps track of DnBElement object
+     *
+     * @type {H5P.DragNBarElement}
+     */
+    this.dnbElement = DragNBarElement;
+
+    /**
      * Keeps track of context menu container
+     *
      * @type {H5P.jQuery}
      */
     this.$contextMenu = $('<div>', {
@@ -31,6 +40,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     /**
      * Keeps track of buttons container
+     *
      * @type {H5P.jQuery}
      */
     this.$buttons = $('<div>', {
@@ -104,8 +114,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
           // Do not move outside of container
           var min = {x: 0 , y: 0};
           var max = {
-            x: self.$container.width() - self.$element.outerWidth(),
-            y: self.$container.height() - self.$element.outerHeight()
+            x: self.dnb.$container.width() - self.dnbElement.getElement().outerWidth(),
+            y: self.dnb.$container.height() - self.dnbElement.getElement().outerHeight()
           };
 
           // Check min values
@@ -125,8 +135,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
           }
 
           // Update and store location
-          self.stopMoving(x, y);
-          self.focus(self.$element);
+          self.dnb.stopMoving(x, y);
+          self.dnb.focus(self.dnbElement.getElement());
         }
       }
     });
