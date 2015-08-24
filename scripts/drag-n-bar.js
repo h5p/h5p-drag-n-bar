@@ -377,12 +377,18 @@ H5P.DragNBar.prototype.blurAll = function () {
 /**
  * Update the coordinates picker.
  *
- * @param {Number} left
- * @param {Number} top
- * @param {Number} x
- * @param {Number} y
+ * @param {Number} [left]
+ * @param {Number} [top]
+ * @param {Number} [x]
+ * @param {Number} [y]
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
-  this.focusedElement.updateCoordinates(left, top, x, y);
+  if (left && top && x && y) {
+    this.focusedElement.updateCoordinates(left, top, x, y);
+  } else {
+    var offset = this.$element.offset();
+    var position = this.$element.position();
+    this.focusedElement.updateCoordinates(offset.left, offset.top, position.left, position.top);
+  }
 };

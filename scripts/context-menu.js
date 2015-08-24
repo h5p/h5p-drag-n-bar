@@ -136,7 +136,17 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
           // Update and store location
           self.dnb.stopMoving(x, y);
-          self.dnb.focus(self.dnbElement.getElement());
+
+          if (event.which === 13) {
+            // Pressed enter, mark number for easy edit
+            setTimeout(function () {
+              event.target.focus();
+              event.target.setSelectionRange(0, event.target.value.length);
+            }, 0);
+          }
+
+          // Update context menu position
+          self.dnb.updateCoordinates();
         }
       }
     });

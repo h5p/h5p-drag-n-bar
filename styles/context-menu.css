@@ -25,8 +25,8 @@
   border-style: solid;
   border-width: 7px 7px 0 0;
   border-color: #fff transparent transparent transparent;
-  bottom: -6px;
-  right: 1px;
+  bottom: -7px;
+  right: 0;
   left: initial;
   z-index: 1;
   transform: scaleX(-1);
@@ -41,7 +41,7 @@
   border-color: #0099ff transparent transparent transparent;
   bottom: -10px;
   left: initial;
-  right: -0.75px;
+  right: -1px;
   transform: scaleX(-1);
 }
 
@@ -83,6 +83,11 @@
   background-color: #fff;
   color: #0061a2;
   border-right: 1px solid #0099ff;
+}
+
+.h5p-dragnbar-context-menu.left-aligned .h5p-dragnbar-coordinates {
+  border-right: none;
+  border-left: 1px solid #0099ff;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button {
@@ -131,4 +136,26 @@
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.bringToFront:after {
 
+}
+
+.h5p-dragnbar-coordinates input {
+  background: none repeat scroll 0 0 transparent;
+  border: medium none;
+  width: 2em;
+  text-align: left;
+  color: #0061a2;
+  cursor: pointer;
+}
+
+.h5p-dragnbar-coordinates input.h5p-dragnbar-x {
+  text-align: right;
+}
+
+.h5p-dragnbar-coordinates .h5p-dragnbar-coordinates-separater {
+  margin: 0 0.2em;
+  cursor: default;
+}
+
+.h5p-dragnbar-coordinates input:focus {
+  outline: none;
 }
