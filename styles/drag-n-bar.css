@@ -1,4 +1,5 @@
 .h5p-moving {
+  cursor: move;
   opacity: 0.6;
 }
 
