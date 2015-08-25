@@ -38,6 +38,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       this.$element.mousedown(function () {
         self.dnb.pressed = true;
       });
+
+      // Hide context menu on blur
+      this.$element.blur(function () {
+        self.hideContextMenu();
+      });
     }
   }
 

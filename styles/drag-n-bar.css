@@ -4,8 +4,7 @@
 
 .h5p-dragnbar-element:focus,
 .h5p-dragnbar-element:hover {
-  outline: 2px solid #0099ff;
-  outline-offset: -1px;
+  outline: 1px solid #0099ff;
 }
 
 /* Display outline on label for h5p nil */
@@ -16,8 +15,7 @@
 
 .h5p-dragnbar-element.h5p-nil-interaction:focus > .h5p-interaction-label,
 .h5p-dragnbar-element.h5p-nil-interaction:hover > .h5p-interaction-label {
-  outline: 2px solid #0099ff;
-  outline-offset: -1px;
+  outline: 1px solid #0099ff;
 }
 
 .h5p-dragnbar-overlay {

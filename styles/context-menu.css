@@ -97,7 +97,15 @@
   cursor: pointer;
 }
 
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-x-container,
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-y-container {
+  display: inline-block;
+  position: relative;
+}
+
 /* Button stylings */
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-x-container:hover:before,
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-y-container:hover:before,
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:before {
   background-color: #000;
   color: #fff;
@@ -111,6 +119,7 @@
   font-size: 14px;
   line-height: 2;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:after {
@@ -123,7 +132,7 @@
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:after {
   border: 1px solid #61bfff;
   border-radius: 2px;
-  color: #000;
+  color: #003c65;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.edit:after {

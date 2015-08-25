@@ -91,9 +91,13 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Add coordinates picker
     this.$coordinates = $(
       '<div class="h5p-dragnbar-coordinates">' +
-        '<input class="h5p-dragnbar-x" type="text" value="0">' +
+        '<div class="h5p-dragnbar-x-container" aria-label="x position">' +
+          '<input class="h5p-dragnbar-x" type="text" value="0">' +
+        '</div>' +
         '<span class="h5p-dragnbar-coordinates-separater">,</span>' +
-        '<input class="h5p-dragnbar-y" type="text" value="0">' +
+        '<div class="h5p-dragnbar-y-container" aria-label="y position">' +
+          '<input class="h5p-dragnbar-y" type="text" value="0">' +
+        '</div>' +
       '</div>'
     ).mousedown(function () {
       self.dnb.pressed = true;
@@ -149,6 +153,10 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
           self.dnb.updateCoordinates();
         }
       }
+    }).click(function (event) {
+      // Select coordinates numbers for easy edit
+      event.target.focus();
+      event.target.setSelectionRange(0, event.target.value.length);
     });
   };
 
