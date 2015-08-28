@@ -385,6 +385,10 @@ H5P.DragNBar.prototype.blurAll = function () {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
+  if (!this.focusedElement) {
+    return;
+  }
+
   if (left && top && x && y) {
     this.focusedElement.updateCoordinates(left, top, x, y);
   } else {
