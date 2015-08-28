@@ -26,9 +26,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.$form = $form;
     this.options = options || {};
     this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);
+    this.focused = false;
 
     if (this.options.createElement) {
       this.$element = this.options.createElement().appendTo(dragNBar.$container);
+      this.focus();
     } else {
       this.$element = this.options.element;
     }
@@ -37,6 +39,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     if (this.$element) {
       this.$element.mousedown(function () {
         self.dnb.pressed = true;
+      });
+
+      // Run custom focus function on element focus
+      this.$element.focus(function () {
+        self.focus();
       });
     }
   }
@@ -68,6 +75,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    */
   DragNBarElement.prototype.setElement = function ($element) {
     this.$element = $element;
+
+    // Register custom focus function on new element focus
+    this.$element.focus(function () {
+      this.focus();
+    });
   };
 
   /**
@@ -124,7 +136,8 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    */
   DragNBarElement.prototype.blur = function () {
     if (this.$element) {
-      this.$element.blur();
+      this.$element.removeClass('focused');
+      this.focused = false;
     }
     this.hideContextMenu();
   };
@@ -133,7 +146,8 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * Focus element
    */
   DragNBarElement.prototype.focus = function () {
-    this.$element.focus();
+    this.$element.addClass('focused');
+    this.focused = true;
   };
 
   /**

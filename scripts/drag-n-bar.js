@@ -207,8 +207,8 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.elements.push(newElement);
       that.$container.css('overflow', 'visible');
       that.$element = button.createElement();
-      that.focus(that.$element);
       that.dnd.press(that.$element, event.pageX, event.pageY);
+      that.focus(that.$element);
     });
 };
 
@@ -318,7 +318,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
   // Blur last focused
   if (this.focusedElement && this.focusedElement.$element !== $element) {
-    this.focusedElement.$element.blur();
+    this.focusedElement.blur();
     this.focusedElement.hideContextMenu();
   }
 
@@ -332,6 +332,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
   var position = $element.position();
   this.focusedElement.updateCoordinates(offset.left, offset.top, position.left, position.top);
   this.focusedElement.showContextMenu();
+  this.focusedElement.focus();
 };
 
 /**
