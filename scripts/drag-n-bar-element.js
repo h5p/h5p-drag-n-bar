@@ -148,6 +148,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   DragNBarElement.prototype.focus = function () {
     this.$element.addClass('focused');
     this.focused = true;
+    this.resizeContextMenu(this.$element.position().left);
   };
 
   /**
