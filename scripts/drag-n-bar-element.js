@@ -24,7 +24,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.dnb = dragNBar;
     this.subContentId = subContentId;
     this.options = options || {};
-    if (options.disabledContextMenu) {
+    if (!this.options.disableContextMenu) {
       this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);
     }
     this.focused = false;

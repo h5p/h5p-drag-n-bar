@@ -1,4 +1,5 @@
 .h5p-dragnbar-context-menu {
+  display: table;
   background-color: #c4e3f7;
   height: 36px;
   margin-top: -51px;

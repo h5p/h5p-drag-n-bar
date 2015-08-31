@@ -128,7 +128,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     if (event.keyCode === 17) {
       that.dnd.snap = 10;
     }
-  }).click(function (e) {
+  }).click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (that.pressed !== undefined) {
       delete that.pressed;
@@ -270,7 +270,8 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
     elementExists[0].setElement($element);
     newElement = elementExists[0];
   } else {
-    newElement = new H5P.DragNBarElement(this, subContentId, {element: $element});
+    options.element = $element;
+    newElement = new H5P.DragNBarElement(this, subContentId, options);
     this.elements.push(newElement);
   }
 
@@ -348,7 +349,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 H5P.DragNBar.prototype.getDragNBarElement = function ($element) {
   // Find object with matching element
   var elementResults = H5P.jQuery.grep(this.elements, function (element) {
-    return element.getElement() === $element;
+    return element.getElement().is($element);
   });
 
   return elementResults[0];
@@ -381,7 +382,19 @@ H5P.DragNBar.prototype.blurAll = function () {
 };
 
 /**
- * Update the coordinates picker.
+ * Resize DnB, make sure context menu is positioned correctly.
+ */
+H5P.DragNBar.prototype.resize = function () {
+  var self = this;
+  this.dialog.resize();
+  this.updateCoordinates();
+  if (self.focusedElement) {
+    self.focusedElement.resizeContextMenu(this.$element.offset().left);
+  }
+};
+
+/**
+ * Update the coordinates of context menu.
  *
  * @param {Number} [left]
  * @param {Number} [top]
