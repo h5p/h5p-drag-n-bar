@@ -203,10 +203,11 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
 
       that.newElement = true;
       that.pressed = true;
-      var newElement = new H5P.DragNBarElement(that, button);
+      var createdElement = button.createElement();
+      var newElement = new H5P.DragNBarElement(that, createdElement.subContentId, {element: createdElement.element});
+      that.$element = createdElement.element;
       that.elements.push(newElement);
       that.$container.css('overflow', 'visible');
-      that.$element = button.createElement();
       that.dnd.press(that.$element, event.pageX, event.pageY);
       that.focus(that.$element);
     });
