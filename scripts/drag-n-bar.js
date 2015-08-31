@@ -248,15 +248,16 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  *
  * @param {H5P.jQuery} $element
  * @param {String} subContentId Unique string for subcontent that is added
- * @param {H5P.jQuery} $form Dialog form
  * @param {Object} [options]
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.add = function ($element, subContentId, $form, options) {
+H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
   var self = this;
-  this.dnr.add($element, options);
+  if (this.isEditor) {
+    this.dnr.add($element, options);
+  }
   var newElement = null;
 
   // Check if element already exist
@@ -269,7 +270,7 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, $form, options) {
     elementExists[0].setElement($element);
     newElement = elementExists[0];
   } else {
-    newElement = new H5P.DragNBarElement(this, subContentId, $form, {element: $element});
+    newElement = new H5P.DragNBarElement(this, subContentId, {element: $element});
     this.elements.push(newElement);
   }
 
@@ -280,17 +281,21 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, $form, options) {
     $element.attr('tabindex', 1);
   }
 
-  $element.mousedown(function (event) {
-    if (event.which !== 1) {
-      return;
-    }
+  if (this.isEditor) {
+    $element.mousedown(function (event) {
+      if (event.which !== 1) {
+        return;
+      }
 
-    self.pressed = true;
-    self.focus($element);
-    if (event.result !== false) { // Moving can be stopped if the mousedown is doing something else
-      self.dnd.press($element, event.pageX, event.pageY);
-    }
-  }).focus(function () {
+      self.pressed = true;
+      self.focus($element);
+      if (event.result !== false) { // Moving can be stopped if the mousedown is doing something else
+        self.dnd.press($element, event.pageX, event.pageY);
+      }
+    });
+  }
+
+  $element.focus(function () {
     self.focus($element);
   });
 
@@ -300,10 +305,10 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, $form, options) {
 /**
  * Remove given element in the UI.
  *
- * @param {jQuery} $element
+ * @param {Number} subContentId
  */
-H5P.DragNBar.prototype.removeElement = function ($element) {
-  var removeElement = this.getElementFromSubContentId($element);
+H5P.DragNBar.prototype.removeElement = function (subContentId) {
+  var removeElement = this.getElementFromSubContentId(subContentId);
   removeElement.removeElement();
 };
 

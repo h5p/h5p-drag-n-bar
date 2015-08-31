@@ -10,22 +10,23 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * Constructor DragNBarElement
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
    * @param {String} subContentId Unique identifier for element/content.
-   * @param {H5P.jQuery} $form Form element
    * @param {Object} [options] Button object that the element is created from
+   * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
    * @constructor
    */
-  function DragNBarElement(dragNBar, subContentId, $form, options) {
+  function DragNBarElement(dragNBar, subContentId, options) {
     var self = this;
     EventDispatcher.call(this);
 
     this.dnb = dragNBar;
     this.subContentId = subContentId;
-    this.$form = $form;
     this.options = options || {};
-    this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);
+    if (options.disabledContextMenu) {
+      this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);
+    }
     this.focused = false;
 
     if (this.options.createElement) {
@@ -37,9 +38,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
 
     // Let dnb know element has been pressed
     if (this.$element) {
-      this.$element.mousedown(function () {
-        self.dnb.pressed = true;
-      });
+      if (this.dnb.isEditor) {
+        this.$element.mousedown(function () {
+          self.dnb.pressed = true;
+        });
+      }
 
       // Run custom focus function on element focus
       this.$element.focus(function () {
@@ -86,14 +89,18 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * Show context menu
    */
   DragNBarElement.prototype.showContextMenu = function () {
-    this.contextMenu.attach();
+    if (this.contextMenu) {
+      this.contextMenu.attach();
+    }
   };
 
   /**
    * Hide context menu
    */
   DragNBarElement.prototype.hideContextMenu = function () {
-    this.contextMenu.detach();
+    if (this.contextMenu) {
+      this.contextMenu.detach();
+    }
   };
 
   /**
@@ -105,9 +112,10 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {Number} y Y coordinate of context menu
    */
   DragNBarElement.prototype.updateCoordinates = function (left, top, x, y) {
-    this.contextMenu.updateCoordinates(left, top, x, y);
-    this.resizeContextMenu(left);
-
+    if (this.contextMenu) {
+      this.contextMenu.updateCoordinates(left, top, x, y);
+      this.resizeContextMenu(left);
+    }
   };
 
   /**
@@ -148,7 +156,9 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   DragNBarElement.prototype.focus = function () {
     this.$element.addClass('focused');
     this.focused = true;
-    this.resizeContextMenu(this.$element.position().left);
+    if (this.contextMenu) {
+      this.resizeContextMenu(this.$element.position().left);
+    }
   };
 
   /**
