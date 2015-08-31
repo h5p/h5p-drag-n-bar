@@ -58,7 +58,7 @@ H5P.DragNBar.prototype.initEditor = function () {
   });
 
   this.dnr.on('stoppedResizing',function () {
-    // Queue refocus of element, since mousedown does not propagate
+    // Queue refocus of element
     setTimeout(function () {
       that.focus(that.$element);
     }, 0);
