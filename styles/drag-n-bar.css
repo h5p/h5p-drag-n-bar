@@ -18,11 +18,3 @@
 .h5p-dragnbar-element.h5p-nil-interaction:hover > .h5p-interaction-label {
   outline: 1px solid #0099ff;
 }
-
-.h5p-dragnbar-overlay {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-}

@@ -12,10 +12,13 @@ H5P.DragNBar = (function () {
    *
    * @param {Array} buttons
    * @param {jQuery} $container
+   * @param {jQuery} $dialogContainer
    * @param {Boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
    * @returns {undefined}
    */
-  function DragNBar (buttons, $container, isEditor) {
+  function DragNBar (buttons, $container, $dialogContainer, isEditor) {
+    var self = this;
+
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
@@ -31,7 +34,7 @@ H5P.DragNBar = (function () {
     this.elements = [];
 
     // Create a popup dialog
-    this.dialog = new H5P.DragNBarDialog($container, $container);
+    this.dialog = new H5P.DragNBarDialog($dialogContainer, $container);
 
     if (this.isEditor) {
       this.initEditor();
@@ -151,6 +154,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
   $wrapper.html('');
+  $wrapper.addClass('h5peditor-dragnbar');
 
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
   this.$list = $list;
