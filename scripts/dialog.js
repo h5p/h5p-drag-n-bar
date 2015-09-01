@@ -308,7 +308,8 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       max.height = Number($inner.css('maxHeight').replace('px', ''));
       if (fullScreen) {
         max.width = containerWidth;
-      } else {
+      }
+      else {
         if (buttonPosition.left > (containerWidth / 2) - (buttonWidth / 2)) {
           // Space to the left of the button minus margin
           max.width = buttonPosition.left;

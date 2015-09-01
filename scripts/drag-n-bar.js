@@ -260,7 +260,8 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  */
 H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
   var self = this;
-  if (this.isEditor) {
+  options = options || {};
+  if (this.isEditor && !options.disableResize) {
     this.dnr.add($element, options);
   }
   var newElement = null;
@@ -274,7 +275,8 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
     // Set element as added element
     elementExists[0].setElement($element);
     newElement = elementExists[0];
-  } else {
+  }
+  else {
     options.element = $element;
     newElement = new H5P.DragNBarElement(this, subContentId, options);
     this.elements.push(newElement);
@@ -414,7 +416,8 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
 
   if (left && top && x && y) {
     this.focusedElement.updateCoordinates(left, top, x, y);
-  } else {
+  }
+  else {
     var offset = this.$element.offset();
     var position = this.$element.position();
     this.focusedElement.updateCoordinates(offset.left, offset.top, position.left, position.top);

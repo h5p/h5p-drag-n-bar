@@ -272,7 +272,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   ContextMenu.prototype.toggleCoordinates = function (enableCoordinates) {
     if (enableCoordinates === undefined) {
       this.hasCoordinates = !this.hasCoordinates;
-    } else {
+    }
+    else {
       this.hasCoordinates = !!enableCoordinates;
     }
 

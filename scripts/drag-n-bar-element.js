@@ -32,7 +32,8 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     if (this.options.createElement) {
       this.$element = this.options.createElement().appendTo(dragNBar.$container);
       this.focus();
-    } else {
+    }
+    else {
       this.$element = this.options.element;
     }
 
