@@ -199,6 +199,12 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     }).click(function () {
       self.dnb.pressed = true;
       self.trigger(eventName);
+    }).keydown(function (e) {
+      var keyPressed = e.which;
+      // 32 - space
+      if (keyPressed === 32) {
+        $(this).click();
+      }
     }).appendTo(this.$buttons);
   };
 
