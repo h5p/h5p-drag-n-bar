@@ -2,19 +2,19 @@
 
 /**
  * Create Drag N Bar Element. Connects a DragNBar element to a context menu
- * @class
  */
 H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
 
   /**
    * Constructor DragNBarElement
+   *
+   * @class
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
-   * @constructor
    */
   function DragNBarElement(dragNBar, options) {
     var self = this;
@@ -76,11 +76,12 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {H5P.jQuery} $element
    */
   DragNBarElement.prototype.setElement = function ($element) {
+    var self = this;
     this.$element = $element;
 
     // Register custom focus function on new element focus
     this.$element.focus(function () {
-      this.focus();
+      self.focus();
     });
   };
 

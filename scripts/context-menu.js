@@ -2,15 +2,14 @@
 
 /**
  * Create context menu
- * @class
  */
 H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
   /**
    * Constructor for context menu
+   * @class
    * @param {H5P.DragNBarElement} DragNBarElement
    * @param {Boolean} [hasCoordinates] Decides if coordinates will be displayed
-   * @constructor
    */
   function ContextMenu(DragNBarElement, hasCoordinates) {
     EventDispatcher.call(this);

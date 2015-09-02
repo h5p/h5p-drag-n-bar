@@ -4,7 +4,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
   /**
    * Controls the dialog in the interactive video.
    *
-   * @class H5P.InteractiveVideoDialog
+   * @class
    * @param {H5P.jQuery} $container for dialog
    * @param {H5P.jQuery} $videoWrapper needed for positioning of dialog
    */

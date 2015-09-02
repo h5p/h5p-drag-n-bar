@@ -3,22 +3,19 @@ var H5P = H5P || {};
 
 /**
  * Drag n bar class
- * @class
  */
 H5P.DragNBar = (function () {
 
   /**
    * Constructor. Initializes the drag and drop menu bar.
    *
+   * @class
    * @param {Array} buttons
    * @param {jQuery} $container
    * @param {jQuery} $dialogContainer
    * @param {Boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
-   * @returns {undefined}
    */
-  function DragNBar (buttons, $container, $dialogContainer, isEditor) {
-    var self = this;
-
+  function DragNBar(buttons, $container, $dialogContainer, isEditor) {
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
