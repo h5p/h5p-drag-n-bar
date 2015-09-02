@@ -9,7 +9,6 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   /**
    * Constructor DragNBarElement
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
-   * @param {String} subContentId Unique identifier for element/content.
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
@@ -17,12 +16,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {H5P.jQuery} [options.element] Element
    * @constructor
    */
-  function DragNBarElement(dragNBar, subContentId, options) {
+  function DragNBarElement(dragNBar, options) {
     var self = this;
     EventDispatcher.call(this);
 
     this.dnb = dragNBar;
-    this.subContentId = subContentId;
     this.options = options || {};
     if (!this.options.disableContextMenu) {
       this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);

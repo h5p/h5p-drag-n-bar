@@ -208,7 +208,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.newElement = true;
       that.pressed = true;
       var createdElement = button.createElement();
-      var newElement = new H5P.DragNBarElement(that, createdElement.subContentId, {element: createdElement.element});
+      var newElement = new H5P.DragNBarElement(that, {element: createdElement.element});
       that.$element = createdElement.element;
       that.elements.push(newElement);
       that.$container.css('overflow', 'visible');
@@ -252,13 +252,13 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * Must be inside $container.
  *
  * @param {H5P.jQuery} $element
- * @param {String} subContentId Unique string for subcontent that is added
  * @param {Object} [options]
+ * @param {H5P.DragNBarElement} [options.dnbElement] Register new element with dnbelement
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
+H5P.DragNBar.prototype.add = function ($element, options) {
   var self = this;
   options = options || {};
   if (this.isEditor && !options.disableResize) {
@@ -267,18 +267,14 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
   var newElement = null;
 
   // Check if element already exist
-  var elementExists = H5P.jQuery.grep(self.elements, function (element) {
-    return element.getSubcontentId() === subContentId;
-  });
-
-  if (elementExists.length > 0) {
+  if (options.dnbElement) {
     // Set element as added element
-    elementExists[0].setElement($element);
-    newElement = elementExists[0];
+    options.dnbElement.setElement($element);
+    newElement = options.dnbElement;
   }
   else {
     options.element = $element;
-    newElement = new H5P.DragNBarElement(this, subContentId, options);
+    newElement = new H5P.DragNBarElement(this, options);
     this.elements.push(newElement);
   }
 
@@ -313,11 +309,10 @@ H5P.DragNBar.prototype.add = function ($element, subContentId, options) {
 /**
  * Remove given element in the UI.
  *
- * @param {Number} subContentId
+ * @param {H5P.DragNBarElement} dnbElement
  */
-H5P.DragNBar.prototype.removeElement = function (subContentId) {
-  var removeElement = this.getElementFromSubContentId(subContentId);
-  removeElement.removeElement();
+H5P.DragNBar.prototype.removeElement = function (dnbElement) {
+  dnbElement.removeElement();
 };
 
 /**
@@ -354,26 +349,14 @@ H5P.DragNBar.prototype.focus = function ($element) {
  * @returns {H5P.DragNBarElement} dnbElement with matching $element
  */
 H5P.DragNBar.prototype.getDragNBarElement = function ($element) {
+  var foundElement;
   // Find object with matching element
-  var elementResults = H5P.jQuery.grep(this.elements, function (element) {
-    return element.getElement().is($element);
+  this.elements.forEach(function (element) {
+    if (element.getElement().is($element)) {
+      foundElement = element;
+    }
   });
-
-  return elementResults[0];
-};
-
-/**
- * Get dnbElement from subContentId
- *
- * @param {String} subContentId
- * @returns {H5P.DragNBarElement} dnbElement with matching subContentId
- */
-H5P.DragNBar.prototype.getElementFromSubContentId = function (subContentId) {
-  var elementExists = H5P.jQuery.grep(this.elements, function (element) {
-    return element.getSubcontentId() === subContentId;
-  });
-
-  return elementExists[0];
+  return foundElement;
 };
 
 /**
