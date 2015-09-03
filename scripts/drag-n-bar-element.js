@@ -131,15 +131,6 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   };
 
   /**
-   * Get subContentID used to uniquely identify a DragNBarElement
-   *
-   * @returns {String|*}
-   */
-  DragNBarElement.prototype.getSubcontentId = function () {
-    return this.subContentId;
-  };
-
-  /**
    * Blur element and hide context menu.
    */
   DragNBarElement.prototype.blur = function () {
