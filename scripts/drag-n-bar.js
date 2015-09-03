@@ -205,8 +205,8 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.newElement = true;
       that.pressed = true;
       var createdElement = button.createElement();
-      var newElement = new H5P.DragNBarElement(that, {element: createdElement.element});
-      that.$element = createdElement.element;
+      var newElement = new H5P.DragNBarElement(that, {element: createdElement});
+      that.$element = createdElement;
       that.elements.push(newElement);
       that.$container.css('overflow', 'visible');
       that.dnd.press(that.$element, event.pageX, event.pageY);
