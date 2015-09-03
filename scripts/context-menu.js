@@ -64,8 +64,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @type {ContextMenuButton[]}
      */
     this.buttons = [
-      {buttonName: 'edit', eventName: 'contextMenuEdit'},
-      {buttonName: 'delete', eventName: 'contextMenuDelete'}
+      {buttonName: 'Edit', eventName: 'contextMenuEdit'},
+      {buttonName: 'Remove', eventName: 'contextMenuRemove'}
       //{buttonName: 'bringToFront', eventName: 'contextMenuBringToFront'}
     ];
 
@@ -90,11 +90,11 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Add coordinates picker
     this.$coordinates = $(
       '<div class="h5p-dragnbar-coordinates">' +
-        '<div class="h5p-dragnbar-x-container" aria-label="x position">' +
+        '<div class="h5p-dragnbar-x-container" aria-label="X position">' +
           '<input class="h5p-dragnbar-x" type="text" value="0">' +
         '</div>' +
         '<span class="h5p-dragnbar-coordinates-separater">,</span>' +
-        '<div class="h5p-dragnbar-y-container" aria-label="y position">' +
+        '<div class="h5p-dragnbar-y-container" aria-label="Y position">' +
           '<input class="h5p-dragnbar-y" type="text" value="0">' +
         '</div>' +
       '</div>'
@@ -191,7 +191,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     // Create new button
     $('<div>', {
-      'class': 'h5p-dragnbar-context-menu-button ' + buttonName,
+      'class': 'h5p-dragnbar-context-menu-button ' + buttonName.toLowerCase(),
       'role': 'button',
       'tabindex': 0,
       'aria-label': buttonName
