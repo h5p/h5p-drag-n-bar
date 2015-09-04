@@ -139,7 +139,6 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         delete that.focusedElement;
       }
     }
-    return false;
   });
 };
 
@@ -253,7 +252,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * @param {H5P.DragNBarElement} [options.dnbElement] Register new element with dnbelement
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
- * @returns {undefined}
+ * @returns {H5P.DragNBarElement} Reference to added dnbelement
  */
 H5P.DragNBar.prototype.add = function ($element, options) {
   var self = this;
