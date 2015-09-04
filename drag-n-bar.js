@@ -18,11 +18,22 @@ H5P.DragNBar = function (buttons, $container) {
   this.dnd.snap = 10;
   this.newElement = false;
 
-  this.dnd.startMovingCallback = function (event) {
+  var startX, startY;
+  this.dnd.startMovingCallback = function (x, y) {
+    that.dnd.min = {x: 0 , y: 0};
+    that.dnd.max = {
+      x: $container.width() - that.$element.outerWidth(),
+      y: $container.height() - that.$element.outerHeight()
+    };
+
     if (that.newElement) {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
+      that.dnd.min.y -= that.$list.height();
     }
+
+    startX = x;
+    startY = y;
 
     return true;
   };
@@ -36,12 +47,35 @@ H5P.DragNBar = function (buttons, $container) {
       y = Math.round(y / that.dnd.snap) * that.dnd.snap;
     }
     that.updateCoordinates(x, y, left - paddingLeft, top);
+
+    if (that.newElement && top >= 0) {
+      // Do not allow dragging back up
+      that.dnd.min.y = 0;
+    }
   };
 
-  this.dnd.stopMovingCallback = function (event) {
-    that.stopMoving(event);
+  this.dnd.stopMovingCallback = function () {
+    var x, y;
+
+    if (that.newElement) {
+      that.$container.css('overflow', '');
+      if (parseInt(that.$element.css('top')) < 0) {
+        x = (that.dnd.max.x / 2);
+        y = (that.dnd.max.y / 2);
+      }
+    }
+
+    if (x === undefined || y === undefined) {
+      x = parseInt(that.$element.css('left'));
+      y = parseInt(that.$element.css('top'));
+    }
+
+    that.stopMoving(x, y);
     that.newElement = false;
     that.focus(that.$element);
+
+    delete that.dnd.min;
+    delete that.dnd.max;
   };
 
   H5P.$body.keydown(function (event) {
@@ -74,6 +108,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   $wrapper.html('');
 
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
+  this.$list = $list;
 
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
@@ -107,16 +142,40 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
   this.$x.add(this.$y).on('change keydown', function(event) {
     if (event.type === 'change' || event.which === 13) {
-      var x = parseInt(self.$x.val());
-      var y = parseInt(self.$y.val());
+
+      // Get input
+      var x = Number(self.$x.val());
+      var y = Number(self.$y.val());
+
+      // Make sure input is valid
       if (!isNaN(x) && !isNaN(y)) {
-        var snap = self.dnd.snap;
-        delete self.dnd.snap;
-        self.dnd.stopMovingCallback({
-          pageX: x + self.dnd.adjust.x + self.dnd.containerOffset.left + self.dnd.scrollLeft + parseInt(self.$container.css('padding-left')),
-          pageY: y + self.dnd.adjust.y + self.dnd.containerOffset.top + self.dnd.scrollTop
-        });
-        self.dnd.snap = snap;
+
+        // Do not move outside of container
+        var min = {x: 0 , y: 0};
+        var max = {
+          x: self.$container.width() - self.$element.outerWidth(),
+          y: self.$container.height() - self.$element.outerHeight()
+        };
+
+        // Check min values
+        if (x < 0) {
+          x = min.x;
+        }
+        if (y < 0) {
+          y = min.y;
+        }
+
+        // Check max values
+        if (x > max.x) {
+          x = max.x;
+        }
+        if (y > max.y) {
+          y = max.y;
+        }
+
+        // Update and store location
+        self.stopMoving(x, y);
+        self.focus(self.$element);
       }
     }
   });
@@ -142,6 +201,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     that.newElement = true;
     that.pressed = true;
     var $element = button.createElement().appendTo(that.$container);
+    that.$container.css('overflow', 'visible');
     that.focus($element);
     that.dnd.press($element, event.pageX, event.pageY);
   });
@@ -164,63 +224,15 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @param {Object} event
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.stopMoving = function (event) {
-  var x, y, top, left;
-
-  if (this.newElement) {
-    x = event.pageX - 10;
-    y = event.pageY - 10;
-  }
-  else {
-    x = event.pageX - this.dnd.adjust.x;
-    y = event.pageY - this.dnd.adjust.y;
-  }
-
-  var offset = this.$container.offset();
-
-  // Check if element is above or below the container.
-  var containerHeight = this.$container.height();
-  var elementHeight = this.dnd.$element.outerHeight() + 3;
-  if (y < offset.top) {
-    top = 0;
-  }
-  else if (y + elementHeight > offset.top + containerHeight) {
-    top = containerHeight - elementHeight;
-  }
-  else {
-    top = y - offset.top;
-  }
-
-  // Check if element is to the left or to the right of the container.
-  var paddingLeft = parseInt(this.$container.css('padding-left'));
-  var containerWidth = this.$container.width() + paddingLeft;
-  var elementWidth = this.dnd.$element.outerWidth() + 2;
-
-  if (x < offset.left + paddingLeft) {
-    left = paddingLeft;
-  }
-  else if (x + elementWidth > offset.left + containerWidth) {
-    left = containerWidth - elementWidth;
-  }
-  else {
-    left = x - offset.left;
-  }
-
-  if (this.dnd.snap !== undefined) {
-    left = Math.round(left / this.dnd.snap) * this.dnd.snap;
-    top = Math.round(top / this.dnd.snap) * this.dnd.snap;
-  }
-
+H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
-  top = top / (containerHeight / 100);
-  left = left / (containerWidth / 100);
-
+  top = top / (this.$container.height() / 100);
+  left = left / (this.$container.width() / 100);
   this.dnd.$element.css({top: top + '%', left: left + '%'});
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
-    paddingLeft = paddingLeft / (containerWidth / 100);
-    this.stopMovingCallback(left - paddingLeft, top);
+    this.stopMovingCallback(left, top);
   }
 };
 
