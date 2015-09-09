@@ -155,14 +155,6 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
   this.$list = $list;
 
-  /**
-   * Stops current list animation, and toggles slide animation for 300ms
-   * @param {H5P.jQuery} $list List element
-   */
-  var toggleListAnimation = function ($list) {
-    $list.stop().slideToggle(300);
-  };
-
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 
@@ -172,7 +164,11 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
         .click(function () {
           return false;
         })
-        .hover(toggleListAnimation($list), toggleListAnimation($list))
+        .hover(function () {
+          $list.stop().slideToggle(300);
+        }, function () {
+          $list.stop().slideToggle(300);
+        })
         .children(':first')
         .next();
     }
