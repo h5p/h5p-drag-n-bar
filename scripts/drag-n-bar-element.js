@@ -23,7 +23,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.dnb = dragNBar;
     this.options = options || {};
     if (!this.options.disableContextMenu) {
-      this.contextMenu = new ContextMenu(this, this.options.hasCoordinates);
+      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates);
     }
     this.focused = false;
 
@@ -114,7 +114,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   DragNBarElement.prototype.updateCoordinates = function (left, top, x, y) {
     if (this.contextMenu) {
       this.contextMenu.updateCoordinates(left, top, x, y);
-      this.resizeContextMenu(left);
+      this.resizeContextMenu(x);
     }
   };
 

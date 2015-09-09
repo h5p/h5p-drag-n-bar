@@ -8,10 +8,11 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   /**
    * Constructor for context menu
    * @class
+   * @param {jQuery} $container Parent container
    * @param {H5P.DragNBarElement} DragNBarElement
    * @param {Boolean} [hasCoordinates] Decides if coordinates will be displayed
    */
-  function ContextMenu(DragNBarElement, hasCoordinates) {
+  function ContextMenu($container, DragNBarElement, hasCoordinates) {
     EventDispatcher.call(this);
 
     /**
@@ -45,6 +46,13 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.$buttons = $('<div>', {
       'class': 'h5p-context-menu-buttons'
     });
+
+    /**
+     * Keeps track of context menu parent
+     *
+     * @type {jQuery}
+     */
+    this.$parent = $container;
 
     /**
      * Keeps track of whether the context menu should display coordinates
@@ -283,7 +291,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * Attach context menu to body.
    */
   ContextMenu.prototype.attach = function () {
-    this.$contextMenu.appendTo(H5P.$body);
+    this.$contextMenu.appendTo(this.$parent);
   };
 
   /**

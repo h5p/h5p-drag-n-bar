@@ -9,6 +9,7 @@
   -webkit-filter: drop-shadow(0px 0px 0.25em #2c2c2c);
   filter: drop-shadow(16px 16px 10px rgba(0,0,0,0.9));
   z-index: 100;
+  font-size: 16px;
 }
 
 .h5p-dragnbar-context-menu.left-aligned {

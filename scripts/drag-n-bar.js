@@ -19,6 +19,7 @@ H5P.DragNBar = (function () {
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
+    this.$dialogContainer = $dialogContainer;
     this.dnd = new H5P.DragNDrop($container, true);
     this.dnd.snap = 10;
     this.newElement = false;
@@ -330,7 +331,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
   var offset = $element.offset();
   var position = $element.position();
-  this.focusedElement.updateCoordinates(offset.left, offset.top, position.left, position.top);
+  self.updateCoordinates(offset.left, offset.top, position.left, position.top);
   this.focusedElement.showContextMenu();
   this.focusedElement.focus();
 };
@@ -389,12 +390,16 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
     return;
   }
 
+  var containerPosition = this.$container.position();
+
   if (left && top && x && y) {
+    left = x + containerPosition.left;
+    top = y + containerPosition.top;
     this.focusedElement.updateCoordinates(left, top, x, y);
   }
   else {
     var offset = this.$element.offset();
     var position = this.$element.position();
-    this.focusedElement.updateCoordinates(offset.left, offset.top, position.left, position.top);
+    this.focusedElement.updateCoordinates(position.left + containerPosition.left, position.top + containerPosition.top, position.left, position.top);
   }
 };
