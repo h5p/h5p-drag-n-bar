@@ -20,7 +20,7 @@ H5P.DragNBar = (function () {
     this.buttons = buttons;
     this.$container = $container;
     this.$dialogContainer = $dialogContainer;
-    this.dnd = new H5P.DragNDrop($container, true);
+    this.dnd = new H5P.DragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
     this.isEditor = isEditor === undefined ? true : isEditor;
@@ -82,12 +82,6 @@ H5P.DragNBar.prototype.initEditor = function () {
     startY = y;
 
     return true;
-  };
-
-  this.dnd.moveCallback = function (x, y, $element) {
-    var offset = $element.offset();
-    var position = $element.position();
-    that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   };
 
   this.dnd.stopMovingCallback = function (event) {
@@ -329,11 +323,15 @@ H5P.DragNBar.prototype.focus = function ($element) {
   // Show and update coordinates picker
   this.focusedElement = this.getDragNBarElement($element);
 
-  var offset = $element.offset();
-  var position = $element.position();
-  self.updateCoordinates(offset.left, offset.top, position.left, position.top);
-  this.focusedElement.showContextMenu();
-  this.focusedElement.focus();
+  if (this.focusedElement) {
+    this.focusedElement.showContextMenu();
+    this.focusedElement.focus();
+  }
+
+  // Wait for potential recreation of element
+  setTimeout(function () {
+    self.updateCoordinates();
+  }, 0);
 };
 
 /**
@@ -398,7 +396,6 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
     this.focusedElement.updateCoordinates(left, top, x, y);
   }
   else {
-    var offset = this.$element.offset();
     var position = this.$element.position();
     this.focusedElement.updateCoordinates(position.left + containerPosition.left, position.top + containerPosition.top, position.left, position.top);
   }
