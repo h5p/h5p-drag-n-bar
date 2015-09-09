@@ -102,7 +102,6 @@ H5P.DragNBar.prototype.initEditor = function () {
 
     that.stopMoving(x, y);
     that.newElement = false;
-    that.focus(that.$element);
 
     delete that.dnd.min;
     delete that.dnd.max;
