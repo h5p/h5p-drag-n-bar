@@ -48,7 +48,6 @@ H5P.DragNBar = (function () {
  */
 H5P.DragNBar.prototype.initEditor = function () {
   var that = this;
-  var startX, startY;
   this.dnr = new H5P.DragNResize(this.$container);
 
   // Update coordinates when element is resized
@@ -77,9 +76,6 @@ H5P.DragNBar.prototype.initEditor = function () {
       that.dnd.adjust.y = 10;
       that.dnd.min.y -= that.$list.height();
     }
-
-    startX = x;
-    startY = y;
 
     return true;
   };
