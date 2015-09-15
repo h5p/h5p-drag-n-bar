@@ -73,8 +73,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      */
     this.buttons = [
       {buttonName: 'Edit', eventName: 'contextMenuEdit'},
-      {buttonName: 'Remove', eventName: 'contextMenuRemove'}
-      //{buttonName: 'bringToFront', eventName: 'contextMenuBringToFront'}
+      {buttonName: 'Remove', eventName: 'contextMenuRemove'},
+      {buttonName: 'bringToFront', eventName: 'contextMenuBringToFront'}
     ];
 
     this.updateContextMenu();
