@@ -163,6 +163,8 @@
   font-family: "H5PDragNBar";
   content: "\e608";
 	padding: 3px;
+  font-size: 1.05em;  
+  vertical-align: bottom;
 }
 
 .h5p-dragnbar-coordinates input {
