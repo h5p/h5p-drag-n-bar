@@ -1,13 +1,13 @@
 /* Custom H5P font to use for icons. */
 @font-face {
-	font-family: 'H5PDragNBar';
-	src:url('../fonts/H5PDragNBar.eot?5yxjqx');
-	src:url('../fonts/H5PDragNBar.eot?#iefix5yxjqx') format('embedded-opentype'),
+  font-family: 'H5PDragNBar';
+  src:url('../fonts/H5PDragNBar.eot?5yxjqx');
+  src:url('../fonts/H5PDragNBar.eot?#iefix5yxjqx') format('embedded-opentype'),
     url('data:application/font-woff;base64,d09GRgABAAAAAAS0AAsAAAAABGgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABCAAAAGAAAABgDxICMmNtYXAAAAFoAAAAVAAAAFQaTsyXZ2FzcAAAAbwAAAAIAAAACAAAABBnbHlmAAABxAAAAHwAAAB8uhYcYGhlYWQAAAJAAAAANgAAADYGieuHaGhlYQAAAngAAAAkAAAAJAcAA8ZobXR4AAACnAAAABQAAAAUCgAAwmxvY2EAAAKwAAAADAAAAAwAKABSbWF4cAAAArwAAAAgAAAAIAAIABJuYW1lAAAC3AAAAbYAAAG2EB9/n3Bvc3QAAASUAAAAIAAAACAAAwAAAAMDAAGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAQAAA5ggDwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAwAAAAMAAAAcAAEAAwAAABwAAwABAAAAHAAEADgAAAAKAAgAAgACAAEAIOYI//3//wAAAAAAIOYI//3//wAB/+MZ/AADAAEAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAgDCAIIDPgL+AAgADwAAATUhETMVIREjEyE1IREzEQKW/ixnAhWoZv5uASxmApdn/iyoAhX+LWYBLP5uAAAAAAEAAAABAAAnj2iRXw889QALBAAAAAAA0hbTxgAAAADSFtPGAAAAAAM+Av4AAAAIAAIAAAAAAAAAAQAAA8D/wAAABAAAAAAAAz4AAQAAAAAAAAAAAAAAAAAAAAUEAAAAAAAAAAAAAAACAAAABAAAwgAAAAAACgAUAB4APgABAAAABQAQAAIAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEACwAAAAEAAAAAAAIABwCEAAEAAAAAAAMACwBCAAEAAAAAAAQACwCZAAEAAAAAAAUACwAhAAEAAAAAAAYACwBjAAEAAAAAAAoAGgC6AAMAAQQJAAEAFgALAAMAAQQJAAIADgCLAAMAAQQJAAMAFgBNAAMAAQQJAAQAFgCkAAMAAQQJAAUAFgAsAAMAAQQJAAYAFgBuAAMAAQQJAAoANADUSDVQRHJhZ05CYXIASAA1AFAARAByAGEAZwBOAEIAYQByVmVyc2lvbiAxLjAAVgBlAHIAcwBpAG8AbgAgADEALgAwSDVQRHJhZ05CYXIASAA1AFAARAByAGEAZwBOAEIAYQBySDVQRHJhZ05CYXIASAA1AFAARAByAGEAZwBOAEIAYQByUmVndWxhcgBSAGUAZwB1AGwAYQBySDVQRHJhZ05CYXIASAA1AFAARAByAGEAZwBOAEIAYQByRm9udCBnZW5lcmF0ZWQgYnkgSWNvTW9vbi4ARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==') format('woff'),
-		url('../fonts/H5PDragNBar.ttf?5yxjqx') format('truetype'),
-		url('../fonts/H5PDragNBar.svg?5yxjqx#H5PDragNBar') format('svg');
-	font-weight: normal;
-	font-style: normal;
+    url('../fonts/H5PDragNBar.ttf?5yxjqx') format('truetype'),
+    url('../fonts/H5PDragNBar.svg?5yxjqx#H5PDragNBar') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
 .h5p-dragnbar-context-menu {
@@ -109,8 +109,8 @@
   text-align: center;
   position: relative;
   cursor: pointer;
-	line-height: 1;
-	vertical-align: middle;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-x-container,
@@ -162,8 +162,8 @@
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.bringtofront:after {
   font-family: "H5PDragNBar";
   content: "\e608";
-	padding: 3px;
-  font-size: 1.05em;  
+  padding: 3px;
+  font-size: 1.05em;
   vertical-align: bottom;
 }
 
