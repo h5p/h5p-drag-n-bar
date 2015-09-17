@@ -118,7 +118,9 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     if (event.keyCode === 17) {
       that.dnd.snap = 10;
     }
-  }).click(function () {
+  });
+
+  this.$container.click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (that.pressed !== undefined) {
       delete that.pressed;
