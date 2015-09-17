@@ -1,21 +1,17 @@
-/*global H5PEditor */
-var H5P = H5P || {};
-
-/**
- * Drag n bar class
- */
-H5P.DragNBar = (function () {
+H5P.DragNBar = (function (EventDispatcher) {
 
   /**
    * Constructor. Initializes the drag and drop menu bar.
    *
    * @class
-   * @param {Array} buttons
-   * @param {jQuery} $container
-   * @param {jQuery} $dialogContainer
-   * @param {Boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
+   * @param {array} buttons
+   * @param {H5P.jQuery} $container
+   * @param {H5P.jQuery} $dialogContainer
+   * @param {boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
    */
   function DragNBar(buttons, $container, $dialogContainer, isEditor) {
+    EventDispatcher.call(this);
+
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
@@ -40,8 +36,12 @@ H5P.DragNBar = (function () {
     }
   }
 
+  // Inherit support for events
+  DragNBar.prototype = Object.create(EventDispatcher.prototype);
+  DragNBar.prototype.constructor = DragNBar;
+
   return DragNBar;
-})();
+})(H5P.EventDispatcher);
 
 /**
  * Initializes editor functionality of DragNBar
@@ -108,25 +108,67 @@ H5P.DragNBar.prototype.initEditor = function () {
  * Initialize click listeners
  */
 H5P.DragNBar.prototype.initClickListeners = function () {
-  var that = this;
+  var self = this;
 
+  // Key coordinates
+  var CTRL = 17;
+  var C = 67;
+  var V = 86;
+
+  // Keep track of key state
+  var ctrlDown = false;
+
+  // Register event listeners
   H5P.$body.keydown(function (event) {
-    if (event.keyCode === 17 && that.dnd.snap !== undefined) {
-      delete that.dnd.snap;
+    if (event.which === CTRL) {
+      ctrlDown = true;
+
+      if (self.dnd.snap !== undefined) {
+        // Disable snapping
+        delete self.dnd.snap;
+      }
+    }
+    else if (event.which === C && ctrlDown && self.focusedElement) {
+      // Copy element params to clipboard
+      self.focusedElement.toClipboard();
+    }
+    else if (event.which === V && localStorage) {
+      var clipboardData = localStorage.getItem('h5pClipboard');
+      if (clipboardData) {
+
+        // Parse
+        try {
+          clipboardData = JSON.parse(clipboardData);
+        }
+        catch (err) {
+          console.error('Unable to parse JSON from clipboard.', err);
+        }
+
+        if (clipboardData.generic) {
+          // Use reference instead of key.
+          clipboardData.generic = clipboardData.specific[clipboardData.generic];
+        }
+
+        self.trigger('paste', clipboardData);
+      }
     }
   }).keyup(function (event) {
-    if (event.keyCode === 17) {
-      that.dnd.snap = 10;
+    if (event.which === CTRL) {
+      // Update key state
+      ctrlDown = false;
+
+      // Enable snapping
+      self.dnd.snap = 10;
     }
   }).click(function () {
     // Remove coordinates picker if we didn't press an element.
-    if (that.pressed !== undefined) {
-      delete that.pressed;
+    if (self.pressed !== undefined) {
+      delete self.pressed;
     }
     else {
-      that.blurAll();
-      if (that.focusedElement !== undefined) {
-        delete that.focusedElement;
+      self.blurAll();
+      if (self.focusedElement !== undefined) {
+        delete self.focusedElement;
       }
     }
   });
@@ -190,9 +232,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.newElement = true;
       that.pressed = true;
       var createdElement = button.createElement();
-      var newElement = new H5P.DragNBarElement(that, {element: createdElement});
       that.$element = createdElement;
-      that.elements.push(newElement);
       that.$container.css('overflow', 'visible');
       that.dnd.press(that.$element, event.pageX, event.pageY);
       that.focus(that.$element);
@@ -238,9 +278,10 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * @param {H5P.DragNBarElement} [options.dnbElement] Register new element with dnbelement
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
+ * @param {string} [clipboardData]
  * @returns {H5P.DragNBarElement} Reference to added dnbelement
  */
-H5P.DragNBar.prototype.add = function ($element, options) {
+H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   var self = this;
   options = options || {};
   if (this.isEditor && !options.disableResize) {
@@ -256,7 +297,7 @@ H5P.DragNBar.prototype.add = function ($element, options) {
   }
   else {
     options.element = $element;
-    newElement = new H5P.DragNBarElement(this, options);
+    newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
 
@@ -394,4 +435,26 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
     var position = this.$element.position();
     this.focusedElement.updateCoordinates(position.left + containerPosition.left, position.top + containerPosition.top, position.left, position.top);
   }
+};
+
+/**
+ * Creates element data to store in the clipboard.
+ *
+ * @param {string} from Source of the element
+ * @param {object} params Element options
+ * @param {string} [generic] Which part of the parameters can be used by other libraries
+ * @returns {string} JSON
+ */
+H5P.DragNBar.clipboardify = function (from, params, generic) {
+  var clipboardData = {
+    from: from,
+    specific: params
+  };
+
+  // Add the generic part
+  if (params[generic]) {
+    clipboardData.generic = generic;
+  }
+
+  return clipboardData;
 };

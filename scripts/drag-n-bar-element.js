@@ -10,13 +10,14 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    *
    * @class
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
+   * @param {object} [clipboardData]
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
    */
-  function DragNBarElement(dragNBar, options) {
+  function DragNBarElement(dragNBar, clipboardData, options) {
     var self = this;
     EventDispatcher.call(this);
 
@@ -48,6 +49,15 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
         self.focus();
       });
     }
+
+    /**
+     * Store element paramets in the local storage.
+     */
+    self.toClipboard = function () {
+      if (clipboardData && localStorage) {
+        localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
+      }
+    };
   }
 
   // Inheritance
