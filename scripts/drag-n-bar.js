@@ -144,6 +144,12 @@ H5P.DragNBar.prototype.initClickListeners = function () {
           console.error('Unable to parse JSON from clipboard.', err);
         }
 
+        // Update file URLs
+        if (clipboardData.contentId !== H5PEditor.contentId) {
+          var prefix = clipboardData.contentId ? '../' + clipboardData.contentId : '../../editor';
+          H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
+        }
+
         if (clipboardData.generic) {
           // Use reference instead of key.
           clipboardData.generic = clipboardData.specific[clipboardData.generic];
@@ -172,6 +178,26 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       }
     }
   });
+};
+
+/**
+ * Update file URLs. Useful when copying between different contents.
+ *
+ * @param {object} params Reference
+ * @param {number} contentId From source
+ */
+H5P.DragNBar.updateFileUrls = function (params, prefix) {
+  for (var prop in params) {
+    if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
+      var obj = params[prop];
+      if (obj.path !== undefined && obj.mime !== undefined) {
+        obj.path = prefix + '/' + obj.path;
+      }
+      else {
+        H5P.DragNBar.updateFileUrls(obj, prefix);
+      }
+    }
+  }
 };
 
 /**
@@ -450,6 +476,10 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
     from: from,
     specific: params
   };
+  
+  if (H5PEditor.contentId) {
+    clipboardData.contentId = H5PEditor.contentId;
+  }
 
   // Add the generic part
   if (params[generic]) {
