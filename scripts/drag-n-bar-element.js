@@ -53,8 +53,10 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     /**
      * Store element paramets in the local storage.
      */
-    self.toClipboard = function () {
+    self.toClipboard = function (width, height) {
       if (clipboardData && localStorage) {
+        clipboardData.width = width;
+        clipboardData.height = height;
         localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
       }
     };

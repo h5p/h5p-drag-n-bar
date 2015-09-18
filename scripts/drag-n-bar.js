@@ -130,7 +130,13 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     }
     else if (event.which === C && ctrlDown && self.focusedElement) {
       // Copy element params to clipboard
-      self.focusedElement.toClipboard();
+      var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
+      var width = parseFloat(elementSize.width);
+      var height = parseFloat(elementSize.height) / width;
+      width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+      height *= width;
+
+      self.focusedElement.toClipboard(width, height);
     }
     else if (event.which === V && localStorage) {
       var clipboardData = localStorage.getItem('h5pClipboard');
@@ -151,8 +157,11 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         }
 
         if (clipboardData.generic) {
-          // Use reference instead of key.
+          // Use reference instead of key
           clipboardData.generic = clipboardData.specific[clipboardData.generic];
+
+          // Avoid multiple content with same ID
+          delete clipboardData.generic.subContentId;
         }
 
         self.trigger('paste', clipboardData);
@@ -476,7 +485,7 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
     from: from,
     specific: params
   };
-  
+
   if (H5PEditor.contentId) {
     clipboardData.contentId = H5PEditor.contentId;
   }
