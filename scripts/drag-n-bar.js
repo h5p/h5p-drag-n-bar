@@ -81,27 +81,84 @@ H5P.DragNBar.prototype.initEditor = function () {
   };
 
   this.dnd.stopMovingCallback = function (event) {
-    var x, y;
+    var pos = {};
 
     if (that.newElement) {
       that.$container.css('overflow', '');
       if (Math.round(parseFloat(that.$element.css('top'))) < 0) {
-        x = (that.dnd.max.x / 2);
-        y = (that.dnd.max.y / 2);
+        // Try to center element, but avoid overlapping
+        pos.x = (that.dnd.max.x / 2);
+        pos.y = (that.dnd.max.y / 2);
+        that.avoidOverlapping(pos, that.focusedElement.$element);
       }
     }
 
-    if (x === undefined || y === undefined) {
-      x = Math.round(parseFloat(that.$element.css('left')));
-      y = Math.round(parseFloat(that.$element.css('top')));
+    if (pos.x === undefined || pos.y === undefined ) {
+      pos.x = Math.round(parseFloat(that.$element.css('left')));
+      pos.y = Math.round(parseFloat(that.$element.css('top')));
     }
 
-    that.stopMoving(x, y);
+    that.stopMoving(pos.x, pos.y);
     that.newElement = false;
 
     delete that.dnd.min;
     delete that.dnd.max;
   };
+};
+
+/**
+ * Tries to position the given element close to the requested coordinates.
+ * Element can be skipped to check if spot is available.
+ *
+ * @param {object} pos
+ * @param {number} pos.x
+ * @param {number} pos.y
+ * @param {H5P.jQuery} [$element]
+ */
+H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
+  var limit = 16;
+  var attempts = 0;
+
+  while (attempts < limit && this.elementOverlaps(pos.x, pos.y, $element)) {
+    // Try to choose another random position within -50 and 50 px.
+    pos.x += ((Math.floor(Math.random() * 10) + 1) * 10) - 50;
+    pos.y += ((Math.floor(Math.random() * 10) + 1) * 10) - 50;
+    attempts++;
+  }
+};
+
+/**
+ * Determine if moving the given element to its new position will cause it to
+ * cover another element. This can make new or pasted elements difficult to see.
+ * Element can be skipped to check if spot is available.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {H5P.jQuery} [$element]
+ * @returns {boolean}
+ */
+H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
+  var self = this;
+  var overlaps = false;
+
+  // Use snap grid
+  x = Math.round(x / 10);
+  y = Math.round(y / 10);
+
+  self.$container.children().each(function (i, e) {
+    if ($element !== undefined && $element[0] === e) {
+      return; // Skip
+    }
+
+    var $e = H5P.jQuery(e);
+    if (x === Math.round(parseFloat($e.css('left')) / 10) &&
+        y === Math.round(parseFloat($e.css('top')) / 10)) {
+      overlaps = true;
+      return false; // Stop loop
+    }
+  });
+
+  return overlaps;
 };
 
 /**
@@ -496,4 +553,11 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
   }
 
   return clipboardData;
+};
+
+// Add translations
+H5PEditor.language["H5P.DragNBar"] = {
+  "libraryStrings": {
+    "unableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version."
+  }
 };
