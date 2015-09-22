@@ -212,7 +212,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      *
      * @param {H5P.jQuery} $button
      * @param {Object} [size] Sets a size for the dialog, useful for images.
-     * @param {boolean} [medium] Sets a min. size for medium dialogs.
+     * @param {boolean} [medium=false] Sets a min. size for medium dialogs.
      */
     self.position = function ($button, size, medium) {
       resetPosition();
@@ -247,9 +247,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       // Position dialog horizontally
       var left = buttonPosition.left;
       var dialogWidth = $dialog.outerWidth(true);
-
-      if (dialogWidth > containerWidth) {
+      if (medium && dialogWidth > containerWidth) {
         // If dialog is too big to fit within the container, display as h5p-big instead.
+        // Only medium dialogs can become big
         $dialog.addClass('h5p-big');
         return;
       }
@@ -359,7 +359,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       }, 201);
 
       self.trigger('close');
-      
+
       // Let others reach to the hiding of this dialog
       self.trigger('domHidden', {
         '$dom': $wrapper,
