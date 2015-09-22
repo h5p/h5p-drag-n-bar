@@ -63,8 +63,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     /**
      * Button containing button name and event name that will be fired.
      * @typedef {Object} ContextMenuButton
-     * @property {String} buttonName - Name of the button and title
-     * @property {String} eventName - Name of the event that will be fired upon click
+     * @property {String} name Machine readable
+     * @property {String} label Human readable
      */
 
     /**
@@ -72,9 +72,9 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @type {ContextMenuButton[]}
      */
     this.buttons = [
-      {buttonName: 'Edit', eventName: 'contextMenuEdit'},
-      {buttonName: 'Remove', eventName: 'contextMenuRemove'}
-      //{buttonName: 'bringToFront', eventName: 'contextMenuBringToFront'}
+      {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
+      {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
+      //{name: 'Bring to Front', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')}
     ];
 
     this.updateContextMenu();
@@ -191,21 +191,22 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
   /**
    * Create button and add it to context menu element
-   * @param {String} buttonName
-   * @param {String} eventName
+   * @param {object} button
+   * @param {string} button.name
+   * @param {string} button.label
    */
-  ContextMenu.prototype.addToMenu = function (buttonName, eventName) {
+  ContextMenu.prototype.addToMenu = function (button) {
     var self = this;
 
     // Create new button
     $('<div>', {
-      'class': 'h5p-dragnbar-context-menu-button ' + buttonName.toLowerCase(),
+      'class': 'h5p-dragnbar-context-menu-button ' + button.name.toLowerCase(),
       'role': 'button',
       'tabindex': 0,
-      'aria-label': buttonName
+      'aria-label': button.label
     }).click(function () {
       self.dnb.pressed = true;
-      self.trigger(eventName);
+      self.trigger('contextMenu' + button.name);
     }).keydown(function (e) {
       var keyPressed = e.which;
       // 32 - space
@@ -240,7 +241,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     // Add menu elements
     this.buttons.forEach(function (button) {
-      self.addToMenu(button.buttonName, button.eventName);
+      self.addToMenu(button);
     });
 
     this.$buttons.appendTo(this.$contextMenu);
@@ -248,26 +249,28 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
   /**
    * Add button and update context menu.
-   * @param {String} buttonName
-   * @param {String} eventName
+   * @param {String} name
+   * @param {String} label
    */
-  ContextMenu.prototype.addButton = function (buttonName, eventName) {
-    this.buttons.push({buttonName: buttonName, eventName: eventName});
+  ContextMenu.prototype.addButton = function (name, label) {
+    this.buttons.push({name:name, label:label});
     this.updateContextMenu();
   };
 
   /**
    * Remove button from context menu
-   * @param {String} buttonName
+   * @param {string} name
    */
-  ContextMenu.prototype.removeButton = function (buttonName) {
-    // Check if button exists
-    var buttonIndex = this.buttons.indexOf(buttonName);
+  ContextMenu.prototype.removeButton = function (name) {
+    var self = this;
 
-    // Remove button
-    if (buttonIndex >= 0) {
-      this.buttons.splice(buttonIndex, 1);
-    }
+    // Check if button exists
+    self.buttons.forEach(function (button, index) {
+      if (button.name === name) {
+        self.buttons.splice(index, 1);
+        return;
+      }
+    });
 
     this.updateContextMenu();
   };
