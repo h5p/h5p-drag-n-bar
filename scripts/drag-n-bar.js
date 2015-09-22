@@ -530,6 +530,7 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
   }
 };
 
+
 /**
  * Creates element data to store in the clipboard.
  *
@@ -558,9 +559,12 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
 
 if (window.H5PEditor) {
   // Add translations
-  H5PEditor.language["H5P.DragNBar"] = {
-    "libraryStrings": {
-      "unableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version."
+  H5PEditor.language['H5P.DragNBar'] = {
+    libraryStrings: {
+      editLabel: 'Edit',
+      removeLabel: 'Remove',
+      bringToFrontLabel: 'Bring to Front',
+      unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.'
     }
   };
 }

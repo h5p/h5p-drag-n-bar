@@ -67,12 +67,13 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   DragNBarElement.prototype.constructor = DragNBarElement;
 
   /**
-   * Add button to context menu
-   * @param {String} buttonText
-   * @param {String} eventName
+   * Add button to context menu.
+   *
+   * @param {string} name
+   * @param {string} label
    */
-  DragNBarElement.prototype.addButton = function (buttonText, eventName) {
-    this.contextMenu.addToMenu(buttonText, eventName);
+  DragNBarElement.prototype.addButton = function (name, label) {
+    this.contextMenu.addToMenu({name:name, label:label});
   };
 
   /**
