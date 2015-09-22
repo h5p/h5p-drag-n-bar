@@ -232,7 +232,9 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       // Enable snapping
       self.dnd.snap = 10;
     }
-  }).click(function () {
+  });
+
+  this.$container.click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (self.pressed !== undefined) {
       delete self.pressed;
@@ -305,6 +307,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
  * Add button.
  *
  * @param {type} button
+ * @param {Function} button.createElement Function for creating element
  * @param {type} $list
  * @returns {undefined}
  */

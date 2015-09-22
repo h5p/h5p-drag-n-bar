@@ -13,7 +13,6 @@
 .h5p-dialog-title {
   color: #313131;
   float: left;
-  margin-top: 0.25em;
 }
 
 /* Remove h5p-nil library border */
@@ -108,7 +107,7 @@
   padding: 0;
 }
 .h5p-dialog[data-lib="H5P.SingleChoiceSet"] .h5p-dialog-inner {
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
 }
 .h5p-dialog[data-lib="H5P.SingleChoiceSet"] .h5p-sc-sound-control {
