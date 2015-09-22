@@ -555,9 +555,11 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
   return clipboardData;
 };
 
-// Add translations
-H5PEditor.language["H5P.DragNBar"] = {
-  "libraryStrings": {
-    "unableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version."
-  }
-};
+if (window.H5PEditor) {
+  // Add translations
+  H5PEditor.language["H5P.DragNBar"] = {
+    "libraryStrings": {
+      "unableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version."
+    }
+  };
+}
