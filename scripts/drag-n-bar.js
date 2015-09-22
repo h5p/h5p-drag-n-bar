@@ -89,7 +89,7 @@ H5P.DragNBar.prototype.initEditor = function () {
         // Try to center element, but avoid overlapping
         pos.x = (that.dnd.max.x / 2);
         pos.y = (that.dnd.max.y / 2);
-        that.avoidOverlapping(pos, that.focusedElement.$element);
+        that.avoidOverlapping(pos, that.$element);
       }
     }
 
@@ -139,26 +139,24 @@ H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
  */
 H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
   var self = this;
-  var overlaps = false;
 
   // Use snap grid
   x = Math.round(x / 10);
   y = Math.round(y / 10);
 
-  self.$container.children().each(function (i, e) {
-    if ($element !== undefined && $element[0] === e) {
-      return; // Skip
+  for (var i = 0; i < self.elements.length; i++) {
+    var element = self.elements[i];
+    if ($element !== undefined && element.$element === $element) {
+      continue;
     }
 
-    var $e = H5P.jQuery(e);
-    if (x === Math.round(parseFloat($e.css('left')) / 10) &&
-        y === Math.round(parseFloat($e.css('top')) / 10)) {
-      overlaps = true;
-      return false; // Stop loop
+    if (x === Math.round(parseFloat(element.$element.css('left')) / 10) &&
+        y === Math.round(parseFloat(element.$element.css('top')) / 10)) {
+      return true; // Stop loop
     }
-  });
+  }
 
-  return overlaps;
+  return false;
 };
 
 /**
