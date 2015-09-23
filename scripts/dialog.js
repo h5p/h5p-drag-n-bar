@@ -359,7 +359,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       }, 201);
 
       self.trigger('close');
-      
+
       // Let others reach to the hiding of this dialog
       self.trigger('domHidden', {
         '$dom': $wrapper,
