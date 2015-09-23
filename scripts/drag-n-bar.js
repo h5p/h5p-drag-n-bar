@@ -396,3 +396,14 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
     this.focusedElement.updateCoordinates(position.left + containerPosition.left, position.top + containerPosition.top, position.left, position.top);
   }
 };
+
+if (window.H5PEditor) {
+  // Default english translations
+  H5PEditor.language['H5P.DragNBar'] = {
+    libraryStrings: {
+      editLabel: 'Edit',
+      removeLabel: 'Remove'
+      // bringToFrontLabel: 'Bring to Front'
+    }
+  };
+}
