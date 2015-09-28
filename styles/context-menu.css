@@ -18,7 +18,7 @@
   position: absolute;
   border: 1px solid #0099ff;
   line-height: 36px;
-  -webkit-filter: drop-shadow(0px 0px 0.25em #2c2c2c);
+  -webkit-filter: drop-shadow(0px 0px 0.25em rgba(44,44,44,0.75));
   filter: drop-shadow(16px 16px 10px rgba(0,0,0,0.9));
   z-index: 100;
   font-size: 16px;
@@ -105,12 +105,19 @@
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button {
-  width: 37px;
+  width: 32px;
   text-align: center;
   position: relative;
   cursor: pointer;
-	line-height: 1;
+	line-height: 35px;
 	vertical-align: middle;
+	outline: none;
+}
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:first-child {
+	margin-left: 4px;
+}
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:last-child {
+	margin-right: 4px;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-x-container,
@@ -163,7 +170,7 @@
   font-family: "H5PDragNBar";
   content: "\e608";
 	padding: 3px;
-  font-size: 1.05em;  
+  font-size: 1.05em;
   vertical-align: bottom;
 }
 
@@ -187,4 +194,41 @@
 
 .h5p-dragnbar-coordinates input:focus {
   outline: none;
+}
+.h5p-dragnbar-dimensions {
+	display: inline-block;
+	border-right: 1px solid #0099ff;
+}
+.left-aligned .h5p-dragnbar-dimensions {
+	border-left: 1px solid #0099ff;
+	border-right: 0;
+}
+.h5p-dragnbar-input {
+	width: 3.25em;
+	height: 36px;
+	color: #0061a2;
+	padding: 0.25em 0.5em;
+	border: 0;
+	box-sizing: border-box;
+	vertical-align: top;
+	outline: none;
+}
+.h5p-dragnbar-input:hover,
+.h5p-dragnbar-input:focus {
+	color: #044c7c;
+}
+.h5p-dragnbar-width {
+	text-align: right;
+	padding-right: 0.25em;
+}
+.h5p-dragnbar-height {
+	padding-left: 0.25em;
+}
+.h5p-dragnbar-dimensions-separator {
+	height: 34px;
+	padding: 2px 0 0;
+	background-color: #fff;
+	display: inline-block;
+	vertical-align: top;
+	color: #0061a2;
 }
