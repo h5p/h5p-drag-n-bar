@@ -79,6 +79,7 @@
   background-color: #fff;
   color: #0061a2;
   border-right: 1px solid #0099ff;
+  line-height: 35px;
 }
 
 .h5p-dragnbar-context-menu.left-aligned .h5p-dragnbar-coordinates {
