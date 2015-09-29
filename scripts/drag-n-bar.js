@@ -13,7 +13,7 @@ H5P.DragNBar = (function () {
    * @param {Array} buttons
    * @param {jQuery} $container
    * @param {jQuery} $dialogContainer
-   * @param {Object} [options={}] Collection of options
+   * @param {Object} [options] Collection of options
    * @param {Boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
    * @param {jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    */
@@ -25,8 +25,12 @@ H5P.DragNBar = (function () {
     this.dnd = new H5P.DragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
+    var defaultOptions = {
+      disableEditor: false
+    };
+    options = H5P.jQuery.extend(defaultOptions, options);
     this.isEditor = !options.disableEditor;
-    this.$blurElements = options.$blurElements ? options.$blurElements : undefined;
+    this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
 
     /**
      * Keeps track of created DragNBar elements
@@ -124,12 +128,12 @@ H5P.DragNBar.prototype.initClickListeners = function () {
   });
 
   // Set blur handler element if option has been specified
-  var $blurHandler = this.$container;
-  if (this.$blurElements) {
-    $blurHandler = this.$blurElements;
+  var $blurHandlers = this.$container;
+  if (this.$blurHandlers) {
+    $blurHandlers = this.$blurHandlers;
   }
 
-  $blurHandler.click(function () {
+  $blurHandlers.click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (that.pressed !== undefined) {
       delete that.pressed;
