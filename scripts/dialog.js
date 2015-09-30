@@ -169,12 +169,13 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         $buttons.appendTo($titleBar);
       }
 
-      // Set focus to first input field
-      $inner.find('input').focus();
-
       self.resize();
 
       self.trigger('open');
+
+      setTimeout(function () {
+        $inner.find('input').get(0).focus();
+      }, 100);
     };
 
     self.resize = function () {
