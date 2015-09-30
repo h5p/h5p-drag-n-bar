@@ -117,7 +117,11 @@ H5P.DragNBar.prototype.initEditor = function () {
 H5P.DragNBar.prototype.initClickListeners = function () {
   var that = this;
 
-  H5P.$body.keydown(function (event) {
+  H5P.$body.click(function () {
+
+    // Remove pressed on click
+    delete that.pressed;
+  }).keydown(function (event) {
     if (event.keyCode === 17 && that.dnd.snap !== undefined) {
       delete that.dnd.snap;
     }
