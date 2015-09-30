@@ -174,7 +174,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       self.trigger('open');
 
       setTimeout(function () {
-        $inner.find('input').get(0).focus();
+        if ($inner.find('input').length) {
+          $inner.find('input').get(0).focus();
+        }
       }, 100);
     };
 
