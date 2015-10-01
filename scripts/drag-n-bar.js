@@ -13,9 +13,11 @@ H5P.DragNBar = (function () {
    * @param {Array} buttons
    * @param {jQuery} $container
    * @param {jQuery} $dialogContainer
-   * @param {Boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
+   * @param {Object} [options] Collection of options
+   * @param {Boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
+   * @param {jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    */
-  function DragNBar(buttons, $container, $dialogContainer, isEditor) {
+  function DragNBar(buttons, $container, $dialogContainer, options) {
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
@@ -23,7 +25,12 @@ H5P.DragNBar = (function () {
     this.dnd = new H5P.DragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
-    this.isEditor = isEditor === undefined ? true : isEditor;
+    var defaultOptions = {
+      disableEditor: false
+    };
+    options = H5P.jQuery.extend(defaultOptions, options);
+    this.isEditor = !options.disableEditor;
+    this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
 
     /**
      * Keeps track of created DragNBar elements
@@ -110,7 +117,11 @@ H5P.DragNBar.prototype.initEditor = function () {
 H5P.DragNBar.prototype.initClickListeners = function () {
   var that = this;
 
-  H5P.$body.keydown(function (event) {
+  H5P.$body.click(function () {
+
+    // Remove pressed on click
+    delete that.pressed;
+  }).keydown(function (event) {
     if (event.keyCode === 17 && that.dnd.snap !== undefined) {
       delete that.dnd.snap;
     }
@@ -120,7 +131,13 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     }
   });
 
-  this.$container.click(function () {
+  // Set blur handler element if option has been specified
+  var $blurHandlers = this.$container;
+  if (this.$blurHandlers) {
+    $blurHandlers = this.$blurHandlers;
+  }
+
+  $blurHandlers.click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (that.pressed !== undefined) {
       delete that.pressed;

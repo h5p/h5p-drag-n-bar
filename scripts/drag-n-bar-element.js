@@ -126,9 +126,21 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
     var containerWidth = this.dnb.$container.width();
-    var contextMenuWidth = this.contextMenu.$contextMenu.outerWidth();
+    var $tmp = this.contextMenu.$contextMenu.clone().css({
+      position: 'absolute',
+      left: 0
+    }).appendTo(this.contextMenu.$contextMenu.parent());
+    var contextMenuWidth = $tmp.outerWidth(true);
+    $tmp.remove();
     var isTooWide = left + contextMenuWidth >= containerWidth;
-    this.contextMenu.$contextMenu.toggleClass('left-aligned', isTooWide);
+
+    if (isTooWide) {
+      var newLeft = left - contextMenuWidth;
+      this.contextMenu.$contextMenu.css('left', newLeft + 'px');
+      this.contextMenu.$contextMenu.addClass('left-aligned');
+    } else {
+      this.contextMenu.$contextMenu.removeClass('left-aligned');
+    }
   };
 
   /**
