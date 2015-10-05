@@ -193,7 +193,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
       self.focusedElement.toClipboard(width, height);
     }
-    else if (event.which === V && localStorage) {
+    else if (event.which === V && ctrlDown && window.localStorage) {
       var clipboardData = localStorage.getItem('h5pClipboard');
       if (clipboardData) {
 
