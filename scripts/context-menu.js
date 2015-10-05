@@ -274,7 +274,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   ContextMenu.prototype.getNewInput = function (type, label, handler) {
     return $('<input/>', {
       'class': 'h5p-dragnbar-input h5p-dragnbar-' + type,
-      ariaLabel: label,
+      'aria-label': label,
       maxLength: 5,
       on: {
         change: function () {
