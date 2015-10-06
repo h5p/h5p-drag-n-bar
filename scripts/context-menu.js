@@ -10,9 +10,10 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @class
    * @param {jQuery} $container Parent container
    * @param {H5P.DragNBarElement} DragNBarElement
-   * @param {Boolean} [hasCoordinates] Decides if coordinates will be displayed
+   * @param {boolean} [hasCoordinates] Decides if coordinates will be displayed
+   * @param {boolean} [disableResize] No input for dimensions
    */
-  function ContextMenu($container, DragNBarElement, hasCoordinates) {
+  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize) {
     EventDispatcher.call(this);
 
     /**
@@ -59,6 +60,12 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @type {Boolean}
      */
     this.hasCoordinates = (hasCoordinates !== undefined ? hasCoordinates : true);
+
+    /**
+     * Determines if the dimensions can be changed.
+     * @type {boolean}
+     */
+    this.canResize = !disableResize;
 
     /**
      * Button containing button name and event name that will be fired.
@@ -190,6 +197,100 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   };
 
   /**
+   * Create coordinates in context menu
+   */
+  ContextMenu.prototype.addDimensions = function () {
+    var self = this;
+
+    self.$dimensions = $('<div/>', {
+      'class': 'h5p-dragnbar-dimensions',
+    });
+
+    var updateDimensions = function (type) {
+      var target = parseFloat(this.value);
+      if (isNaN(target)) {
+        return;
+      }
+
+      // Get element
+      var $element = self.dnbElement.getElement();
+
+      // Determine min&max values
+      var min = 32;
+      var containerSize = parseFloat(window.getComputedStyle(self.dnb.$container[0])[type]);
+      var max = containerSize - parseFloat(window.getComputedStyle($element[0])[type === 'width' ? 'left' : 'top']);
+
+      if (target < min) {
+        target = min;
+      }
+      if (target > max) {
+        target = max;
+      }
+
+      $element.css(type, (target / (containerSize / 100)) + '%');
+      self['$' + type].val(Math.round(target));
+
+      var eventData = {};
+      eventData[type] = target / self.dnb.dnr.containerEm;
+      self.dnb.dnr.trigger('stoppedResizing', eventData);
+    };
+
+    // Add input for width
+    self.$width = self.getNewInput('width', 'Width', updateDimensions).appendTo(self.$dimensions);
+
+    $('<span/>', {
+      'class': 'h5p-dragnbar-dimensions-separator',
+      text: '×',
+      appendTo: self.$dimensions
+    });
+
+    self.$height = self.getNewInput('height', 'Height', updateDimensions).appendTo(self.$dimensions);
+
+    self.dnb.dnr.on('moveResizing', function () {
+      self.updateDimensions();
+    });
+
+    self.$dimensions.appendTo(self.$contextMenu);
+  };
+
+  /**
+   * Updates the values in the input fields for width and height.
+   */
+  ContextMenu.prototype.updateDimensions = function () {
+    var self = this;
+    var $element = self.dnbElement.getElement();
+    self.$width.val($element.width());
+    self.$height.val($element.height());
+  };
+
+  /**
+   * Creates a new input field for modifying an element property.
+   *
+   * @param {string} type
+   * @param {string} label
+   * @param {function} handler
+   * @returns {H5P.jQuery}
+   */
+  ContextMenu.prototype.getNewInput = function (type, label, handler) {
+    return $('<input/>', {
+      'class': 'h5p-dragnbar-input h5p-dragnbar-' + type,
+      'aria-label': label,
+      maxLength: 5,
+      on: {
+        change: function () {
+          handler.call(this, type);
+        },
+        keydown: function (event) {
+          if (event.which === 13) {
+            handler.call(this, type);
+            event.target.focus();
+          }
+        }
+      }
+    });
+  };
+
+  /**
    * Create button and add it to context menu element
    * @param {object} button
    * @param {string} button.name
@@ -237,6 +338,11 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Add coordinates
     if (this.hasCoordinates) {
       this.addCoordinates();
+    }
+
+    // Add dimensions
+    if (this.canResize) {
+      this.addDimensions();
     }
 
     // Add menu elements

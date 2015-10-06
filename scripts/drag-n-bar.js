@@ -63,13 +63,6 @@ H5P.DragNBar.prototype.initEditor = function () {
     that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   });
 
-  this.dnr.on('stoppedResizing',function () {
-    // Queue refocus of element
-    setTimeout(function () {
-      that.focus(that.$element);
-    }, 0);
-  });
-
   this.dnd.startMovingCallback = function (x, y) {
     that.dnd.min = {x: 0, y: 0};
     that.dnd.max = {
@@ -475,6 +468,9 @@ H5P.DragNBar.prototype.focus = function ($element) {
   // Wait for potential recreation of element
   setTimeout(function () {
     self.updateCoordinates();
+    if (self.focusedElement && self.focusedElement.contextMenu.canResize) {
+      self.focusedElement.contextMenu.updateDimensions();
+    }
   }, 0);
 };
 
