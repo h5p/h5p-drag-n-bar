@@ -231,7 +231,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     }
   }).click(function () {
     // Remove pressed on click
-    delete that.pressed;
+    delete self.pressed;
   });
 
   // Set blur handler element if option has been specified
