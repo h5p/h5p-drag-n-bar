@@ -55,6 +55,7 @@ H5P.DragNBar = (function (EventDispatcher) {
 H5P.DragNBar.prototype.initEditor = function () {
   var that = this;
   this.dnr = new H5P.DragNResize(this.$container);
+  this.dnr.snap = 10;
 
   // Update coordinates when element is resized
   this.dnr.on('moveResizing', function () {
