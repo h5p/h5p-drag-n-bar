@@ -55,19 +55,13 @@ H5P.DragNBar = (function (EventDispatcher) {
 H5P.DragNBar.prototype.initEditor = function () {
   var that = this;
   this.dnr = new H5P.DragNResize(this.$container);
+  this.dnr.snap = 10;
 
   // Update coordinates when element is resized
   this.dnr.on('moveResizing', function () {
     var offset = that.$element.offset();
     var position = that.$element.position();
     that.updateCoordinates(offset.left, offset.top, position.left, position.top);
-  });
-
-  this.dnr.on('stoppedResizing',function () {
-    // Queue refocus of element
-    setTimeout(function () {
-      that.focus(that.$element);
-    }, 0);
   });
 
   this.dnd.startMovingCallback = function (x, y) {
@@ -238,7 +232,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     }
   }).click(function () {
     // Remove pressed on click
-    delete that.pressed;
+    delete self.pressed;
   });
 
   // Set blur handler element if option has been specified
@@ -475,6 +469,9 @@ H5P.DragNBar.prototype.focus = function ($element) {
   // Wait for potential recreation of element
   setTimeout(function () {
     self.updateCoordinates();
+    if (self.focusedElement && self.focusedElement.contextMenu.canResize) {
+      self.focusedElement.contextMenu.updateDimensions();
+    }
   }, 0);
 };
 
