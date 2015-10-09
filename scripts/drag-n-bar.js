@@ -4,14 +4,15 @@ H5P.DragNBar = (function (EventDispatcher) {
    * Constructor. Initializes the drag and drop menu bar.
    *
    * @class
-   * @param {array} buttons
+   * @param {Array} buttons
    * @param {H5P.jQuery} $container
    * @param {H5P.jQuery} $dialogContainer
-   * @param {boolean} [isEditor] Determines if DragNBar should be displayed in view or editor mode
+   * @param {object} [options] Collection of options
+   * @param {boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
+   * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    */
-  function DragNBar(buttons, $container, $dialogContainer, isEditor) {
+  function DragNBar(buttons, $container, $dialogContainer, options) {
     EventDispatcher.call(this);
-
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
@@ -19,7 +20,12 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.dnd = new H5P.DragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
-    this.isEditor = isEditor === undefined ? true : isEditor;
+    var defaultOptions = {
+      disableEditor: false
+    };
+    options = H5P.jQuery.extend(defaultOptions, options);
+    this.isEditor = !options.disableEditor;
+    this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
 
     /**
      * Keeps track of created DragNBar elements
@@ -49,6 +55,7 @@ H5P.DragNBar = (function (EventDispatcher) {
 H5P.DragNBar.prototype.initEditor = function () {
   var that = this;
   this.dnr = new H5P.DragNResize(this.$container);
+  this.dnr.snap = 10;
 
   // Update coordinates when element is resized
   this.dnr.on('moveResizing', function () {
@@ -186,7 +193,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
       self.focusedElement.toClipboard(width, height);
     }
-    else if (event.which === V && localStorage) {
+    else if (event.which === V && ctrlDown && window.localStorage) {
       var clipboardData = localStorage.getItem('h5pClipboard');
       if (clipboardData) {
 
@@ -223,9 +230,18 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       // Enable snapping
       self.dnd.snap = 10;
     }
+  }).click(function () {
+    // Remove pressed on click
+    delete self.pressed;
   });
 
-  this.$container.click(function () {
+  // Set blur handler element if option has been specified
+  var $blurHandlers = this.$container;
+  if (this.$blurHandlers) {
+    $blurHandlers = this.$blurHandlers;
+  }
+
+  $blurHandlers.click(function () {
     // Remove coordinates picker if we didn't press an element.
     if (self.pressed !== undefined) {
       delete self.pressed;

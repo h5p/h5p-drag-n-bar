@@ -3,6 +3,7 @@
   font-family: 'H5PFontAwesome4';
   color: #313131;
   margin-right: 0.5em;
+  margin-left: 0.1em;
   vertical-align: middle;
 }
 
@@ -59,10 +60,6 @@
 
 .h5p-dialog-inner .field.library .libwrap {
   margin-top: 0;
-}
-
-.h5p-dialog-inner .h5p-image-radio-button-group {
-  margin-top: -2em;
 }
 
 .h5p-dialog-wrapper {
