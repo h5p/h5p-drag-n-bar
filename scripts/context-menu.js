@@ -236,7 +236,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     };
 
     // Add input for width
-    self.$width = self.getNewInput('width', 'Width', updateDimensions).appendTo(self.$dimensions);
+    self.$width = self.getNewInput('width', 'Width', self.$dimensions, updateDimensions);
 
     $('<span/>', {
       'class': 'h5p-dragnbar-dimensions-separator',
@@ -244,7 +244,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       appendTo: self.$dimensions
     });
 
-    self.$height = self.getNewInput('height', 'Height', updateDimensions).appendTo(self.$dimensions);
+    self.$height = self.getNewInput('height', 'Height', self.$dimensions, updateDimensions);
 
     self.dnb.dnr.on('moveResizing', function () {
       self.updateDimensions();
@@ -268,26 +268,51 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    *
    * @param {string} type
    * @param {string} label
+   * @param {H5P.jQuery} $container
    * @param {function} handler
    * @returns {H5P.jQuery}
    */
-  ContextMenu.prototype.getNewInput = function (type, label, handler) {
-    return $('<input/>', {
+  ContextMenu.prototype.getNewInput = function (type, label, $container, handler) {
+    // Wrap input element with label (implicit labeling)
+    var $wrapper = $('<div/>', {
       'class': 'h5p-dragnbar-input h5p-dragnbar-' + type,
       'aria-label': label,
+      appendTo: $container
+    });
+
+    // Create input field
+    var $input = $('<input/>', {
       maxLength: 5,
       on: {
         change: function () {
           handler.call(this, type);
         },
         keydown: function (event) {
-          if (event.which === 13) {
+          if (event.which === 13) { // Enter key
             handler.call(this, type);
-            event.target.focus();
+            $input.focus().select();
           }
+          else if (event.which === 38 || event.which === 40) { // Up key
+            // Increase or decrease the number by using the arrows keys
+            var currentValue = parseFloat($input.val());
+            if (!isNaN(currentValue)) {
+              $input.val(currentValue + (event.which === 38 ? 1 : -1));
+              handler.call(this, type);
+            }
+          }
+        },
+        keyup: function (event) {
+          if (event.which === 38 || event.which === 40) { // Up or Down key
+            $input.select(); // Select again
+          }
+        },
+        click: function (event) {
+          $input.select();
         }
-      }
+      },
+      appendTo: $wrapper
     });
+    return $input;
   };
 
   /**

@@ -89,7 +89,7 @@
   background-color: #fff;
   color: #0061a2;
   border-right: 1px solid #0099ff;
-  line-height: 35px;
+  line-height: 36px;
 }
 
 .h5p-dragnbar-context-menu.left-aligned .h5p-dragnbar-coordinates {
@@ -102,7 +102,7 @@
   text-align: center;
   position: relative;
   cursor: pointer;
-	line-height: 35px;
+	line-height: 36px;
 	vertical-align: middle;
 	outline: none;
 }
@@ -122,7 +122,8 @@
 /* Button stylings */
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-x-container:hover:before,
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates .h5p-dragnbar-y-container:hover:before,
-.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:before {
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:hover:before,
+.h5p-dragnbar-context-menu .h5p-dragnbar-input:hover:before {
   background-color: #000;
   color: #fff;
   opacity: 0.75;
@@ -169,14 +170,12 @@
 
 .ui-widget .h5p-dragnbar-coordinates input,
 .h5p-dragnbar-coordinates input {
-  font-family: Arial, "Liberation Sans", sans-serif;
   font-size: 13px;
   background: none repeat scroll 0 0 transparent;
   border: medium none;
   width: 2em;
   text-align: left;
   color: #0061a2;
-  cursor: pointer;
 }
 
 .h5p-dragnbar-coordinates input.h5p-dragnbar-x {
@@ -200,24 +199,28 @@
 	border-right: 0;
 }
 .h5p-dragnbar-input {
+  display: inline-block;
+  position: relative;
+}
+.h5p-dragnbar-input > input {
 	width: 3.25em;
 	height: 36px;
 	color: #0061a2;
 	padding: 0.25em 0.5em;
 	border: 0;
-	box-sizing: border-box;
-	vertical-align: top;
 	outline: none;
+  box-sizing: border-box;
+  vertical-align: top;
 }
-.h5p-dragnbar-input:hover,
-.h5p-dragnbar-input:focus {
+.h5p-dragnbar-input > input:hover,
+.h5p-dragnbar-input > input:focus {
 	color: #044c7c;
 }
-.h5p-dragnbar-width {
+.h5p-dragnbar-width > input {
 	text-align: right;
 	padding-right: 0.25em;
 }
-.h5p-dragnbar-height {
+.h5p-dragnbar-height > input {
 	padding-left: 0.25em;
 }
 .h5p-dragnbar-dimensions-separator {
