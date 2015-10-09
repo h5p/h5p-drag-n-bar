@@ -10,20 +10,21 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    *
    * @class
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
+   * @param {object} [clipboardData]
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
    */
-  function DragNBarElement(dragNBar, options) {
+  function DragNBarElement(dragNBar, clipboardData, options) {
     var self = this;
     EventDispatcher.call(this);
 
     this.dnb = dragNBar;
     this.options = options || {};
     if (!this.options.disableContextMenu) {
-      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates);
+      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates, this.options.disableResize);
     }
     this.focused = false;
 
@@ -48,6 +49,17 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
         self.focus();
       });
     }
+
+    /**
+     * Store element paramets in the local storage.
+     */
+    self.toClipboard = function (width, height) {
+      if (clipboardData && localStorage) {
+        clipboardData.width = width;
+        clipboardData.height = height;
+        localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
+      }
+    };
   }
 
   // Inheritance
@@ -126,9 +138,21 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
     var containerWidth = this.dnb.$container.width();
-    var contextMenuWidth = this.contextMenu.$contextMenu.outerWidth();
+    var $tmp = this.contextMenu.$contextMenu.clone().css({
+      position: 'absolute',
+      left: 0
+    }).appendTo(this.contextMenu.$contextMenu.parent());
+    var contextMenuWidth = $tmp.outerWidth(true);
+    $tmp.remove();
     var isTooWide = left + contextMenuWidth >= containerWidth;
-    this.contextMenu.$contextMenu.toggleClass('left-aligned', isTooWide);
+
+    if (isTooWide) {
+      var newLeft = left - contextMenuWidth;
+      this.contextMenu.$contextMenu.css('left', newLeft + 'px');
+      this.contextMenu.$contextMenu.addClass('left-aligned');
+    } else {
+      this.contextMenu.$contextMenu.removeClass('left-aligned');
+    }
   };
 
   /**
