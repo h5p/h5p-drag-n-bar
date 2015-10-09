@@ -469,7 +469,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
   // Wait for potential recreation of element
   setTimeout(function () {
     self.updateCoordinates();
-    if (self.focusedElement && self.focusedElement.contextMenu.canResize) {
+    if (self.focusedElement && self.focusedElement.contextMenu && self.focusedElement.contextMenu.canResize) {
       self.focusedElement.contextMenu.updateDimensions();
     }
   }, 0);
