@@ -18,7 +18,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function () {
+        click: function () {
           if (!self.disableOverlay)  {
             self.close();
           }
@@ -76,7 +76,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Reset the dialog's positioning
      *
-     * @private
+     * @private
      */
     var resetPosition = function () {
       // Reset positioning
@@ -209,7 +209,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.attr('data-lib', machineName);
     };
 
-    self.isOpen = function () {
+    self.isOpen = function () {
       return $wrapper.is(':visible');
     };
 
@@ -396,7 +396,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Removes the close button from the current dialog.
      */
-    self.hideCloseButton = function () {
+    self.hideCloseButton = function () {
       $close.hide();
     };
 
