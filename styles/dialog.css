@@ -22,44 +22,29 @@
 }
 
 /* interaction semantics wrapper */
-.h5p-dialog-inner .h5peditor-interaction-duration {
-  display: inline-block;
+.h5p-dialog-inner .field:first-child {
+  margin-top: 0;
 }
-
-.h5p-dialog-inner .h5peditor-interaction-pause {
-  display: inline-block;
-  margin-left: 1em;
-  display: inline-block;
-  vertical-align: baseline;
-  position: relative;
-  bottom: .6em;
-}
-
-.h5p-dialog-inner .h5peditor-interaction-pause input[type="checkbox"] {
-  vertical-align: middle;
-}
-
-.h5p-dialog-inner .h5peditor-interaction-pause .h5peditor-field-description {
-  margin-left: 1.8em;
-  margin-top: -1em;
-  line-height: 1.2;
-}
-
-.h5p-dialog-inner .h5peditor-interaction-label.hide {
-  display: none;
-}
-
-.h5p-dialog-inner input[type="checkbox"] {
-  vertical-align: text-bottom;
-}
-
+.h5p-dialog-inner .h5peditor-interaction-label.hide,
 .h5p-dialog-inner .field.library > select,
 .h5p-dialog-inner .field.library > label {
   display: none;
 }
+.h5p-dialog-inner input[type="checkbox"] {
+  vertical-align: middle;
+}
 
 .h5p-dialog-inner .field.library .libwrap {
   margin-top: 0;
+}
+.h5p-dialog-inner div.ckeditor > p {
+  margin: 0.5em;
+}
+.h5p-dialog-inner div.ckeditor > p:first-child {
+  margin-top: 0;
+}
+.h5p-dialog-inner div.ckeditor > p:last-child {
+  margin-bottom: 0;
 }
 
 .h5p-dialog-wrapper {
