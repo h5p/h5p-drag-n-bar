@@ -22,7 +22,7 @@
 }
 
 /* interaction semantics wrapper */
-.h5p-dialog-inner .field:first-child {
+.h5p-dialog-inner > div > .field:first-child {
   margin-top: 0;
 }
 .h5p-dialog-inner .h5peditor-interaction-label.hide,
