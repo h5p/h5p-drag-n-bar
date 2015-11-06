@@ -26,8 +26,8 @@
   margin-top: 0;
 }
 .h5p-dialog-inner .h5peditor-interaction-label.hide,
-.h5p-dialog-inner .field.library > select,
-.h5p-dialog-inner .field.library > label {
+.h5p-dialog-inner > div > .field.library > select,
+.h5p-dialog-inner > div > .field.library > label {
   display: none;
 }
 .h5p-dialog-inner input[type="checkbox"] {
