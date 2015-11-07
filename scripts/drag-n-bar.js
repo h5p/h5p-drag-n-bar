@@ -194,7 +194,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       self.focusedElement.toClipboard(width, height);
     }
     else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
-      if (self.dialog.isOpen() || document.activeElement.contentEditable === 'true' || document.activeElement.value !== undefined) {
+      if (self.preventPaste || self.dialog.isOpen() || document.activeElement.contentEditable === 'true' || document.activeElement.value !== undefined) {
         // Don't allow paste if dialog is open or active element can be modified
         return;
       }
