@@ -208,6 +208,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         }
         catch (err) {
           console.error('Unable to parse JSON from clipboard.', err);
+          return;
         }
 
         // Update file URLs
