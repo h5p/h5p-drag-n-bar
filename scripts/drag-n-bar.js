@@ -183,7 +183,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         delete self.dnd.snap;
       }
     }
-    else if (event.which === C && ctrlDown && self.focusedElement) {
+    else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
       // Copy element params to clipboard
       var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
       var width = parseFloat(elementSize.width);
