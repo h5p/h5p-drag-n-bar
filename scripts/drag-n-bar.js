@@ -369,7 +369,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
-  this.dnd.$element.css({top: top + '%', left: left + '%'});
+  this.$element.css({top: top + '%', left: left + '%'});
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
