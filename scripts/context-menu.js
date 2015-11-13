@@ -216,7 +216,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       var $element = self.dnbElement.getElement();
 
       // Determine min&max values
-      var min = 24;
+      var min = H5P.DragNResize.minSize;
       var containerSize = parseFloat(window.getComputedStyle(self.dnb.$container[0])[type]);
       var max = containerSize - parseFloat(window.getComputedStyle($element[0])[type === 'width' ? 'left' : 'top']);
 
