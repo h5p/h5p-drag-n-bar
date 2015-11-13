@@ -203,7 +203,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
 
     self.$dimensions = $('<div/>', {
-      'class': 'h5p-dragnbar-dimensions',
+      'class': 'h5p-dragnbar-dimensions'
     });
 
     var updateDimensions = function (type) {
@@ -216,7 +216,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       var $element = self.dnbElement.getElement();
 
       // Determine min&max values
-      var min = 32;
+      var min = 24;
       var containerSize = parseFloat(window.getComputedStyle(self.dnb.$container[0])[type]);
       var max = containerSize - parseFloat(window.getComputedStyle($element[0])[type === 'width' ? 'left' : 'top']);
 
