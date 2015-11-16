@@ -30,7 +30,7 @@
   content: "";
   border-style: solid;
   border-width: 8px 7px 0 0;
-  border-color: #fff transparent transparent transparent;
+  border-color: #c4e3f7 transparent transparent transparent;
   bottom: -7px;
   right: 0;
   left: initial;
@@ -72,7 +72,7 @@
   content: "";
   border-style: solid;
   border-width: 8px 7px 0 0;
-  border-color: #fff transparent transparent transparent;
+  border-color: #c4e3f7 transparent transparent transparent;
   bottom: -7px;
   left: 0;
   z-index: 1;
@@ -80,6 +80,8 @@
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button,
 .h5p-dragnbar-context-menu .h5p-context-menu-buttons,
+.h5p-dragnbar-context-menu .h5p-transform-panel,
+.h5p-dragnbar-context-menu .h5p-dragnbar-dimensions,
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates {
   display: inline-block;
 }
@@ -89,6 +91,7 @@
   background-color: #fff;
   color: #0061a2;
   border-right: 1px solid #0099ff;
+  border-left: 1px solid #0099ff;
   line-height: 36px;
 }
 
@@ -106,9 +109,7 @@
 	vertical-align: middle;
 	outline: none;
 }
-.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:first-child {
-	margin-left: 4px;
-}
+
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button:last-child {
 	margin-right: 4px;
 }
@@ -152,6 +153,10 @@
   color: #003c65;
 }
 
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.transform:after {
+  content: '\f0b2';
+}
+
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.edit:after {
   content: '\f040';
 }
@@ -190,10 +195,7 @@
 .h5p-dragnbar-coordinates input:focus {
   outline: none;
 }
-.h5p-dragnbar-dimensions {
-	display: inline-block;
-	border-right: 1px solid #0099ff;
-}
+
 .left-aligned .h5p-dragnbar-dimensions {
 	border-left: 1px solid #0099ff;
 	border-right: 0;
@@ -230,4 +232,29 @@
 	display: inline-block;
 	vertical-align: top;
 	color: #0061a2;
+}
+
+.h5p-dragnbar-context-menu .h5p-transform-panel.hide,
+.h5p-dragnbar-context-menu .h5p-context-menu-buttons.hide,
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.transform.hide {
+  display: none;
+}
+
+.h5p-dragnbar-context-menu .h5p-transform-button-wrapper {
+  margin-left: 4px;
+  display: inline-block;
+}
+
+.h5p-dragnbar-context-menu .h5p-transform-button-wrapper.active {
+  margin-right: 4px;
+}
+
+.h5p-dragnbar-context-menu .h5p-transform-button-wrapper .transform {
+  margin: 0;
+}
+
+.h5p-dragnbar-context-menu .h5p-transform-button-wrapper.active .transform:after {
+  border: 1px solid #80c2ee;
+  background: #b2d7ee;
+  box-shadow: inset 0 1px 5px 0 rgba(2,94,156,0.65);
 }

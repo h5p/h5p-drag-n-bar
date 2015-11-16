@@ -14,6 +14,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @param {boolean} [disableResize] No input for dimensions
    */
   function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize) {
+    var self = this;
     EventDispatcher.call(this);
 
     /**
@@ -49,6 +50,15 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     });
 
     /**
+     * Keeps track of transform panel
+     *
+     * @type {H5P.jQuery}
+     */
+    this.$transformPanel = $('<div>', {
+      'class': 'h5p-transform-panel hide'
+    });
+
+    /**
      * Keeps track of context menu parent
      *
      * @type {jQuery}
@@ -80,9 +90,18 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      */
     this.buttons = [
       {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
-      {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')},
-      {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')}
+      {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')},
+      {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
     ];
+
+    // Register transform listener
+    self.on('contextMenuTransform', function () {
+
+      // Toggle buttons bar and transform panel
+      self.toggleButtonsBar();
+      self.toggleTransformPanel();
+      self.$transformButtonWrapper.toggleClass('active');
+    });
 
     this.updateContextMenu();
   }
@@ -115,7 +134,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       '</div>'
     ).mousedown(function () {
       self.dnb.pressed = true;
-    }).appendTo(this.$contextMenu);
+    }).appendTo(this.$transformPanel);
 
     this.$x = this.$coordinates.find('.h5p-dragnbar-x');
     this.$y = this.$coordinates.find('.h5p-dragnbar-y');
@@ -250,7 +269,29 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       self.updateDimensions();
     });
 
-    self.$dimensions.appendTo(self.$contextMenu);
+    self.$dimensions.appendTo(self.$transformPanel);
+  };
+
+  /**
+   * Add transform functionality
+   *
+   * @param [enableTransform]
+   */
+  ContextMenu.prototype.addTransform = function (enableTransform) {
+    var self = this;
+    var transformButtonObject = {name: 'Transform', label: H5PEditor.t('H5P.DragNBar', 'transformLabel')};
+    var $transformButtonWrapper = $('<div>', {
+      'class': 'h5p-transform-button-wrapper'
+    });
+
+    // Attach button
+    if (enableTransform) {
+      self.createButton(transformButtonObject)
+        .appendTo($transformButtonWrapper);
+    }
+
+    self.$transformButtonWrapper = $transformButtonWrapper;
+    return $transformButtonWrapper;
   };
 
   /**
@@ -317,16 +358,28 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   };
 
   /**
-   * Create button and add it to context menu element
+   * Create button and add it to buttons bar
    * @param {object} button
-   * @param {string} button.name
-   * @param {string} button.label
    */
   ContextMenu.prototype.addToMenu = function (button) {
     var self = this;
 
-    // Create new button
-    $('<div>', {
+    self.createButton(button).appendTo(this.$buttons);
+  };
+
+  /**
+   * Create button
+   *
+   * @param button
+   * @param {string} button.name
+   * @param {string} button.label
+   *
+   * @returns {H5P.jQuery}
+   */
+  ContextMenu.prototype.createButton = function (button) {
+    var self = this;
+
+    var $newButton = $('<div>', {
       'class': 'h5p-dragnbar-context-menu-button ' + button.name.toLowerCase(),
       'role': 'button',
       'tabindex': 0,
@@ -340,7 +393,9 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       if (keyPressed === 32) {
         $(this).click();
       }
-    }).appendTo(this.$buttons);
+    });
+
+    return $newButton;
   };
 
   /**
@@ -361,14 +416,19 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Clear context menu
     this.$buttons.children().remove();
 
+    // Check if transform button should be enabled
+    var enableTransform = false;
+
     // Add coordinates
     if (this.hasCoordinates) {
       this.addCoordinates();
+      enableTransform = true;
     }
 
     // Add dimensions
     if (this.canResize) {
       this.addDimensions();
+      enableTransform = true;
     }
 
     // Add menu elements
@@ -376,7 +436,12 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       self.addToMenu(button);
     });
 
+    // Add transform button
+    this.addTransform(enableTransform)
+      .appendTo(this.$contextMenu);
+
     this.$buttons.appendTo(this.$contextMenu);
+    this.$transformPanel.appendTo(this.$contextMenu);
   };
 
   /**
@@ -405,6 +470,38 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     });
 
     this.updateContextMenu();
+  };
+
+  /**
+   * Toggle buttons visibility
+   *
+   * @param [showButtons] Show buttons
+   */
+  ContextMenu.prototype.toggleButtonsBar = function (showButtons) {
+    var self = this;
+
+    if (showButtons !== undefined) {
+      self.$buttons.toggleClass('hide', showButtons);
+    }
+    else {
+      self.$buttons.toggleClass('hide');
+    }
+  };
+
+  /**
+   * Toggle transform panel visibility.
+   *
+   * @param [showTransformPanel] Show transform panel
+   */
+  ContextMenu.prototype.toggleTransformPanel = function (showTransformPanel) {
+    var self = this;
+
+    if (showTransformPanel !== undefined) {
+      self.$transformPanel.toggleClass('hide', showTransformPanel);
+    }
+    else {
+      self.$transformPanel.toggleClass('hide');
+    }
   };
 
   /**

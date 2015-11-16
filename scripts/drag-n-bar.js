@@ -579,6 +579,7 @@ if (window.H5PEditor) {
   // Add translations
   H5PEditor.language['H5P.DragNBar'] = {
     libraryStrings: {
+      transformLabel: 'Transform',
       editLabel: 'Edit',
       removeLabel: 'Remove',
       bringToFrontLabel: 'Bring to Front',
