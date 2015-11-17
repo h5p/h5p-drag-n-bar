@@ -134,16 +134,27 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   /**
    * Float context menu left if width exceeds parent container.
    *
-   * @param {Number} left Left position of context menu.
+   * @param {Number} [left] Left position of context menu.
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
+    left = left || this.$element.offset().left;
     var containerWidth = this.dnb.$container.width();
-    var $tmp = this.contextMenu.$contextMenu.clone().css({
+    var $cm = this.contextMenu.$contextMenu;
+
+    // Measure full outer width
+    $cm.css({
       position: 'absolute',
       left: 0
-    }).appendTo(this.contextMenu.$contextMenu.parent());
-    var contextMenuWidth = $tmp.outerWidth(true);
-    $tmp.remove();
+    });
+    var contextMenuWidth = $cm.outerWidth(true);
+
+    // Reset to default
+    $cm.css({
+      position: '',
+      left: left
+    });
+
+
     var isTooWide = left + contextMenuWidth >= containerWidth;
 
     if (isTooWide) {

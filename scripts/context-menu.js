@@ -101,6 +101,9 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       self.toggleButtonsBar();
       self.toggleTransformPanel();
       self.$transformButtonWrapper.toggleClass('active');
+
+      // Realign context menu
+      self.dnb.updateCoordinates();
     });
 
     this.updateContextMenu();
