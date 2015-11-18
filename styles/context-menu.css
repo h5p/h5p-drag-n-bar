@@ -214,6 +214,10 @@
 .h5p-dragnbar-input > input:focus {
 	color: #044c7c;
 }
+.ui-widget .h5p-dragnbar-input > input {
+  font-size: 13px;
+  font-family: inherit;
+}
 .h5p-dragnbar-width > input {
 	text-align: right;
 	padding-right: 0.25em;
