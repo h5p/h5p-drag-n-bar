@@ -173,6 +173,9 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     if (this.$element) {
       this.$element.removeClass('focused');
       this.focused = false;
+
+      // Hide transform panel
+      this.contextMenu.trigger('contextMenuTransform', {showTransformPanel: false});
     }
     this.hideContextMenu();
   };
