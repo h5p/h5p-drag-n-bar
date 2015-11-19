@@ -12,6 +12,8 @@ H5P.DragNBar = (function (EventDispatcher) {
    * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    */
   function DragNBar(buttons, $container, $dialogContainer, options) {
+    var self = this;
+
     EventDispatcher.call(this);
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
@@ -40,6 +42,10 @@ H5P.DragNBar = (function (EventDispatcher) {
       this.initEditor();
       this.initClickListeners();
     }
+
+    H5P.jQuery(window).resize(function () {
+      self.resize();
+    });
   }
 
   // Inherit support for events
@@ -532,8 +538,9 @@ H5P.DragNBar.prototype.resize = function () {
   var self = this;
   this.dialog.resize();
   this.updateCoordinates();
+
   if (self.focusedElement) {
-    self.focusedElement.resizeContextMenu(this.$element.offset().left);
+    self.focusedElement.resizeContextMenu(self.$element.offset().left - self.$element.parent().offset().left);
   }
 };
 
