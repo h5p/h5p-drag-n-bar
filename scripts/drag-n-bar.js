@@ -70,10 +70,22 @@ H5P.DragNBar.prototype.initEditor = function () {
     that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   });
 
+  // Set pressed to not lose focus at the end of resize
+  this.dnr.on('stoppedResizing', function () {
+    that.pressed = true;
+  });
+
   /**
    * Show transform panel listener
    */
   this.dnr.on('showTransformPanel', function () {
+    if (that.focusedElement) {
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
+  });
+
+  this.dnd.on('showTransformPanel', function () {
+    // Get moving element and show transform panel
     if (that.focusedElement) {
       that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
     }
@@ -90,12 +102,6 @@ H5P.DragNBar.prototype.initEditor = function () {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
       that.dnd.min.y -= that.$list.height();
-    }
-
-    // Get moving element and show transform panel
-    var element = that.getDragNBarElement(that.$element);
-    if (element) {
-      element.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
     }
 
     return true;
