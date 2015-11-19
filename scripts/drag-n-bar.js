@@ -73,6 +73,13 @@ H5P.DragNBar.prototype.initEditor = function () {
     }
   });
 
+  this.dnd.on('showTransformPanel', function () {
+    // Get moving element and show transform panel
+    if (that.focusedElement) {
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
+  });
+
   this.dnd.startMovingCallback = function (x, y) {
     that.dnd.min = {x: 0, y: 0};
     that.dnd.max = {
@@ -84,12 +91,6 @@ H5P.DragNBar.prototype.initEditor = function () {
       that.dnd.adjust.x = 10;
       that.dnd.adjust.y = 10;
       that.dnd.min.y -= that.$list.height();
-    }
-
-    // Get moving element and show transform panel
-    var element = that.getDragNBarElement(that.$element);
-    if (element) {
-      element.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
     }
 
     return true;
