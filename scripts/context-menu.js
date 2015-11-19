@@ -78,6 +78,12 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.canResize = !disableResize;
 
     /**
+     * Determines if the transform panel is showing.
+     * @type {boolean}
+     */
+    this.showingTransformPanel = false;
+
+    /**
      * Button containing button name and event name that will be fired.
      * @typedef {Object} ContextMenuButton
      * @property {String} name Machine readable
@@ -94,13 +100,27 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
     ];
 
-    // Register transform listener
-    self.on('contextMenuTransform', function () {
+    /**
+     * Register transform listener
+     *
+     * @param {event} [e] event
+     * @param {Object} [e.data] event data
+     * @param {Boolean} [e.data.showTransformPanel] Show transform panel
+     */
+    self.on('contextMenuTransform', function (e) {
+      if (e && e.data) {
+        // Use event data
+        self.showingTransformPanel = e.data.showTransformPanel;
+      }
+      else {
+        // Toggle showing panel
+        self.showingTransformPanel = !self.showingTransformPanel;
+      }
 
       // Toggle buttons bar and transform panel
-      self.toggleButtonsBar();
-      self.toggleTransformPanel();
-      self.$transformButtonWrapper.toggleClass('active');
+      self.toggleButtonsBar(!self.showingTransformPanel);
+      self.toggleTransformPanel(self.showingTransformPanel);
+      self.$transformButtonWrapper.toggleClass('active', self.showingTransformPanel);
 
       // Realign context menu
       self.dnb.updateCoordinates();
@@ -484,7 +504,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
 
     if (showButtons !== undefined) {
-      self.$buttons.toggleClass('hide', showButtons);
+      self.$buttons.toggleClass('hide', !showButtons);
     }
     else {
       self.$buttons.toggleClass('hide');
@@ -500,7 +520,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
 
     if (showTransformPanel !== undefined) {
-      self.$transformPanel.toggleClass('hide', showTransformPanel);
+      self.$transformPanel.toggleClass('hide', !showTransformPanel);
     }
     else {
       self.$transformPanel.toggleClass('hide');

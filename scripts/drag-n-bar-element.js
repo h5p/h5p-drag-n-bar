@@ -137,7 +137,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {Number} [left] Left position of context menu.
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
-    left = left || this.$element.offset().left;
+    left = left || this.$element.position().left;
     var containerWidth = this.dnb.$container.width();
     var $cm = this.contextMenu.$contextMenu;
 
@@ -173,6 +173,9 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     if (this.$element) {
       this.$element.removeClass('focused');
       this.focused = false;
+
+      // Hide transform panel
+      this.contextMenu.trigger('contextMenuTransform', {showTransformPanel: false});
     }
     this.hideContextMenu();
   };
