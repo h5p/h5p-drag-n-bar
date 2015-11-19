@@ -96,8 +96,16 @@
 }
 
 .h5p-dragnbar-context-menu.left-aligned .h5p-dragnbar-coordinates {
-  border-right: none;
   border-left: none;
+  border-right: none;
+}
+
+.h5p-dragnbar-context-menu.left-aligned .h5p-dragnbar-coordinates:last-child {
+  border-right: 1px solid #0099ff;
+}
+
+.h5p-dragnbar-context-menu .h5p-dragnbar-coordinates:last-child {
+  border-right: none;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button {
