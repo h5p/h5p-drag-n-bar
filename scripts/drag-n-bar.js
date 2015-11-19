@@ -70,6 +70,11 @@ H5P.DragNBar.prototype.initEditor = function () {
     that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   });
 
+  // Set pressed to not lose focus at the end of resize
+  this.dnr.on('stoppedResizing', function () {
+    that.pressed = true;
+  });
+
   /**
    * Show transform panel listener
    */
