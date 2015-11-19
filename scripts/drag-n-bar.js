@@ -88,7 +88,9 @@ H5P.DragNBar.prototype.initEditor = function () {
 
     // Get moving element and show transform panel
     var element = that.getDragNBarElement(that.$element);
-    element.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    if (element) {
+      element.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
 
     return true;
   };
@@ -105,7 +107,6 @@ H5P.DragNBar.prototype.initEditor = function () {
         that.avoidOverlapping(pos, that.$element);
       }
     }
-
 
     if (pos.x === undefined || pos.y === undefined ) {
       pos.x = Math.round(parseFloat(that.$element.css('left')));
