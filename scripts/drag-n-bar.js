@@ -93,6 +93,7 @@ H5P.DragNBar.prototype.initEditor = function () {
       }
     }
 
+
     if (pos.x === undefined || pos.y === undefined ) {
       pos.x = Math.round(parseFloat(that.$element.css('left')));
       pos.y = Math.round(parseFloat(that.$element.css('top')));
