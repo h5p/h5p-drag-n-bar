@@ -84,8 +84,9 @@ H5P.DragNBar.prototype.initEditor = function () {
       that.dnd.min.y -= that.$list.height();
     }
 
-    // Show transform panel
-    that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    // Get moving element and show transform panel
+    var element = that.getDragNBarElement(that.$element);
+    element.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
 
     return true;
   };
