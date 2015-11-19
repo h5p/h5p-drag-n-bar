@@ -68,7 +68,9 @@ H5P.DragNBar.prototype.initEditor = function () {
    * Show transform panel listener
    */
   this.dnr.on('showTransformPanel', function () {
-    that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    if (that.focusedElement) {
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
   });
 
   this.dnd.startMovingCallback = function (x, y) {
