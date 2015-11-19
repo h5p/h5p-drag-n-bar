@@ -43,7 +43,7 @@ H5P.DragNBar = (function (EventDispatcher) {
       this.initClickListeners();
     }
 
-    H5P.jQuery(window).resize(function () {
+    H5P.$window.resize(function () {
       self.resize();
     });
   }
