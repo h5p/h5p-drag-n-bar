@@ -476,9 +476,8 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
 
       self.pressed = true;
       self.focus($element);
-      if (event.result !== false) { // Moving can be stopped if the mousedown is doing something else
+      if (self.dnr.active !== true) { // Moving can be stopped if the mousedown is doing something else
         self.dnd.press($element, event.pageX, event.pageY);
-        event.preventDefault();
       }
     });
   }
