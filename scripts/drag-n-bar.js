@@ -140,16 +140,38 @@ H5P.DragNBar.prototype.initEditor = function () {
  * @param {object} pos
  * @param {number} pos.x
  * @param {number} pos.y
- * @param {H5P.jQuery} [$element]
+ * @param {(H5P.jQuery|Object)} element object with width&height if ran before insertion.
  */
 H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
+  // Determine size of element
+  var size = $element;
+  if (size instanceof H5P.jQuery) {
+    size = window.getComputedStyle(size[0]);
+    size = {
+      width: parseFloat(size.width),
+      height: parseFloat(size.height)
+    };
+  }
+  else {
+    $element = undefined;
+  }
+
+  // Determine how much they can be manuvered
+  var containerStyle = window.getComputedStyle(this.$container[0]);
+  var manX = parseFloat(containerStyle.width) - size.width;
+  var manY = parseFloat(containerStyle.height) - size.height;
+
   var limit = 16;
   var attempts = 0;
 
   while (attempts < limit && this.elementOverlaps(pos.x, pos.y, $element)) {
-    // Try to choose another random position within -50 and 50 px.
-    pos.x += ((Math.floor(Math.random() * 10) + 1) * 10) - 50;
-    pos.y += ((Math.floor(Math.random() * 10) + 1) * 10) - 50;
+    // Try to place randomly inside container
+    if (manX > 0) {
+      pos.x = Math.floor(Math.random() * manX);
+    }
+    if (manY > 0) {
+      pos.y = Math.floor(Math.random() * manY);
+    }
     attempts++;
   }
 };
