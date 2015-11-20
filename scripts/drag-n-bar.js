@@ -38,6 +38,9 @@ H5P.DragNBar = (function (EventDispatcher) {
     // Create a popup dialog
     this.dialog = new H5P.DragNBarDialog($dialogContainer, $container);
 
+    // Fix for forcing redraw on $container, to avoid "artifcats" on safari
+    this.$container.addClass('hardware-accelerated');
+
     if (this.isEditor) {
       this.initEditor();
       this.initClickListeners();
@@ -498,6 +501,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
   if (this.focusedElement) {
     this.focusedElement.showContextMenu();
     this.focusedElement.focus();
+    self.updateCoordinates();
   }
 
   // Wait for potential recreation of element
