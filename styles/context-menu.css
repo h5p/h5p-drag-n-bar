@@ -84,6 +84,7 @@
 .h5p-dragnbar-context-menu .h5p-dragnbar-dimensions,
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates {
   display: inline-block;
+  position: relative;
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-coordinates {
@@ -185,6 +186,8 @@
   width: 2em;
   text-align: left;
   color: #0061a2;
+  vertical-align: bottom;
+  margin-bottom: 3px;
 }
 
 .h5p-dragnbar-coordinates input.h5p-dragnbar-x {
@@ -192,8 +195,10 @@
 }
 
 .h5p-dragnbar-coordinates .h5p-dragnbar-coordinates-separater {
-  margin: 0 0.2em;
-  cursor: default;
+  margin: 0 0.25em;
+  vertical-align: bottom;
+  line-height: 24px;
+  color: #555;
 }
 
 .h5p-dragnbar-coordinates input:focus {
@@ -212,7 +217,7 @@
 	width: 3.25em;
 	height: 36px;
 	color: #0061a2;
-	padding: 0.25em 0.5em;
+  padding: 1em 0.5em 0;
 	border: 0;
 	outline: none;
   box-sizing: border-box;
@@ -234,12 +239,12 @@
 	padding-left: 0.25em;
 }
 .h5p-dragnbar-dimensions-separator {
-	height: 34px;
-	padding: 2px 0 0;
+  height: 28px;
+  padding: 0.5em 0 0;
 	background-color: #fff;
 	display: inline-block;
 	vertical-align: top;
-	color: #0061a2;
+	color: #555;
 }
 
 .h5p-dragnbar-context-menu .h5p-transform-panel.hide,
@@ -284,4 +289,15 @@
   border: 1px solid #80c2ee;
   background: #b2d7ee;
   box-shadow: inset 0 1px 5px 0 rgba(2,94,156,0.65);
+}
+.h5p-dragnbar-context-menu .h5p-dragnbar-label {
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  color: #555;
+  width: 100%;
+  z-index: 1;
+  text-align: center;
+  padding: 1px 0 0;
+  line-height: 18px;
 }

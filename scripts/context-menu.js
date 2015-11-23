@@ -147,6 +147,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Add coordinates picker
     this.$coordinates = $(
       '<div class="h5p-dragnbar-coordinates">' +
+        '<div class="h5p-dragnbar-label">' + H5PEditor.t('H5P.DragNBar', 'positionLabel') + '</div>' +
         '<div class="h5p-dragnbar-x-container" aria-label="X position">' +
           '<input class="h5p-dragnbar-x" type="text" value="0">' +
         '</div>' +
@@ -246,6 +247,13 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     self.$dimensions = $('<div/>', {
       'class': 'h5p-dragnbar-dimensions'
+    });
+
+    // Add label
+    $('<div/>', {
+      'class': 'h5p-dragnbar-label',
+      appendTo: self.$dimensions,
+      text: H5PEditor.t('H5P.DragNBar', 'sizeLabel')
     });
 
     var updateDimensions = function (type) {
