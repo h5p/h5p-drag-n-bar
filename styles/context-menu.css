@@ -222,6 +222,7 @@
 	outline: none;
   box-sizing: border-box;
   vertical-align: top;
+  font-size: 13px;
 }
 .h5p-dragnbar-input > input:hover,
 .h5p-dragnbar-input > input:focus {
@@ -239,6 +240,7 @@
 	padding-left: 0.25em;
 }
 .h5p-dragnbar-dimensions-separator {
+  font-size: 14px;
   height: 28px;
   padding: 0.5em 0 0;
 	background-color: #fff;
