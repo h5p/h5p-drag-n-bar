@@ -76,6 +76,11 @@ H5P.DragNBar.prototype.initEditor = function () {
   // Set pressed to not lose focus at the end of resize
   this.dnr.on('stoppedResizing', function () {
     that.pressed = true;
+
+    // Delete pressed after dnbelement has been refocused so it will lose focus on single click.
+    setTimeout(function () {
+      delete that.pressed;
+    }, 10);
   });
 
   /**
