@@ -137,6 +137,10 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {Number} [left] Left position of context menu.
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
+    if (this.options.disableContextMenu) {
+      return;
+    }
+
     left = left || this.$element.position().left;
     var containerWidth = this.dnb.$container.width();
     var $cm = this.contextMenu.$contextMenu;
