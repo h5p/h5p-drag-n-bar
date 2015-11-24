@@ -602,7 +602,6 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
   }
 };
 
-
 /**
  * Creates element data to store in the clipboard.
  *
@@ -627,6 +626,89 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
   }
 
   return clipboardData;
+};
+
+/**
+ * @typedef SizeNPosition
+ * @type Object
+ * @property {number} width Width of the Element
+ * @property {number} height Height of the Element
+ * @property {number} left The X Coordinate
+ * @property {number} top The Y Coordinate
+ */
+
+/**
+ * Calculates position and size for the given element (in pixels)
+ *
+ * @throws Error if invalid type
+ * @param {Element} element
+ * @param {string} [type=inner] Possible values "inner" and "outer"
+ * @returns {SizeNPosition}
+ */
+H5P.DragNBar.getSizeNPosition = function (element, type) {
+  type = type || 'inner';
+  var style;
+  switch (type) {
+    case 'inner':
+      style = window.getComputedStyle(element);
+      break;
+    case 'outer':
+      style = element.getBoundingClientRect();
+      break;
+    default:
+      throw 'Unknown type';
+  }
+
+  return {
+    width: parseFloat(style.width),
+    height: parseFloat(style.height),
+    left: parseFloat(style.left),
+    top: parseFloat(style.top)
+  };
+};
+
+/**
+ * Make sure the given element is inside the container.
+ *
+ * @param {H5P.jQuery} $element
+ * @param {SizeNPosition} containerSize
+ * @returns {SizeNPosition} Only the properties which require change
+ */
+H5P.DragNBar.fitElementInside = function ($element, containerSize) {
+  var elementSize = H5P.DragNBar.getSizeNPosition($element[0], 'outer');
+  var style = {};
+
+  if (elementSize.left < 0) {
+    // Element sticks out of the left side
+    style.left = elementSize.left = 0;
+  }
+
+  if (elementSize.width + elementSize.left > containerSize.width) {
+    // Element sticks out of the right side
+    style.left = containerSize.width - elementSize.width;
+    if (style.left < 0) {
+      // Element is wider than the container
+      style.left = 0;
+      style.width = containerSize.width;
+    }
+  }
+
+  if (elementSize.left < 0) {
+    // Element sticks out of the top side
+    style.left = elementSize.left = 0;
+  }
+
+  if (elementSize.height + elementSize.top > containerSize.height) {
+    // Element sticks out of the bottom side
+    style.top = containerSize.height - elementSize.height;
+    if (style.top < 0) {
+      // Element is higher than the container
+      style.top = 0;
+      style.height = containerSize.height;
+    }
+  }
+
+  return style;
 };
 
 if (window.H5PEditor) {
