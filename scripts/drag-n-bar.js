@@ -698,9 +698,9 @@ H5P.DragNBar.fitElementInside = function ($element, containerSize) {
     }
   }
 
-  if (elementSize.left < 0) {
+  if (elementSize.top < 0) {
     // Element sticks out of the top side
-    style.left = elementSize.left = 0;
+    style.top = elementSize.top = 0;
   }
 
   if (elementSize.height + elementSize.top > containerSize.height) {
