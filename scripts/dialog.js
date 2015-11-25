@@ -181,6 +181,10 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     };
 
     self.resize = function () {
+      if (!$dialog.hasClass('h5p-big')) {
+        return;
+      }
+
       var fontSize = toNum($inner.css('fontSize'));
       var titleBarHeight = ($titleBar.outerHeight() / fontSize);
 
@@ -292,14 +296,15 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         top -= totalHeight - containerHeight;
       }
       var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
+      var fontSize = toNum($container.css('fontSize'));
       // Set dialog size
       $dialog.css({
         top: (top / (containerHeight / 100)) + '%',
         left: (left / (containerWidth / 100)) + '%',
-        width: window.getComputedStyle($dialog[0]).width,
-        maxHeight: maxHeight
+        width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
+        maxHeight: (maxHeight / fontSize) + 'em'
       });
-      $inner.css('maxHeight', maxHeight - $titleBar.outerHeight(true));
+      $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
     };
 
     /**
@@ -399,8 +404,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     self.hideCloseButton = function () {
       $close.hide();
     };
-
-    this.on('resize', this.resize, this);
   }
 
   // Extends the event dispatcher

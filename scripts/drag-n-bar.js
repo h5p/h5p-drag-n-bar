@@ -572,7 +572,6 @@ H5P.DragNBar.prototype.blurAll = function () {
  */
 H5P.DragNBar.prototype.resize = function () {
   var self = this;
-  this.dialog.resize();
   this.updateCoordinates();
 
   if (self.focusedElement) {
