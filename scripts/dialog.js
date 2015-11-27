@@ -243,12 +243,12 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         if (size.height) {
           size.height = (size.height * fontSizeRatio) + titleBarHeight;
           $dialog.css('height', size.height + 'em');
-        }
 
-        $inner.css({
-          width: 'auto',
-          overflow: 'hidden'
-        });
+          $inner.css({
+            width: 'auto',
+            overflow: 'hidden'
+          });
+        }
       }
 
       if (medium) {
