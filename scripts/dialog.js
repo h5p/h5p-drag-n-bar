@@ -229,16 +229,22 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
 
+      // Use a fixed size
       if (size) {
         var fontSizeRatio = 16 / toNum($container.css('fontSize'));
-        size.width = (size.width * fontSizeRatio);
-        size.height = (size.height * fontSizeRatio) + titleBarHeight;
 
-        // Use a fixed size
-        $dialog.css({
-          width: size.width + 'em',
-          height: size.height + 'em'
-        });
+        // Fixed width
+        if (size.width) {
+          size.width = (size.width * fontSizeRatio);
+          $dialog.css('width', size.width + 'em');
+        }
+
+        // Fixed height
+        if (size.height) {
+          size.height = (size.height * fontSizeRatio) + titleBarHeight;
+          $dialog.css('height', size.height + 'em');
+        }
+
         $inner.css({
           width: 'auto',
           overflow: 'hidden'
@@ -403,6 +409,21 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.hideCloseButton = function () {
       $close.hide();
+    };
+
+    /**
+     * Get width of dialog
+     * @returns {Number} Width of dialog
+     */
+    self.getDialogWidth = function () {
+      return $dialog.width();
+    };
+
+    /**
+     * Reset dialog width
+     */
+    self.removeStaticWidth = function () {
+      $dialog.css('width', '');
     };
   }
 
