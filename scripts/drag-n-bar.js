@@ -680,14 +680,15 @@ H5P.DragNBar.getSizeNPosition = function (element, type) {
  */
 H5P.DragNBar.fitElementInside = function ($element, containerSize) {
   var elementSize = H5P.DragNBar.getSizeNPosition($element[0], 'outer');
+  var elementPosition = H5P.DragNBar.getSizeNPosition($element[0], 'inner');
   var style = {};
 
-  if (elementSize.left < 0) {
+  if (elementPosition.left < 0) {
     // Element sticks out of the left side
-    style.left = elementSize.left = 0;
+    style.left = elementPosition.left = 0;
   }
 
-  if (elementSize.width + elementSize.left > containerSize.width) {
+  if (elementSize.width + elementPosition.left > containerSize.width) {
     // Element sticks out of the right side
     style.left = containerSize.width - elementSize.width;
     if (style.left < 0) {
@@ -697,12 +698,12 @@ H5P.DragNBar.fitElementInside = function ($element, containerSize) {
     }
   }
 
-  if (elementSize.top < 0) {
+  if (elementPosition.top < 0) {
     // Element sticks out of the top side
-    style.top = elementSize.top = 0;
+    style.top = elementPosition.top = 0;
   }
 
-  if (elementSize.height + elementSize.top > containerSize.height) {
+  if (elementSize.height + elementPosition.top > containerSize.height) {
     // Element sticks out of the bottom side
     style.top = containerSize.height - elementSize.height;
     if (style.top < 0) {
