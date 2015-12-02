@@ -1,23 +1,20 @@
-/*global H5PEditor */
-var H5P = H5P || {};
-
-/**
- * Drag n bar class
- */
-H5P.DragNBar = (function () {
+H5P.DragNBar = (function (EventDispatcher) {
 
   /**
    * Constructor. Initializes the drag and drop menu bar.
    *
    * @class
    * @param {Array} buttons
-   * @param {jQuery} $container
-   * @param {jQuery} $dialogContainer
-   * @param {Object} [options] Collection of options
-   * @param {Boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
-   * @param {jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
+   * @param {H5P.jQuery} $container
+   * @param {H5P.jQuery} $dialogContainer
+   * @param {object} [options] Collection of options
+   * @param {boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
+   * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    */
   function DragNBar(buttons, $container, $dialogContainer, options) {
+    var self = this;
+
+    EventDispatcher.call(this);
     this.overflowThreshold = 13; // How many buttons to display before we add the more button.
     this.buttons = buttons;
     this.$container = $container;
@@ -41,14 +38,25 @@ H5P.DragNBar = (function () {
     // Create a popup dialog
     this.dialog = new H5P.DragNBarDialog($dialogContainer, $container);
 
+    // Fix for forcing redraw on $container, to avoid "artifcats" on safari
+    this.$container.addClass('hardware-accelerated');
+
     if (this.isEditor) {
       this.initEditor();
       this.initClickListeners();
     }
+
+    H5P.$window.resize(function () {
+      self.resize();
+    });
   }
 
+  // Inherit support for events
+  DragNBar.prototype = Object.create(EventDispatcher.prototype);
+  DragNBar.prototype.constructor = DragNBar;
+
   return DragNBar;
-})();
+})(H5P.EventDispatcher);
 
 /**
  * Initializes editor functionality of DragNBar
@@ -65,11 +73,30 @@ H5P.DragNBar.prototype.initEditor = function () {
     that.updateCoordinates(offset.left, offset.top, position.left, position.top);
   });
 
-  this.dnr.on('stoppedResizing',function () {
-    // Queue refocus of element
+  // Set pressed to not lose focus at the end of resize
+  this.dnr.on('stoppedResizing', function () {
+    that.pressed = true;
+
+    // Delete pressed after dnbelement has been refocused so it will lose focus on single click.
     setTimeout(function () {
-      that.focus(that.$element);
-    }, 0);
+      delete that.pressed;
+    }, 10);
+  });
+
+  /**
+   * Show transform panel listener
+   */
+  this.dnr.on('showTransformPanel', function () {
+    if (that.focusedElement) {
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
+  });
+
+  this.dnd.on('showTransformPanel', function () {
+    // Get moving element and show transform panel
+    if (that.focusedElement) {
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    }
   });
 
   this.dnd.startMovingCallback = function (x, y) {
@@ -89,22 +116,24 @@ H5P.DragNBar.prototype.initEditor = function () {
   };
 
   this.dnd.stopMovingCallback = function (event) {
-    var x, y;
+    var pos = {};
 
     if (that.newElement) {
       that.$container.css('overflow', '');
       if (Math.round(parseFloat(that.$element.css('top'))) < 0) {
-        x = (that.dnd.max.x / 2);
-        y = (that.dnd.max.y / 2);
+        // Try to center element, but avoid overlapping
+        pos.x = (that.dnd.max.x / 2);
+        pos.y = (that.dnd.max.y / 2);
+        that.avoidOverlapping(pos, that.$element);
       }
     }
 
-    if (x === undefined || y === undefined) {
-      x = Math.round(parseFloat(that.$element.css('left')));
-      y = Math.round(parseFloat(that.$element.css('top')));
+    if (pos.x === undefined || pos.y === undefined ) {
+      pos.x = Math.round(parseFloat(that.$element.css('left')));
+      pos.y = Math.round(parseFloat(that.$element.css('top')));
     }
 
-    that.stopMoving(x, y);
+    that.stopMoving(pos.x, pos.y);
     that.newElement = false;
 
     delete that.dnd.min;
@@ -113,23 +142,160 @@ H5P.DragNBar.prototype.initEditor = function () {
 };
 
 /**
+ * Tries to position the given element close to the requested coordinates.
+ * Element can be skipped to check if spot is available.
+ *
+ * @param {object} pos
+ * @param {number} pos.x
+ * @param {number} pos.y
+ * @param {(H5P.jQuery|Object)} element object with width&height if ran before insertion.
+ */
+H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
+  // Determine size of element
+  var size = $element;
+  if (size instanceof H5P.jQuery) {
+    size = window.getComputedStyle(size[0]);
+    size = {
+      width: parseFloat(size.width),
+      height: parseFloat(size.height)
+    };
+  }
+  else {
+    $element = undefined;
+  }
+
+  // Determine how much they can be manuvered
+  var containerStyle = window.getComputedStyle(this.$container[0]);
+  var manX = parseFloat(containerStyle.width) - size.width;
+  var manY = parseFloat(containerStyle.height) - size.height;
+
+  var limit = 16;
+  var attempts = 0;
+
+  while (attempts < limit && this.elementOverlaps(pos.x, pos.y, $element)) {
+    // Try to place randomly inside container
+    if (manX > 0) {
+      pos.x = Math.floor(Math.random() * manX);
+    }
+    if (manY > 0) {
+      pos.y = Math.floor(Math.random() * manY);
+    }
+    attempts++;
+  }
+};
+
+/**
+ * Determine if moving the given element to its new position will cause it to
+ * cover another element. This can make new or pasted elements difficult to see.
+ * Element can be skipped to check if spot is available.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {H5P.jQuery} [$element]
+ * @returns {boolean}
+ */
+H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
+  var self = this;
+
+  // Use snap grid
+  x = Math.round(x / 10);
+  y = Math.round(y / 10);
+
+  for (var i = 0; i < self.elements.length; i++) {
+    var element = self.elements[i];
+    if ($element !== undefined && element.$element === $element) {
+      continue;
+    }
+
+    if (x === Math.round(parseFloat(element.$element.css('left')) / 10) &&
+        y === Math.round(parseFloat(element.$element.css('top')) / 10)) {
+      return true; // Stop loop
+    }
+  }
+
+  return false;
+};
+
+/**
  * Initialize click listeners
  */
 H5P.DragNBar.prototype.initClickListeners = function () {
-  var that = this;
+  var self = this;
 
-  H5P.$body.click(function () {
+  // Key coordinates
+  var CTRL = 17;
+  var C = 67;
+  var V = 86;
 
-    // Remove pressed on click
-    delete that.pressed;
-  }).keydown(function (event) {
-    if (event.keyCode === 17 && that.dnd.snap !== undefined) {
-      delete that.dnd.snap;
+  // Keep track of key state
+  var ctrlDown = false;
+
+  // Register event listeners
+  H5P.$body.keydown(function (event) {
+    if (event.which === CTRL) {
+      ctrlDown = true;
+
+      if (self.dnd.snap !== undefined) {
+        // Disable snapping
+        delete self.dnd.snap;
+      }
+    }
+    else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
+      // Copy element params to clipboard
+      var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
+      var width = parseFloat(elementSize.width);
+      var height = parseFloat(elementSize.height) / width;
+      width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+      height *= width;
+
+      self.focusedElement.toClipboard(width, height);
+    }
+    else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
+      if (self.preventPaste || self.dialog.isOpen() || document.activeElement.contentEditable === 'true' || document.activeElement.value !== undefined) {
+        // Don't allow paste if dialog is open or active element can be modified
+        return;
+      }
+
+      var clipboardData = localStorage.getItem('h5pClipboard');
+      if (clipboardData) {
+
+        // Parse
+        try {
+          clipboardData = JSON.parse(clipboardData);
+        }
+        catch (err) {
+          console.error('Unable to parse JSON from clipboard.', err);
+          return;
+        }
+
+        // Update file URLs
+        if (clipboardData.contentId !== H5PEditor.contentId) {
+          var prefix = clipboardData.contentId ? '../' + clipboardData.contentId : '../../editor';
+          H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
+        }
+
+        if (clipboardData.generic) {
+          // Use reference instead of key
+          clipboardData.generic = clipboardData.specific[clipboardData.generic];
+
+          // Avoid multiple content with same ID
+          delete clipboardData.generic.subContentId;
+        }
+
+        self.trigger('paste', clipboardData);
+      }
     }
   }).keyup(function (event) {
-    if (event.keyCode === 17) {
-      that.dnd.snap = 10;
+    if (event.which === CTRL) {
+      // Update key state
+      ctrlDown = false;
+
+      // Enable snapping
+      self.dnd.snap = 10;
     }
+  }).click(function () {
+    // Remove pressed on click
+    delete self.pressed;
   });
 
   // Set blur handler element if option has been specified
@@ -140,16 +306,36 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
   $blurHandlers.click(function () {
     // Remove coordinates picker if we didn't press an element.
-    if (that.pressed !== undefined) {
-      delete that.pressed;
+    if (self.pressed !== undefined) {
+      delete self.pressed;
     }
     else {
-      that.blurAll();
-      if (that.focusedElement !== undefined) {
-        delete that.focusedElement;
+      self.blurAll();
+      if (self.focusedElement !== undefined) {
+        delete self.focusedElement;
       }
     }
   });
+};
+
+/**
+ * Update file URLs. Useful when copying between different contents.
+ *
+ * @param {object} params Reference
+ * @param {number} contentId From source
+ */
+H5P.DragNBar.updateFileUrls = function (params, prefix) {
+  for (var prop in params) {
+    if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
+      var obj = params[prop];
+      if (obj.path !== undefined && obj.mime !== undefined) {
+        obj.path = prefix + '/' + obj.path;
+      }
+      else {
+        H5P.DragNBar.updateFileUrls(obj, prefix);
+      }
+    }
+  }
 };
 
 /**
@@ -240,7 +426,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
-  this.dnd.$element.css({top: top + '%', left: left + '%'});
+  this.$element.css({top: top + '%', left: left + '%'});
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
@@ -257,9 +443,10 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * @param {H5P.DragNBarElement} [options.dnbElement] Register new element with dnbelement
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
+ * @param {string} [clipboardData]
  * @returns {H5P.DragNBarElement} Reference to added dnbelement
  */
-H5P.DragNBar.prototype.add = function ($element, options) {
+H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   var self = this;
   options = options || {};
   if (this.isEditor && !options.disableResize) {
@@ -275,7 +462,7 @@ H5P.DragNBar.prototype.add = function ($element, options) {
   }
   else {
     options.element = $element;
-    newElement = new H5P.DragNBarElement(this, options);
+    newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
 
@@ -294,7 +481,7 @@ H5P.DragNBar.prototype.add = function ($element, options) {
 
       self.pressed = true;
       self.focus($element);
-      if (event.result !== false) { // Moving can be stopped if the mousedown is doing something else
+      if (self.dnr.active !== true) { // Moving can be stopped if the mousedown is doing something else
         self.dnd.press($element, event.pageX, event.pageY);
       }
     });
@@ -340,11 +527,15 @@ H5P.DragNBar.prototype.focus = function ($element) {
   if (this.focusedElement) {
     this.focusedElement.showContextMenu();
     this.focusedElement.focus();
+    self.updateCoordinates();
   }
 
   // Wait for potential recreation of element
   setTimeout(function () {
     self.updateCoordinates();
+    if (self.focusedElement && self.focusedElement.contextMenu && self.focusedElement.contextMenu.canResize) {
+      self.focusedElement.contextMenu.updateDimensions();
+    }
   }, 0);
 };
 
@@ -381,10 +572,10 @@ H5P.DragNBar.prototype.blurAll = function () {
  */
 H5P.DragNBar.prototype.resize = function () {
   var self = this;
-  this.dialog.resize();
   this.updateCoordinates();
+
   if (self.focusedElement) {
-    self.focusedElement.resizeContextMenu(this.$element.offset().left);
+    self.focusedElement.resizeContextMenu(self.$element.offset().left - self.$element.parent().offset().left);
   }
 };
 
@@ -415,13 +606,127 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
   }
 };
 
+/**
+ * Creates element data to store in the clipboard.
+ *
+ * @param {string} from Source of the element
+ * @param {object} params Element options
+ * @param {string} [generic] Which part of the parameters can be used by other libraries
+ * @returns {string} JSON
+ */
+H5P.DragNBar.clipboardify = function (from, params, generic) {
+  var clipboardData = {
+    from: from,
+    specific: params
+  };
+
+  if (H5PEditor.contentId) {
+    clipboardData.contentId = H5PEditor.contentId;
+  }
+
+  // Add the generic part
+  if (params[generic]) {
+    clipboardData.generic = generic;
+  }
+
+  return clipboardData;
+};
+
+/**
+ * @typedef SizeNPosition
+ * @type Object
+ * @property {number} width Width of the Element
+ * @property {number} height Height of the Element
+ * @property {number} left The X Coordinate
+ * @property {number} top The Y Coordinate
+ */
+
+/**
+ * Calculates position and size for the given element (in pixels)
+ *
+ * @throws Error if invalid type
+ * @param {Element} element
+ * @param {string} [type=inner] Possible values "inner" and "outer"
+ * @returns {SizeNPosition}
+ */
+H5P.DragNBar.getSizeNPosition = function (element, type) {
+  type = type || 'inner';
+  var style;
+  switch (type) {
+    case 'inner':
+      style = window.getComputedStyle(element);
+      break;
+    case 'outer':
+      style = element.getBoundingClientRect();
+      break;
+    default:
+      throw 'Unknown type';
+  }
+
+  return {
+    width: parseFloat(style.width),
+    height: parseFloat(style.height),
+    left: parseFloat(style.left),
+    top: parseFloat(style.top)
+  };
+};
+
+/**
+ * Make sure the given element is inside the container.
+ *
+ * @param {H5P.jQuery} $element
+ * @param {SizeNPosition} containerSize
+ * @returns {SizeNPosition} Only the properties which require change
+ */
+H5P.DragNBar.fitElementInside = function ($element, containerSize) {
+  var elementSize = H5P.DragNBar.getSizeNPosition($element[0], 'outer');
+  var elementPosition = H5P.DragNBar.getSizeNPosition($element[0], 'inner');
+  var style = {};
+
+  if (elementPosition.left < 0) {
+    // Element sticks out of the left side
+    style.left = elementPosition.left = 0;
+  }
+
+  if (elementSize.width + elementPosition.left > containerSize.width) {
+    // Element sticks out of the right side
+    style.left = containerSize.width - elementSize.width;
+    if (style.left < 0) {
+      // Element is wider than the container
+      style.left = 0;
+      style.width = containerSize.width;
+    }
+  }
+
+  if (elementPosition.top < 0) {
+    // Element sticks out of the top side
+    style.top = elementPosition.top = 0;
+  }
+
+  if (elementSize.height + elementPosition.top > containerSize.height) {
+    // Element sticks out of the bottom side
+    style.top = containerSize.height - elementSize.height;
+    if (style.top < 0) {
+      // Element is higher than the container
+      style.top = 0;
+      style.height = containerSize.height;
+    }
+  }
+
+  return style;
+};
+
 if (window.H5PEditor) {
-  // Default english translations
+  // Add translations
   H5PEditor.language['H5P.DragNBar'] = {
     libraryStrings: {
+      transformLabel: 'Transform',
       editLabel: 'Edit',
-      removeLabel: 'Remove'
-      // bringToFrontLabel: 'Bring to Front'
+      removeLabel: 'Remove',
+      bringToFrontLabel: 'Bring to Front',
+      unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
+      sizeLabel: 'Size',
+      positionLabel: 'Position'
     }
   };
 }
