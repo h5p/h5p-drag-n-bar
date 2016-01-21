@@ -18,3 +18,9 @@
 .h5peditor .h5p-dragnbar-element.h5p-nil-interaction:hover > .h5p-interaction-label {
   outline: 1px solid #0099ff;
 }
+
+.h5peditor .hardware-accelerated {
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}

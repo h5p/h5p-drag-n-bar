@@ -10,20 +10,21 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    *
    * @class
    * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
+   * @param {object} [clipboardData]
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
    */
-  function DragNBarElement(dragNBar, options) {
+  function DragNBarElement(dragNBar, clipboardData, options) {
     var self = this;
     EventDispatcher.call(this);
 
     this.dnb = dragNBar;
     this.options = options || {};
     if (!this.options.disableContextMenu) {
-      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates);
+      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates, this.options.disableResize);
     }
     this.focused = false;
 
@@ -48,6 +49,17 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
         self.focus();
       });
     }
+
+    /**
+     * Store element paramets in the local storage.
+     */
+    self.toClipboard = function (width, height) {
+      if (clipboardData && localStorage) {
+        clipboardData.width = width;
+        clipboardData.height = height;
+        localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
+      }
+    };
   }
 
   // Inheritance
@@ -122,16 +134,31 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   /**
    * Float context menu left if width exceeds parent container.
    *
-   * @param {Number} left Left position of context menu.
+   * @param {Number} [left] Left position of context menu.
    */
   DragNBarElement.prototype.resizeContextMenu = function (left) {
+    if (this.options.disableContextMenu) {
+      return;
+    }
+
+    left = left || this.$element.position().left;
     var containerWidth = this.dnb.$container.width();
-    var $tmp = this.contextMenu.$contextMenu.clone().css({
+    var $cm = this.contextMenu.$contextMenu;
+
+    // Measure full outer width
+    $cm.css({
       position: 'absolute',
       left: 0
-    }).appendTo(this.contextMenu.$contextMenu.parent());
-    var contextMenuWidth = $tmp.outerWidth(true);
-    $tmp.remove();
+    });
+    var contextMenuWidth = $cm.outerWidth(true);
+
+    // Reset to default
+    $cm.css({
+      position: '',
+      left: left
+    });
+
+
     var isTooWide = left + contextMenuWidth >= containerWidth;
 
     if (isTooWide) {
@@ -150,6 +177,11 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     if (this.$element) {
       this.$element.removeClass('focused');
       this.focused = false;
+
+      if (!this.options.disableContextMenu) {
+        // Hide transform panel
+        this.contextMenu.trigger('contextMenuTransform', {showTransformPanel: false});
+      }
     }
     this.hideContextMenu();
   };

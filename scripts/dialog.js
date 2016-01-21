@@ -18,7 +18,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function () {
+        click: function () {
           if (!self.disableOverlay)  {
             self.close();
           }
@@ -76,7 +76,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Reset the dialog's positioning
      *
-     * @private
+     * @private
      */
     var resetPosition = function () {
       // Reset positioning
@@ -181,6 +181,10 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     };
 
     self.resize = function () {
+      if (!$dialog.hasClass('h5p-big')) {
+        return;
+      }
+
       var fontSize = toNum($inner.css('fontSize'));
       var titleBarHeight = ($titleBar.outerHeight() / fontSize);
 
@@ -209,7 +213,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.attr('data-lib', machineName);
     };
 
-    self.isOpen = function () {
+    self.isOpen = function () {
       return $wrapper.is(':visible');
     };
 
@@ -225,20 +229,26 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
 
+      // Use a fixed size
       if (size) {
         var fontSizeRatio = 16 / toNum($container.css('fontSize'));
-        size.width = (size.width * fontSizeRatio);
-        size.height = (size.height * fontSizeRatio) + titleBarHeight;
 
-        // Use a fixed size
-        $dialog.css({
-          width: size.width + 'em',
-          height: size.height + 'em'
-        });
-        $inner.css({
-          width: 'auto',
-          overflow: 'hidden'
-        });
+        // Fixed width
+        if (size.width) {
+          size.width = (size.width * fontSizeRatio);
+          $dialog.css('width', size.width + 'em');
+        }
+
+        // Fixed height
+        if (size.height) {
+          size.height = (size.height * fontSizeRatio) + titleBarHeight;
+          $dialog.css('height', size.height + 'em');
+
+          $inner.css({
+            width: 'auto',
+            overflow: 'hidden'
+          });
+        }
       }
 
       if (medium) {
@@ -292,14 +302,15 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         top -= totalHeight - containerHeight;
       }
       var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
+      var fontSize = toNum($container.css('fontSize'));
       // Set dialog size
       $dialog.css({
         top: (top / (containerHeight / 100)) + '%',
         left: (left / (containerWidth / 100)) + '%',
-        width: window.getComputedStyle($dialog[0]).width,
-        maxHeight: maxHeight
+        width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
+        maxHeight: (maxHeight / fontSize) + 'em'
       });
-      $inner.css('maxHeight', maxHeight - $titleBar.outerHeight(true));
+      $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
     };
 
     /**
@@ -396,11 +407,24 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Removes the close button from the current dialog.
      */
-    self.hideCloseButton = function () {
+    self.hideCloseButton = function () {
       $close.hide();
     };
 
-    this.on('resize', this.resize, this);
+    /**
+     * Get width of dialog
+     * @returns {Number} Width of dialog
+     */
+    self.getDialogWidth = function () {
+      return $dialog.width();
+    };
+
+    /**
+     * Reset dialog width
+     */
+    self.removeStaticWidth = function () {
+      $dialog.css('width', '');
+    };
   }
 
   // Extends the event dispatcher
