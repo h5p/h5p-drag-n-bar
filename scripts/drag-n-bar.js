@@ -44,11 +44,11 @@ H5P.DragNBar = (function (EventDispatcher) {
     if (this.isEditor) {
       this.initEditor();
       this.initClickListeners();
-    }
 
-    H5P.$window.resize(function () {
-      self.resize();
-    });
+      H5P.$window.resize(function () {
+        self.resize();
+      });
+    }
   }
 
   // Inherit support for events
