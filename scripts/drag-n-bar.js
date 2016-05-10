@@ -520,6 +520,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
   // Keep track of the element we have in focus
   self.$element = $element;
+  this.dnd.setElement($element);
 
   // Show and update coordinates picker
   this.focusedElement = this.getDragNBarElement($element);
