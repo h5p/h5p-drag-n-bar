@@ -224,6 +224,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
   // Key coordinates
   var CTRL = 17;
+  var DELETE = 46;
   var C = 67;
   var V = 86;
 
@@ -232,6 +233,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
   // Register event listeners
   H5P.$body.keydown(function (event) {
+    var activeElement = document.activeElement;
     if (event.which === CTRL) {
       ctrlDown = true;
 
@@ -251,7 +253,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       self.focusedElement.toClipboard(width, height);
     }
     else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
-      if (self.preventPaste || self.dialog.isOpen() || document.activeElement.contentEditable === 'true' || document.activeElement.value !== undefined) {
+      if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
         // Don't allow paste if dialog is open or active element can be modified
         return;
       }
@@ -309,6 +311,14 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         }
 
         self.trigger('paste', clipboardData);
+      }
+    }
+    else if ((event.which === DELETE) && self.focusedElement) {
+      if (activeElement.tagName.toLowerCase() === 'input') {
+        return;
+      }
+      else {
+        self.focusedElement.contextMenu.trigger('contextMenuRemove');
       }
     }
   }).keyup(function (event) {
