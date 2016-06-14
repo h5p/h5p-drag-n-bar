@@ -319,7 +319,15 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
     var transformButtonObject = {name: 'Transform', label: H5PEditor.t('H5P.DragNBar', 'transformLabel')};
     var $transformButtonWrapper = $('<div>', {
-      'class': 'h5p-transform-button-wrapper'
+      'class': 'h5p-transform-button-wrapper',
+      click: function () {
+        if (self.dnb.transformButtonActive) {
+          self.dnb.transformButtonActive = false;
+        }
+        else {
+          self.dnb.transformButtonActive = true;
+        }
+      }
     });
 
     // Attach button

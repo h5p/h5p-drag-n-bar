@@ -42,6 +42,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.$container.addClass('hardware-accelerated');
 
     if (this.isEditor) {
+      this.transformButtonActive = false;
       this.initEditor();
       this.initClickListeners();
 
@@ -84,20 +85,40 @@ H5P.DragNBar.prototype.initEditor = function () {
   });
 
   /**
-   * Show transform panel listener
+   * Show transform panel listeners
    */
   this.dnr.on('showTransformPanel', function () {
-    if (that.focusedElement) {
-      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+    transformPanel(true);
+  });
+  this.dnd.on('showTransformPanel', function () {
+    transformPanel(true);
+  });
+
+  /**
+   * Hide transform panel listeners
+   */
+  this.dnr.on('hideTransformPanel', function () {
+    if(!that.transformButtonActive) {
+      transformPanel(false);
+    }
+  });
+  this.dnd.on('hideTransformPanel', function () {
+    if(!that.transformButtonActive) {
+      transformPanel(false);
     }
   });
 
-  this.dnd.on('showTransformPanel', function () {
-    // Get moving element and show transform panel
+  /**
+   * Trigger a context menu transform to either show or hide
+   * the transform panel.
+   *
+   * @param {boolean} show
+   */
+  function transformPanel(show) {
     if (that.focusedElement) {
-      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: true});
+      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: show});
     }
-  });
+  }
 
   this.dnd.startMovingCallback = function (x, y) {
     that.dnd.min = {x: 0, y: 0};
