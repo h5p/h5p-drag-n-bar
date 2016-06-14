@@ -270,7 +270,16 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
         // Update file URLs
         if (clipboardData.contentId !== H5PEditor.contentId) {
-          var prefix = clipboardData.contentId ? '../' + clipboardData.contentId : '../../editor';
+          var prefix;
+          if (clipboardData.contentId) {
+            // Comes from existing content
+            prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../') + clipboardData.contentId;
+          }
+          else {
+            // Comes from editor tmp
+            prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor');
+          }
+
           H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
         }
 
