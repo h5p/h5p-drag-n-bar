@@ -273,11 +273,28 @@ H5P.DragNBar.prototype.initClickListeners = function () {
           var prefix;
           if (clipboardData.contentId) {
             // Comes from existing content
-            prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../') + clipboardData.contentId;
+
+            if (H5PEditor.contentId) {
+              // .. to existing content
+              prefix = '../';
+            }
+            else {
+              // .. to new content
+              prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
+            }
+            prefix += clipboardData.contentId;
           }
           else {
-            // Comes from editor tmp
-            prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor');
+            // Comes from new content
+
+            if (H5PEditor.contentId) {
+              // .. to existing content
+              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../content/');
+            }
+            else {
+              // .. to new content
+              prefix = '../';
+            }
           }
 
           H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
