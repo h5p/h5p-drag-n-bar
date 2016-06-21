@@ -268,7 +268,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       // Determine min&max values
       var min = H5P.DragNResize.MIN_SIZE;
       var containerSize = parseFloat(window.getComputedStyle(self.dnb.$container[0])[type]);
-      var max = containerSize - parseFloat(window.getComputedStyle($element[0])[type === 'width' ? 'left' : 'top']);
+      var elementStyle = window.getComputedStyle($element[0]);
+      var max = containerSize - parseFloat(elementStyle[type === 'width' ? 'left' : 'top']);
 
       if (target < min) {
         target = min;
@@ -277,8 +278,14 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
         target = max;
       }
 
-      $element.css(type, (target / (containerSize / 100)) + '%');
+      // Set input field value
       self['$' + type].val(Math.round(target));
+
+      // Remove any height padding before updating element
+      var padding = $element[0].getBoundingClientRect()[type] - parseFloat(elementStyle[type]);
+      target -= padding;
+
+      $element.css(type, (target / (containerSize / 100)) + '%');
 
       var eventData = {};
       eventData[type] = target / self.dnb.dnr.containerEm;

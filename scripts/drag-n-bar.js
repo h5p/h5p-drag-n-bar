@@ -270,7 +270,33 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
         // Update file URLs
         if (clipboardData.contentId !== H5PEditor.contentId) {
-          var prefix = clipboardData.contentId ? '../' + clipboardData.contentId : '../../editor';
+          var prefix;
+          if (clipboardData.contentId) {
+            // Comes from existing content
+
+            if (H5PEditor.contentId) {
+              // .. to existing content
+              prefix = '../';
+            }
+            else {
+              // .. to new content
+              prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
+            }
+            prefix += clipboardData.contentId;
+          }
+          else {
+            // Comes from new content
+
+            if (H5PEditor.contentId) {
+              // .. to existing content
+              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../content/');
+            }
+            else {
+              // .. to new content
+              prefix = '../';
+            }
+          }
+
           H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
         }
 
@@ -520,6 +546,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
 
   // Keep track of the element we have in focus
   self.$element = $element;
+  this.dnd.setElement($element);
 
   // Show and update coordinates picker
   this.focusedElement = this.getDragNBarElement($element);
