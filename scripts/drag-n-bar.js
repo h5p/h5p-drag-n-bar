@@ -313,7 +313,11 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         self.trigger('paste', clipboardData);
       }
     }
-    else if ((event.which === DELETE) && self.focusedElement) {
+    else if (
+      (event.which === DELETE) &&
+      self.focusedElement &&
+      self.$container.is(':visible')
+    ) {
       if (activeElement.tagName.toLowerCase() === 'input') {
         return;
       }
