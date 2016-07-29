@@ -289,7 +289,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
             if (H5PEditor.contentId) {
               // .. to existing content
-              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../content/');
+              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
             }
             else {
               // .. to new content
