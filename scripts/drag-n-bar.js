@@ -282,7 +282,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
               // .. to new content
               prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
             }
-            prefix += clipboardData.contentId;
+            prefix += clipboardData.contentId + '/';
           }
           else {
             // Comes from new content
