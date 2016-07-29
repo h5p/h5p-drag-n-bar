@@ -355,7 +355,7 @@ H5P.DragNBar.updateFileUrls = function (params, prefix) {
     if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
-        obj.path = prefix + '/' + obj.path;
+        obj.path = prefix + obj.path;
       }
       else {
         H5P.DragNBar.updateFileUrls(obj, prefix);
