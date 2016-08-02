@@ -282,14 +282,14 @@ H5P.DragNBar.prototype.initClickListeners = function () {
               // .. to new content
               prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
             }
-            prefix += clipboardData.contentId;
+            prefix += clipboardData.contentId + '/';
           }
           else {
             // Comes from new content
 
             if (H5PEditor.contentId) {
               // .. to existing content
-              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../content/');
+              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
             }
             else {
               // .. to new content
@@ -355,7 +355,7 @@ H5P.DragNBar.updateFileUrls = function (params, prefix) {
     if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
-        obj.path = prefix + '/' + obj.path;
+        obj.path = prefix + obj.path;
       }
       else {
         H5P.DragNBar.updateFileUrls(obj, prefix);
