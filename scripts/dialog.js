@@ -332,17 +332,15 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @returns {Object} Attrs: width, height
      */
     self.getMaxSize = function ($button, fullScreen) {
-      var isBig = $dialog.hasClass('h5p-big');
-      var isMedium = $dialog.hasClass('h5p-medium');
-      $dialog.removeClass('h5p-big h5p-medium');
-
       var buttonWidth = $button.outerWidth(true);
       var buttonPosition = $button.position();
       var containerWidth = $container.width();
 
-      var max = {
-        height: $container.height() - buttonPosition.top - ($dialog.outerHeight(true) - $dialog.height())
-      };
+      var max = {};
+      max.height = Number($inner.css('maxHeight').replace('px', ''));
+
+      // If border, extract that:
+      max.height -= Number($inner.css('border-width').replace('px', '')) * 2;
 
       if (fullScreen) {
         max.width = containerWidth;
@@ -362,9 +360,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       var fontSize = toNum($container.css('fontSize'));
       max.width = (max.width / fontSize) * (fontSize / 16);
       max.height = (max.height / fontSize) * (fontSize / 16);
-
-      $dialog.toggleClass('h5p-big', isBig);
-      $dialog.toggleClass('h5p-medium', isMedium);
 
       return max;
     };
