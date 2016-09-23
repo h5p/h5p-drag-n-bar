@@ -213,6 +213,16 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.attr('data-lib', machineName);
     };
 
+    /**
+     * Toggle class on the dialog Dom element
+     * @method toggleClass
+     * @param  {String}    cls    Classname
+     * @param  {Boolean}   toggle
+     */
+    self.toggleClass = function (cls, toggle) {
+      $dialog.toggleClass(cls, toggle);
+    };
+
     self.isOpen = function () {
       return $wrapper.is(':visible');
     };
@@ -328,6 +338,10 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       var max = {};
       max.height = Number($inner.css('maxHeight').replace('px', ''));
+
+      // If border, extract that:
+      max.height -= Number($inner.css('border-width').replace('px', '')) * 2;
+
       if (fullScreen) {
         max.width = containerWidth;
       }

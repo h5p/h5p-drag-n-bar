@@ -75,7 +75,7 @@
 .h5p-dialog {
   position: absolute;
   width: 24.5em;
-  max-height: 81.5%;
+  max-height: 100%;
   margin: 1.25em;
   background: #fff;
   overflow: hidden;
