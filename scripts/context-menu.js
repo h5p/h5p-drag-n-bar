@@ -108,13 +108,28 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @param {Boolean} [e.data.showTransformPanel] Show transform panel
      */
     self.on('contextMenuTransform', function (e) {
-      if (e && e.data) {
+      if (e && e.data.showTransformPanel) {
         // Use event data
         self.showingTransformPanel = e.data.showTransformPanel;
       }
       else {
         // Toggle showing panel
         self.showingTransformPanel = !self.showingTransformPanel;
+      }
+
+      // Toggle sticky transform panel
+      if (e.data.button === 'Transform') {
+        if (self.dnb.transformButtonActive) {
+          self.dnb.transformButtonActive = false;
+        }
+        else {
+          self.dnb.transformButtonActive = true;
+        }
+      }
+
+      // Remove sticky transform panel when focus is lost
+      if (e.data.showTransformPanel == false) {
+        self.dnb.transformButtonActive = false;
       }
 
       // Toggle buttons bar and transform panel
@@ -319,15 +334,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
     var transformButtonObject = {name: 'Transform', label: H5PEditor.t('H5P.DragNBar', 'transformLabel')};
     var $transformButtonWrapper = $('<div>', {
-      'class': 'h5p-transform-button-wrapper',
-      click: function () {
-        if (self.dnb.transformButtonActive) {
-          self.dnb.transformButtonActive = false;
-        }
-        else {
-          self.dnb.transformButtonActive = true;
-        }
-      }
+      'class': 'h5p-transform-button-wrapper'
     });
 
     // Attach button
@@ -432,7 +439,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       'aria-label': button.label
     }).click(function () {
       self.dnb.pressed = true;
-      self.trigger('contextMenu' + button.name);
+      self.trigger('contextMenu' + button.name, {button: button.name});
     }).keydown(function (e) {
       var keyPressed = e.which;
       // 32 - space
