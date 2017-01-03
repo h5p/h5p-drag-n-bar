@@ -268,6 +268,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
       ctrlDown = true;
 
       if (self.dnd.snap !== undefined) {
+        // Disable snapping
         delete self.dnd.snap;
       }
     }
@@ -637,10 +638,6 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
 
   if (this.isEditor) {
-    $element.keydown(function( event ) {
-      self.focus($element);
-    });
-
     $element.mousedown(function (event) {
       if (event.which !== 1) {
         return;
