@@ -244,25 +244,59 @@ H5P.DragNBar.prototype.initClickListeners = function () {
   var self = this;
 
   // Key coordinates
+  var SHIFT = 16;
   var CTRL = 17;
   var DELETE = 46;
   var C = 67;
   var V = 86;
+  var LEFT = 37;
+  var UP = 38;
+  var RIGHT = 39;
+  var DOWN = 40;
 
   // Keep track of key state
   var ctrlDown = false;
+  var shiftDown = false;
+
+  var snapAmount = 1;
 
   // Register event listeners
   H5P.$body.keydown(function (event) {
     var activeElement = document.activeElement;
+
     if (event.which === CTRL) {
       ctrlDown = true;
 
       if (self.dnd.snap !== undefined) {
-        // Disable snapping
         delete self.dnd.snap;
       }
     }
+
+    if (event.which === SHIFT) {
+      shiftDown = true;
+      snapAmount = 10;
+    }
+
+    if (event.which === LEFT && self.focusedElement) {
+      event.preventDefault();
+      self.moveWithKeys(-snapAmount, 0);
+    }
+
+    if (event.which === UP && self.focusedElement) {
+      event.preventDefault();
+      self.moveWithKeys(0, -snapAmount);
+    }
+
+    if (event.which === RIGHT && self.focusedElement) {
+      event.preventDefault();
+      self.moveWithKeys(snapAmount, 0);
+    }
+
+    if (event.which === DOWN && self.focusedElement) {
+      event.preventDefault();
+      self.moveWithKeys(0, snapAmount);
+    }
+
     else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
       // Copy element params to clipboard
       var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
@@ -281,7 +315,6 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
       var clipboardData = localStorage.getItem('h5pClipboard');
       if (clipboardData) {
-
         // Parse
         try {
           clipboardData = JSON.parse(clipboardData);
@@ -349,6 +382,10 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
       // Enable snapping
       self.dnd.snap = 10;
+    }
+    if (event.which === SHIFT) {
+      shiftDown = false;
+      snapAmount = 1;
     }
   }).click(function () {
     // Remove pressed on click
@@ -450,7 +487,6 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       if (event.which !== 1) {
         return;
       }
-
       that.newElement = true;
       that.pressed = true;
       var createdElement = button.createElement();
@@ -488,6 +524,76 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
     this.stopMovingCallback(left, top);
+  }
+};
+
+/**
+ * Makes it possible to move dnb elements by adding to it's x and y
+ *
+ * @param {x} Amount to move on x-axis.
+ * @param {y} Amount to move on y-axis.
+ */
+H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
+  var focusedElement = this.focusedElement.$element[0];
+  var elementSize = H5P.DragNBar.getSizeNPosition(focusedElement, 'outer');
+  var elementPosition = H5P.DragNBar.getSizeNPosition(focusedElement, 'inner');
+
+  var freeSpaceLeft = Math.round(elementPosition.left);
+  var freeSpaceRight = Math.round((this.$container.width()) - (elementSize.width + elementPosition.left));
+  var freeSpaceTop = Math.round(elementPosition.top);
+  var freeSpaceBottom = Math.round((this.$container.height()) - (elementSize.height + elementPosition.top));
+
+  if (x > 0) {
+    if (x > freeSpaceRight) {
+      x = (freeSpaceRight + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      this.$element.css({left: x + '%'});
+    }
+    else {
+      x = (x + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      this.$element.css({left: x + '%'});
+    }
+  }
+  else if (x < 0) {
+    if (x < -freeSpaceLeft) { 
+      x = (-freeSpaceLeft + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      this.$element.css({left: x + '%'});
+    }
+    else {
+      x = (x + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      this.$element.css({left: x + '%'});
+    }
+  }
+  else {
+    x = Math.round(elementPosition.left) / (this.$container.width() / 100);
+  }
+
+  if (y > 0) {
+    if (y > freeSpaceBottom) {
+      y = (freeSpaceBottom + focusedElement.offsetTop) / (this.$container.height() / 100);
+      this.$element.css({top: y + '%'});
+    }
+    else {
+      y = (y + focusedElement.offsetTop) / (this.$container.height() / 100);
+      this.$element.css({top: y + '%'});
+    }
+  }
+  else if (y < 0) {
+    if (y < -freeSpaceTop) {
+      y = (-freeSpaceTop + focusedElement.offsetTop) / (this.$container.height() / 100);
+      this.$element.css({top: y + '%'});
+    }
+    else {
+      y = (y + focusedElement.offsetTop) / (this.$container.height() / 100);
+      this.$element.css({top: y + '%'});
+    }
+  }
+  else {
+    y = Math.round(elementPosition.top) / (this.$container.height() / 100);
+  }
+
+  this.updateCoordinates();
+  if (this.stopMovingCallback !== undefined) {
+    this.stopMovingCallback(x, y);
   }
 };
 
@@ -531,6 +637,10 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
 
   if (this.isEditor) {
+    $element.keydown(function( event ) {
+      self.focus($element);
+    });
+
     $element.mousedown(function (event) {
       if (event.which !== 1) {
         return;
