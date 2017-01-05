@@ -33,10 +33,6 @@
 .h5p-dialog-inner input[type="checkbox"] {
   vertical-align: middle;
 }
-
-.h5p-dialog-inner .field.library .libwrap {
-  margin-top: 0;
-}
 .h5p-dialog-inner div.ckeditor > p {
   margin: 0.5em;
 }
