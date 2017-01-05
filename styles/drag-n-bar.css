@@ -24,3 +24,20 @@
   -ms-transform: translateZ(0);
   transform: translateZ(0);
 }
+
+.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover:before {
+  background-color: #000;
+  color: #fff;
+  opacity: 0.75;
+  z-index: 2;
+  content: attr(aria-label);
+  position: absolute;
+  top: 42px;
+  padding: 0 0.5em;
+  transform: translateX(-50%);
+  left: 50%;
+  font-size: 14px;
+  line-height: 2;
+  border-radius: 4px;
+  white-space: nowrap;
+}
