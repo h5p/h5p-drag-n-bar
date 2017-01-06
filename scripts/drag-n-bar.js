@@ -399,7 +399,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     $blurHandlers = this.$blurHandlers;
   }
 
-  $blurHandlers.click(function () {
+  function handleBlur() {
     // Remove coordinates picker if we didn't press an element.
     if (self.pressed !== undefined) {
       delete self.pressed;
@@ -410,7 +410,15 @@ H5P.DragNBar.prototype.initClickListeners = function () {
         delete self.focusedElement;
       }
     }
-  });
+  }
+
+  $blurHandlers
+    .keydown(function (e) {
+      if (e.which === 9) { // pressed tab
+        handleBlur();
+      }
+    })
+    .click(handleBlur);
 };
 
 /**
@@ -555,7 +563,7 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
     }
   }
   else if (x < 0) {
-    if (x < -freeSpaceLeft) { 
+    if (x < -freeSpaceLeft) {
       x = (-freeSpaceLeft + focusedElement.offsetLeft) / (this.$container.width() / 100);
       this.$element.css({left: x + '%'});
     }
