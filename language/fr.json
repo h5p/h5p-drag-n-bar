@@ -1,24 +1,18 @@
 {
   "libraryStrings": {
-    "englishInsertElement": "Insert :type",
-    "insertElement": "Insérer :type",
-    "englishDone": "Done",
-    "done": "OK",
-    "englishRemove": "Remove",
-    "remove": "Supprimer",
-    "englishImage": "Image",
-    "image": "Image",
-    "englishText": "Text",
-    "text": "Texte",
-    "englishNoTaskSize": "Please specify task size first.",
-    "noTaskSize": "Veuillez commencer par indiquer les dimensions de la zone d'activité.",
-    "englishConfirmRemoval": "Are you sure you wish to remove this element?",
-    "confirmRemoval": "Êtes-vous certain de vouloir supprimer cet élément ?",
-    "englishBackgroundOpacityOverridden": "The background opacity is overridden",
-    "backgroundOpacityOverridden": "L'opacité de l'arrière-plan est écrasée",
-    "englishAdvancedtext": "Advanced text",
-    "advancedtext": "Texte avancé",
-    "englishDropZone": "Drop zone",
-    "dropZone": "Zone de dépôt"
+    "englishTransformLabel": "Transform",
+    "transformLabel": "Transformer",
+    "englishEditLabel": "Edit",
+    "editLabel": "Editer",
+    "englishLremoveLabel": "Remove",
+    "removeLabel": "Supprimer",
+    "englishBringToFrontLabel": "Bring to Front",
+    "bringToFrontLabel": "Amener au premier plan",
+    "englishUnableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.",
+    "unableToPaste": "Impossible de coller cet objet. Malheureusementn l'objet que vous essayez de coller n'est pas supporté par ce type de contenu ou la version en cours.",
+    "englishSizeLabel": "Size",
+    "sizeLabel": "Dimensions",
+    "englishPositionLabel": "Position",
+    "positionLabel": "Position"
   }
 }
