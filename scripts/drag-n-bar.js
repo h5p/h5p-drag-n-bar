@@ -237,161 +237,188 @@ H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
   return false;
 };
 
+// Key coordinates
+var SHIFT = 16;
+var CTRL = 17;
+var DELETE = 46;
+var C = 67;
+var V = 86;
+var LEFT = 37;
+var UP = 38;
+var RIGHT = 39;
+var DOWN = 40;
+
+// Keep track of key state
+var ctrlDown = false;
+var shiftDown = false;
+
+// How many pixels to move
+var snapAmount = 1;
+
+/**
+ * Handle keydown events for the entire frame
+ */
+H5P.DragNBar.keydownHandler = function (event) {
+  var self = event.data.instance;
+  var activeElement = document.activeElement;
+
+  if (event.which === CTRL) {
+    ctrlDown = true;
+
+    if (self.dnd.snap !== undefined) {
+      // Disable snapping
+      delete self.dnd.snap;
+    }
+  }
+
+  if (event.which === SHIFT) {
+    shiftDown = true;
+    snapAmount = 10;
+  }
+
+  if (event.which === LEFT && self.focusedElement) {
+    event.preventDefault();
+    self.moveWithKeys(-snapAmount, 0);
+  }
+
+  if (event.which === UP && self.focusedElement) {
+    event.preventDefault();
+    self.moveWithKeys(0, -snapAmount);
+  }
+
+  if (event.which === RIGHT && self.focusedElement) {
+    event.preventDefault();
+    self.moveWithKeys(snapAmount, 0);
+  }
+
+  if (event.which === DOWN && self.focusedElement) {
+    event.preventDefault();
+    self.moveWithKeys(0, snapAmount);
+  }
+
+  else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
+    // Copy element params to clipboard
+    var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
+    var width = parseFloat(elementSize.width);
+    var height = parseFloat(elementSize.height) / width;
+    width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+    height *= width;
+
+    self.focusedElement.toClipboard(width, height);
+  }
+  else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
+    if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      // Don't allow paste if dialog is open or active element can be modified
+      return;
+    }
+
+    var clipboardData = localStorage.getItem('h5pClipboard');
+    if (clipboardData) {
+      // Parse
+      try {
+        clipboardData = JSON.parse(clipboardData);
+      }
+      catch (err) {
+        console.error('Unable to parse JSON from clipboard.', err);
+        return;
+      }
+
+      // Update file URLs
+      if (clipboardData.contentId !== H5PEditor.contentId) {
+        var prefix;
+        if (clipboardData.contentId) {
+          // Comes from existing content
+
+          if (H5PEditor.contentId) {
+            // .. to existing content
+            prefix = '../';
+          }
+          else {
+            // .. to new content
+            prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
+          }
+          prefix += clipboardData.contentId + '/';
+        }
+        else {
+          // Comes from new content
+
+          if (H5PEditor.contentId) {
+            // .. to existing content
+            prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
+          }
+          else {
+            // .. to new content
+            prefix = '../';
+          }
+        }
+
+        H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
+      }
+
+      if (clipboardData.generic) {
+        // Use reference instead of key
+        clipboardData.generic = clipboardData.specific[clipboardData.generic];
+
+        // Avoid multiple content with same ID
+        delete clipboardData.generic.subContentId;
+      }
+
+      self.trigger('paste', clipboardData);
+    }
+  }
+  else if ((event.which === DELETE) && self.focusedElement && self.$container.is(':visible')) {
+    if (activeElement.tagName.toLowerCase() === 'input') {
+      return;
+    }
+    else {
+      self.focusedElement.contextMenu.trigger('contextMenuRemove');
+    }
+  }
+};
+
+
+/**
+ * Handle keyup events for the entire frame
+ */
+H5P.DragNBar.keyupHandler = function (event) {
+  var self = event.data.instance;
+
+  if (event.which === CTRL) {
+    // Update key state
+    ctrlDown = false;
+
+    // Enable snapping
+    self.dnd.snap = 10;
+  }
+  if (event.which === SHIFT) {
+    shiftDown = false;
+    snapAmount = 1;
+  }
+};
+
+/**
+ * Handle click events for the entire frame
+ */
+H5P.DragNBar.clickHandler = function (event) {
+  var self = event.data.instance;
+
+  // Remove pressed on click
+  delete self.pressed;
+};
+
 /**
  * Initialize click listeners
  */
 H5P.DragNBar.prototype.initClickListeners = function () {
   var self = this;
 
-  // Key coordinates
-  var SHIFT = 16;
-  var CTRL = 17;
-  var DELETE = 46;
-  var C = 67;
-  var V = 86;
-  var LEFT = 37;
-  var UP = 38;
-  var RIGHT = 39;
-  var DOWN = 40;
-
-  // Keep track of key state
-  var ctrlDown = false;
-  var shiftDown = false;
-
-  var snapAmount = 1;
-
   // Register event listeners
-  H5P.$body.keydown(function (event) {
-    var activeElement = document.activeElement;
-
-    if (event.which === CTRL) {
-      ctrlDown = true;
-
-      if (self.dnd.snap !== undefined) {
-        // Disable snapping
-        delete self.dnd.snap;
-      }
-    }
-
-    if (event.which === SHIFT) {
-      shiftDown = true;
-      snapAmount = 10;
-    }
-
-    if (event.which === LEFT && self.focusedElement) {
-      event.preventDefault();
-      self.moveWithKeys(-snapAmount, 0);
-    }
-
-    if (event.which === UP && self.focusedElement) {
-      event.preventDefault();
-      self.moveWithKeys(0, -snapAmount);
-    }
-
-    if (event.which === RIGHT && self.focusedElement) {
-      event.preventDefault();
-      self.moveWithKeys(snapAmount, 0);
-    }
-
-    if (event.which === DOWN && self.focusedElement) {
-      event.preventDefault();
-      self.moveWithKeys(0, snapAmount);
-    }
-
-    else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
-      // Copy element params to clipboard
-      var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
-      var width = parseFloat(elementSize.width);
-      var height = parseFloat(elementSize.height) / width;
-      width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
-      height *= width;
-
-      self.focusedElement.toClipboard(width, height);
-    }
-    else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
-      if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
-        // Don't allow paste if dialog is open or active element can be modified
-        return;
-      }
-
-      var clipboardData = localStorage.getItem('h5pClipboard');
-      if (clipboardData) {
-        // Parse
-        try {
-          clipboardData = JSON.parse(clipboardData);
-        }
-        catch (err) {
-          console.error('Unable to parse JSON from clipboard.', err);
-          return;
-        }
-
-        // Update file URLs
-        if (clipboardData.contentId !== H5PEditor.contentId) {
-          var prefix;
-          if (clipboardData.contentId) {
-            // Comes from existing content
-
-            if (H5PEditor.contentId) {
-              // .. to existing content
-              prefix = '../';
-            }
-            else {
-              // .. to new content
-              prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
-            }
-            prefix += clipboardData.contentId + '/';
-          }
-          else {
-            // Comes from new content
-
-            if (H5PEditor.contentId) {
-              // .. to existing content
-              prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
-            }
-            else {
-              // .. to new content
-              prefix = '../';
-            }
-          }
-
-          H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
-        }
-
-        if (clipboardData.generic) {
-          // Use reference instead of key
-          clipboardData.generic = clipboardData.specific[clipboardData.generic];
-
-          // Avoid multiple content with same ID
-          delete clipboardData.generic.subContentId;
-        }
-
-        self.trigger('paste', clipboardData);
-      }
-    }
-    else if ((event.which === DELETE) && self.focusedElement && self.$container.is(':visible')) {
-      if (activeElement.tagName.toLowerCase() === 'input') {
-        return;
-      }
-      else {
-        self.focusedElement.contextMenu.trigger('contextMenuRemove');
-      }
-    }
-  }).keyup(function (event) {
-    if (event.which === CTRL) {
-      // Update key state
-      ctrlDown = false;
-
-      // Enable snapping
-      self.dnd.snap = 10;
-    }
-    if (event.which === SHIFT) {
-      shiftDown = false;
-      snapAmount = 1;
-    }
-  }).click(function () {
-    // Remove pressed on click
-    delete self.pressed;
-  });
+  var eventData = {
+    instance: self
+  };
+  H5P.$body.keydown(eventData, H5P.DragNBar.keydownHandler)
+           .keyup(eventData, H5P.DragNBar.keyupHandler)
+           .click(eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -887,6 +914,15 @@ H5P.DragNBar.fitElementInside = function ($element, containerSize) {
   }
 
   return style;
+};
+
+/**
+ * Clean up any event listeners
+ */
+H5P.DragNBar.prototype.remove = function () {
+  H5P.$body.unbind('keydown', H5P.DragNBar.keydownHandler)
+           .unbind('keyup', H5P.DragNBar.keyupHandler)
+           .unbind('click', H5P.DragNBar.clickHandler);
 };
 
 if (window.H5PEditor) {
