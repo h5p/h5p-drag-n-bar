@@ -32,7 +32,6 @@
   z-index: 2;
   content: attr(aria-label);
   position: absolute;
-  top: 42px;
   padding: 0 0.5em;
   transform: translateX(-50%);
   left: 50%;
