@@ -26,9 +26,8 @@
 }
 
 .h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover:before {
-  background-color: #000;
+  background-color: rgba(0,0,0,75);
   color: #fff;
-  opacity: 0.75;
   z-index: 2;
   content: attr(aria-label);
   position: absolute;
