@@ -566,8 +566,8 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
 /**
  * Makes it possible to move dnb elements by adding to it's x and y
  *
- * @param {x} Amount to move on x-axis.
- * @param {y} Amount to move on y-axis.
+ * @param {number} x Amount to move on x-axis.
+ * @param {number} y Amount to move on y-axis.
  */
 H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
   var focusedElement = this.focusedElement.$element[0];
