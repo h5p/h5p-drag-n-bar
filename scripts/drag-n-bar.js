@@ -784,7 +784,10 @@ if (window.H5PEditor) {
       bringToFrontLabel: 'Bring to Front',
       unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
       sizeLabel: 'Size',
-      positionLabel: 'Position'
+      positionLabel: 'Position',
+      heightLabel: 'Height',
+      widthLabel: 'Width'
+
     }
   };
 }
