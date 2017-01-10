@@ -13,6 +13,10 @@
     "englishSizeLabel": "Size",
     "sizeLabel": "Dimensions",
     "englishPositionLabel": "Position",
-    "positionLabel": "Position"
+    "positionLabel": "Position",
+    "englishHeightLabel": "Height",
+    "heightLabel": "Hauteur",
+    "englishWidthLabel": "Width",
+    "widthLabel": "Largeur"
   }
 }
