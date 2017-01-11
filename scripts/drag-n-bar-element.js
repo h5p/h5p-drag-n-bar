@@ -141,7 +141,9 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       return;
     }
 
-    left = left || this.$element.position().left;
+    // Need to take into account the left padding of the contextmenu's parent
+    var paddingLeft = Number(this.contextMenu.$parent.css('padding-left').replace('px', ''));
+    left = (left || this.$element.position().left) + paddingLeft;
     var containerWidth = this.dnb.$container.width();
     var $cm = this.contextMenu.$contextMenu;
 
@@ -157,7 +159,6 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       position: '',
       left: left
     });
-
 
     var isTooWide = left + contextMenuWidth >= containerWidth;
 
