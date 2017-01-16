@@ -580,22 +580,24 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
   var freeSpaceBottom = Math.round((this.$container.height()) - (elementSize.height + elementPosition.top));
 
   if (x > 0) {
+    //Requesting to move right.
     if (x > freeSpaceRight) {
-      x = (freeSpaceRight + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      x = (freeSpaceRight + freeSpaceLeft) / (this.$container.width() / 100);
       this.$element.css({left: x + '%'});
     }
     else {
-      x = (x + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      x = (x + freeSpaceLeft) / (this.$container.width() / 100);
       this.$element.css({left: x + '%'});
     }
   }
   else if (x < 0) {
+    //Requesting to move left.
     if (x < -freeSpaceLeft) {
-      x = (-freeSpaceLeft + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      x = (-freeSpaceLeft + freeSpaceLeft) / (this.$container.width() / 100);
       this.$element.css({left: x + '%'});
     }
     else {
-      x = (x + focusedElement.offsetLeft) / (this.$container.width() / 100);
+      x = (x + freeSpaceLeft) / (this.$container.width() / 100);
       this.$element.css({left: x + '%'});
     }
   }
@@ -604,22 +606,24 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
   }
 
   if (y > 0) {
+    //Requesting to move down.
     if (y > freeSpaceBottom) {
-      y = (freeSpaceBottom + focusedElement.offsetTop) / (this.$container.height() / 100);
+      y = (freeSpaceBottom + freeSpaceTop) / (this.$container.height() / 100);
       this.$element.css({top: y + '%'});
     }
     else {
-      y = (y + focusedElement.offsetTop) / (this.$container.height() / 100);
+      y = (y + freeSpaceTop) / (this.$container.height() / 100);
       this.$element.css({top: y + '%'});
     }
   }
   else if (y < 0) {
+    //Requesting to move down.
     if (y < -freeSpaceTop) {
-      y = (-freeSpaceTop + focusedElement.offsetTop) / (this.$container.height() / 100);
+      y = (-freeSpaceTop + freeSpaceTop) / (this.$container.height() / 100);
       this.$element.css({top: y + '%'});
     }
     else {
-      y = (y + focusedElement.offsetTop) / (this.$container.height() / 100);
+      y = (y + freeSpaceTop) / (this.$container.height() / 100);
       this.$element.css({top: y + '%'});
     }
   }
