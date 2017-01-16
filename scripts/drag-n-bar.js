@@ -787,7 +787,6 @@ if (window.H5PEditor) {
       positionLabel: 'Position',
       heightLabel: 'Height',
       widthLabel: 'Width'
-
     }
   };
 }
