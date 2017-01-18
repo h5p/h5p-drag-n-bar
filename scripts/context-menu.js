@@ -308,7 +308,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     };
 
     // Add input for width
-    self.$width = self.getNewInput('width', 'Width', self.$dimensions, updateDimensions);
+    self.$width = self.getNewInput('width', H5PEditor.t('H5P.DragNBar', 'widthLabel'), self.$dimensions, updateDimensions);
 
     $('<span/>', {
       'class': 'h5p-dragnbar-dimensions-separator',
@@ -316,7 +316,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       appendTo: self.$dimensions
     });
 
-    self.$height = self.getNewInput('height', 'Height', self.$dimensions, updateDimensions);
+    self.$height = self.getNewInput('height', H5PEditor.t('H5P.DragNBar', 'heightLabel'), self.$dimensions, updateDimensions);
 
     self.dnb.dnr.on('moveResizing', function () {
       self.updateDimensions();
