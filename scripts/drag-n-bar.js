@@ -514,7 +514,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"></a></li>')
+  H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a></li>')
     .appendTo($list)
     .children()
     .click(function () {
