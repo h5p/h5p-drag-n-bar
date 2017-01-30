@@ -514,8 +514,21 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a></li>')
-    .appendTo($list)
+  $button = H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a></li>')
+    .appendTo($list);
+
+  if (typeof $button.attr('aria-label') !== typeof undefined && $button.attr('aria-label') !== false) {
+    if ($button.parents('ul.h5p-dragnbar-li-ul').length) {
+      $button.addClass('push-left');
+    }
+    else {
+      if ($button.position().left < 50) {
+        $button.addClass('push-right');
+      }
+    }
+  }
+
+  $button
     .children()
     .click(function () {
       return false;

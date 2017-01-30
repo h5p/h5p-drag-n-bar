@@ -38,3 +38,14 @@
   border-radius: 4px;
   white-space: nowrap;
 }
+
+.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li.push-right:before {
+  transform: inherit;
+  left: 0;
+}
+
+.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li.push-left:before {
+  transform: inherit;
+  right: 0;
+  left: inherit;
+}
