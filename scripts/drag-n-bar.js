@@ -665,6 +665,8 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
     top: sizeNPosition.top + 'px',
   });
 
+  this.dnd.trigger('showTransformPanel');
+
   // Update position of context menu
   this.updateCoordinates(sizeNPosition.left, sizeNPosition.top, sizeNPosition.left, sizeNPosition.top);
 };
