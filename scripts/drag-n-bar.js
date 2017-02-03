@@ -666,7 +666,7 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
   });
 
   // Update position of context menu
-  this.focusedElement.updateCoordinates(sizeNPosition.left, sizeNPosition.top, sizeNPosition.left, sizeNPosition.top);
+  this.updateCoordinates(sizeNPosition.left, sizeNPosition.top, sizeNPosition.left, sizeNPosition.top);
 };
 
 /**
