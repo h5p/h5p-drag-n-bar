@@ -1,0 +1,22 @@
+{
+  "libraryStrings": {
+    "englishTransformLabel": "Transform",
+    "transformLabel": "Transformeren",
+    "englishEditLabel": "Edit",
+    "editLabel": "Wijzig",
+    "englishLremoveLabel": "Remove",
+    "removeLabel": "Verwijder",
+    "englishBringToFrontLabel": "Bring to Front",
+    "bringToFrontLabel": "Naar voorgrond",
+    "englishUnableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.",
+    "unableToPaste": "Kan dit object niet plakken. Helaas, het object dat je probeert te plakken wordt niet ondersteund door dit inhoudstype of versie.",
+    "englishSizeLabel": "Size",
+    "sizeLabel": "Maat",
+    "englishPositionLabel": "Position",
+    "positionLabel": "Positie",
+    "englishHeightLabel": "Height",
+    "heightLabel": "Hoogte",
+    "englishWidthLabel": "Width",
+    "widthLabel": "Breedte"
+  }
+}
