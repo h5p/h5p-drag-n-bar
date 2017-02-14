@@ -353,7 +353,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
   ContextMenu.prototype.updateDimensions = function () {
     var self = this;
     var $element = self.dnbElement.getElement();
-    var elementSize = H5P.DragNBar.getSizeNPosition($element[0], 'outer');
+    var elementSize = window.getComputedStyle($element[0]);
     self.$width.val(Math.round(parseFloat(elementSize.width)));
     self.$height.val(Math.round(parseFloat(elementSize.height)));
   };

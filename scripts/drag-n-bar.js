@@ -273,29 +273,25 @@ H5P.DragNBar.keydownHandler = function (event) {
 
   if (event.which === SHIFT) {
     shiftDown = true;
-    snapAmount = 10;
+    snapAmount = self.dnd.snap;
   }
 
   if (event.which === LEFT && self.focusedElement) {
     event.preventDefault();
     self.moveWithKeys(-snapAmount, 0);
   }
-
-  if (event.which === UP && self.focusedElement) {
+  else if (event.which === UP && self.focusedElement) {
     event.preventDefault();
     self.moveWithKeys(0, -snapAmount);
   }
-
-  if (event.which === RIGHT && self.focusedElement) {
+  else if (event.which === RIGHT && self.focusedElement) {
     event.preventDefault();
     self.moveWithKeys(snapAmount, 0);
   }
-
-  if (event.which === DOWN && self.focusedElement) {
+  else if (event.which === DOWN && self.focusedElement) {
     event.preventDefault();
     self.moveWithKeys(0, snapAmount);
   }
-
   else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
     // Copy element params to clipboard
     var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
@@ -393,6 +389,12 @@ H5P.DragNBar.keyupHandler = function (event) {
   if (event.which === SHIFT) {
     shiftDown = false;
     snapAmount = 1;
+  }
+
+  if (self.focusedElement && (event.which === LEFT || event.which === UP || event.which === RIGHT || event.which === DOWN)) {
+    // Store position of element after moving
+    var position = self.getElementSizeNPosition();
+    self.stopMoving(position.left, position.top);
   }
 };
 
@@ -577,77 +579,109 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
 };
 
 /**
+ * @typedef SizeNPosition
+ * @type Object
+ * @property {number} width Outer width of the element
+ * @property {number} height Outer height of the element
+ * @property {number} left The X Coordinate
+ * @property {number} top The Y Coordinate
+ * @property {number} containerWidth Inner width of the container
+ * @property {number} containerHeight Inner height of the container
+ */
+
+/**
+ *
+ * Only works when element is inside this.$container. This is assumed and no
+ * are done.
+ *
+ * @param {H5P.jQuery} [$element] Defaults to focused element.
+ * @throws 'No element given' if $element is missing
+ * @return {SizeNPosition}
+ */
+H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
+  $element = $element || this.focusedElement.$element;
+  if (!$element || !$element.length) {
+    throw 'No element given';
+  }
+
+  // Always use outer size for element
+  var size = $element[0].getBoundingClientRect();
+
+  // Always use position relative to container for element
+  var position = window.getComputedStyle($element[0]);
+
+  // We include container inner size as well
+  var containerSize = window.getComputedStyle(this.$container[0]);
+
+  // Start preparing return value
+  var sizeNPosition = {
+    width: parseFloat(size.width),
+    height: parseFloat(size.height),
+    left: parseFloat(position.left),
+    top: parseFloat(position.top),
+    containerWidth: parseFloat(containerSize.width),
+    containerHeight: parseFloat(containerSize.height)
+  };
+
+  if (position.left.substr(-1, 1) === '%' || position.top.substr(-1, 1) === '%') {
+    // Some browsers(Safari) gets percentage value instead of pixel value.
+    // Container inner size must be used to calculate such values.
+    sizeNPosition.left *= (sizeNPosition.containerWidth / 100);
+    sizeNPosition.top *= (sizeNPosition.containerHeight / 100);
+  }
+
+  return sizeNPosition;
+};
+
+/**
  * Makes it possible to move dnb elements by adding to it's x and y
  *
  * @param {number} x Amount to move on x-axis.
  * @param {number} y Amount to move on y-axis.
  */
 H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
-  var focusedElement = this.focusedElement.$element[0];
-  var elementSize = H5P.DragNBar.getSizeNPosition(focusedElement, 'outer');
-  var elementPosition = H5P.DragNBar.getSizeNPosition(focusedElement, 'inner');
 
-  var freeSpaceLeft = Math.round(elementPosition.left);
-  var freeSpaceRight = Math.round((this.$container.width()) - (elementSize.width + elementPosition.left));
-  var freeSpaceTop = Math.round(elementPosition.top);
-  var freeSpaceBottom = Math.round((this.$container.height()) - (elementSize.height + elementPosition.top));
+  /**
+   * Ensure that the given value is within the given boundaries.
+   *
+   * @private
+   * @param {number} value
+   * @param {number} min
+   * @param {number} max
+   * @return {number}
+   */
+  var withinBoundaries = function (value, min, max) {
+    if (value < min) {
+      value = min;
+    }
+    if (value > max) {
+      value = max;
+    }
 
-  if (x > 0) {
-    //Requesting to move right.
-    if (x > freeSpaceRight) {
-      x = (freeSpaceRight + freeSpaceLeft) / (this.$container.width() / 100);
-      this.$element.css({left: x + '%'});
-    }
-    else {
-      x = (x + freeSpaceLeft) / (this.$container.width() / 100);
-      this.$element.css({left: x + '%'});
-    }
-  }
-  else if (x < 0) {
-    //Requesting to move left.
-    if (x < -freeSpaceLeft) {
-      x = (-freeSpaceLeft + freeSpaceLeft) / (this.$container.width() / 100);
-      this.$element.css({left: x + '%'});
-    }
-    else {
-      x = (x + freeSpaceLeft) / (this.$container.width() / 100);
-      this.$element.css({left: x + '%'});
-    }
-  }
-  else {
-    x = Math.round(elementPosition.left) / (this.$container.width() / 100);
-  }
+    return value;
+  };
 
-  if (y > 0) {
-    //Requesting to move down.
-    if (y > freeSpaceBottom) {
-      y = (freeSpaceBottom + freeSpaceTop) / (this.$container.height() / 100);
-      this.$element.css({top: y + '%'});
-    }
-    else {
-      y = (y + freeSpaceTop) / (this.$container.height() / 100);
-      this.$element.css({top: y + '%'});
-    }
-  }
-  else if (y < 0) {
-    //Requesting to move down.
-    if (y < -freeSpaceTop) {
-      y = (-freeSpaceTop + freeSpaceTop) / (this.$container.height() / 100);
-      this.$element.css({top: y + '%'});
-    }
-    else {
-      y = (y + freeSpaceTop) / (this.$container.height() / 100);
-      this.$element.css({top: y + '%'});
-    }
-  }
-  else {
-    y = Math.round(elementPosition.top) / (this.$container.height() / 100);
-  }
+  // Get size and position of current elemet in focus
+  var sizeNPosition = this.getElementSizeNPosition();
 
-  this.updateCoordinates();
-  if (this.stopMovingCallback !== undefined) {
-    this.stopMovingCallback(x, y);
-  }
+  // Change position
+  sizeNPosition.left += x;
+  sizeNPosition.top += y;
+
+  // Check that values are within boundaries
+  sizeNPosition.left = withinBoundaries(sizeNPosition.left, 0, sizeNPosition.containerWidth - sizeNPosition.width);
+  sizeNPosition.top = withinBoundaries(sizeNPosition.top, 0, sizeNPosition.containerHeight - sizeNPosition.height);
+
+  // Determine new position style
+  this.$element.css({
+    left: sizeNPosition.left + 'px',
+    top: sizeNPosition.top + 'px',
+  });
+
+  this.dnd.trigger('showTransformPanel');
+
+  // Update position of context menu
+  this.updateCoordinates(sizeNPosition.left, sizeNPosition.top, sizeNPosition.left, sizeNPosition.top);
 };
 
 /**
@@ -850,83 +884,41 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
 };
 
 /**
- * @typedef SizeNPosition
- * @type Object
- * @property {number} width Width of the Element
- * @property {number} height Height of the Element
- * @property {number} left The X Coordinate
- * @property {number} top The Y Coordinate
- */
-
-/**
- * Calculates position and size for the given element (in pixels)
- *
- * @throws Error if invalid type
- * @param {Element} element
- * @param {string} [type=inner] Possible values "inner" and "outer"
- * @returns {SizeNPosition}
- */
-H5P.DragNBar.getSizeNPosition = function (element, type) {
-  type = type || 'inner';
-  var style;
-  switch (type) {
-    case 'inner':
-      style = window.getComputedStyle(element);
-      break;
-    case 'outer':
-      style = element.getBoundingClientRect();
-      break;
-    default:
-      throw 'Unknown type';
-  }
-
-  return {
-    width: parseFloat(style.width),
-    height: parseFloat(style.height),
-    left: parseFloat(style.left),
-    top: parseFloat(style.top)
-  };
-};
-
-/**
  * Make sure the given element is inside the container.
  *
- * @param {H5P.jQuery} $element
- * @param {SizeNPosition} containerSize
+ * @param {SizeNPosition} sizeNPosition For the element
  * @returns {SizeNPosition} Only the properties which require change
  */
-H5P.DragNBar.fitElementInside = function ($element, containerSize) {
-  var elementSize = H5P.DragNBar.getSizeNPosition($element[0], 'outer');
-  var elementPosition = H5P.DragNBar.getSizeNPosition($element[0], 'inner');
+H5P.DragNBar.fitElementInside = function (sizeNPosition) {
   var style = {};
 
-  if (elementPosition.left < 0) {
+  if (sizeNPosition.left < 0) {
     // Element sticks out of the left side
-    style.left = elementPosition.left = 0;
+    style.left = sizeNPosition.left = 0;
   }
 
-  if (elementSize.width + elementPosition.left > containerSize.width) {
+  if (sizeNPosition.width + sizeNPosition.left > sizeNPosition.containerWidth) {
     // Element sticks out of the right side
-    style.left = containerSize.width - elementSize.width;
+    style.left = sizeNPosition.containerWidth - sizeNPosition.width;
     if (style.left < 0) {
       // Element is wider than the container
       style.left = 0;
-      style.width = containerSize.width;
+      style.width = sizeNPosition.containerWidth;
     }
   }
 
-  if (elementPosition.top < 0) {
+  if (sizeNPosition.top < 0) {
     // Element sticks out of the top side
-    style.top = elementPosition.top = 0;
+    style.top = sizeNPosition.top = 0;
   }
 
-  if (elementSize.height + elementPosition.top > containerSize.height) {
+  if (sizeNPosition.height + sizeNPosition.top > sizeNPosition.containerHeight) {
     // Element sticks out of the bottom side
-    style.top = containerSize.height - elementSize.height;
+    style.top = sizeNPosition.containerHeight - sizeNPosition.height;
     if (style.top < 0) {
       // Element is higher than the container
       style.top = 0;
-      style.height = containerSize.height;
+      style.height = sizeNPosition.containerHeight;
     }
   }
 
