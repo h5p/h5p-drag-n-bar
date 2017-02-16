@@ -29,7 +29,7 @@
   background-color: rgba(0, 0, 0, 0.9);
   color: #fff;
   z-index: 2;
-  content: attr(aria-label);
+  content: attr(data-label);
   position: absolute;
   padding: 0 0.5em;
   transform: translateX(-50%);
