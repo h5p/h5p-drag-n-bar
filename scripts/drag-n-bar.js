@@ -373,7 +373,8 @@ H5P.DragNBar.keydownHandler = function (event) {
  * Handle keypress events for the entire frame
  */
 H5P.DragNBar.keypressHandler = function (event) {
-  if (event.which === BACKSPACE && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
+  var self = event.data.instance;
+  if (event.which === BACKSPACE && self.focusedElement && self.$container.is(':visible') && document.activeElement.tagName.toLowerCase() !== 'input') {
     event.preventDefault(); // Prevent browser navigating back
   }
 };
