@@ -97,6 +97,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.buttons = [
       {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
       {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')},
+      {name: 'BringToBack', label: H5PEditor.t('H5P.DragNBar', 'bringToBackLabel')},
       {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
     ];
 

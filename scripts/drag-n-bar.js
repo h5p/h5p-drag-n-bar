@@ -936,6 +936,7 @@ if (window.H5PEditor) {
       editLabel: 'Edit',
       removeLabel: 'Remove',
       bringToFrontLabel: 'Bring to Front',
+      bringToBackLabel: 'Bring to Back',
       unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
       sizeLabel: 'Size',
       positionLabel: 'Position',
