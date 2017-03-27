@@ -178,7 +178,7 @@
   vertical-align: bottom;
 }
 
-.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.bringtoback:after {
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.sendtoback:after {
   font-family: "h5pFontIcons";
   content: "\e90b";
   padding: 3px;
