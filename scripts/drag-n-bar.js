@@ -277,18 +277,30 @@ H5P.DragNBar.keydownHandler = function (event) {
   }
 
   if (event.which === LEFT && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(-snapAmount, 0);
   }
   else if (event.which === UP && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(0, -snapAmount);
   }
   else if (event.which === RIGHT && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(snapAmount, 0);
   }
   else if (event.which === DOWN && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(0, snapAmount);
   }
