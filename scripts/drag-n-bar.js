@@ -241,6 +241,7 @@ H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
 var SHIFT = 16;
 var CTRL = 17;
 var DELETE = 46;
+var BACKSPACE = 8;
 var C = 67;
 var V = 86;
 var LEFT = 37;
@@ -374,16 +375,21 @@ H5P.DragNBar.keydownHandler = function (event) {
       self.trigger('paste', clipboardData);
     }
   }
-  else if ((event.which === DELETE) && self.focusedElement && self.$container.is(':visible')) {
-    if (activeElement.tagName.toLowerCase() === 'input') {
-      return;
-    }
-    else {
-      self.focusedElement.contextMenu.trigger('contextMenuRemove');
-    }
+  else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
+    self.focusedElement.contextMenu.trigger('contextMenuRemove');
+    event.preventDefault(); // Prevent browser navigating back
   }
 };
 
+/**
+ * Handle keypress events for the entire frame
+ */
+H5P.DragNBar.keypressHandler = function (event) {
+  var self = event.data.instance;
+  if (event.which === BACKSPACE && self.focusedElement && self.$container.is(':visible') && document.activeElement.tagName.toLowerCase() !== 'input') {
+    event.preventDefault(); // Prevent browser navigating back
+  }
+};
 
 /**
  * Handle keyup events for the entire frame
@@ -431,6 +437,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     instance: self
   };
   H5P.$body.keydown(eventData, H5P.DragNBar.keydownHandler)
+           .keypress(eventData, H5P.DragNBar.keypressHandler)
            .keyup(eventData, H5P.DragNBar.keyupHandler)
            .click(eventData, H5P.DragNBar.clickHandler);
 
