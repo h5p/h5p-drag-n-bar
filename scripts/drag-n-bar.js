@@ -400,7 +400,7 @@ H5P.DragNBar.keyupHandler = function (event) {
   if (self.focusedElement && (event.which === LEFT || event.which === UP || event.which === RIGHT || event.which === DOWN)) {
     // Store position of element after moving
     var position = self.getElementSizeNPosition();
-    self.stopMoving(position.left, position.top);
+    self.stopMoving(Math.round(position.left), Math.round(position.top));
   }
 };
 
