@@ -178,6 +178,14 @@
   vertical-align: bottom;
 }
 
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.sendtoback:after {
+  font-family: "h5pFontIcons";
+  content: "\e90f";
+  padding: 3px;
+  font-size: 1.05em;
+  vertical-align: bottom;
+}
+
 .ui-widget .h5p-dragnbar-coordinates input,
 .h5p-dragnbar-coordinates input {
   font-size: 13px;
