@@ -25,27 +25,23 @@
   transform: translateZ(0);
 }
 
-.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover:before {
-  background-color: rgba(0, 0, 0, 0.9);
-  color: #fff;
-  z-index: 2;
-  content: attr(data-label);
+.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li .h5p-dragnbar-tooltip {
+  visibility: hidden;
   position: absolute;
   padding: 0 0.5em;
-  transform: translateX(-50%);
-  left: 50%;
-  line-height: 2;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li.push-right:before {
-  transform: inherit;
+  top: 100%;
   left: 0;
+  z-index: 2;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.6em;
+  line-height: 2em;
+  content: attr(data-label);
+  white-space: pre;
 }
 
-.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li.push-left:before {
-  transform: inherit;
-  right: 0;
-  left: inherit;
+.h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover > .h5p-dragnbar-tooltip {
+  visibility: visible;
 }
