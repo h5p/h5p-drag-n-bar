@@ -496,6 +496,7 @@ H5P.DragNBar.updateFileUrls = function (params, prefix) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var that = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -522,6 +523,8 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
     this.addButton(button, $list);
   }
+
+  this.containTooltips();
 };
 
 /**
@@ -535,8 +538,21 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a></li>')
-    .appendTo($list)
+  $button = ns.$(
+    '<li class="h5p-dragnbar-li" data-label="Image">' +
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
+    '</li>'
+  ).appendTo($list);
+
+  $tooltip = ns.$('<span/>', {
+    'class': 'h5p-dragnbar-tooltip',
+    'text': button.title
+  }).appendTo($button);
+
+  $button
+    .hover(function() {
+      that.containTooltips();
+    })
     .children()
     .click(function () {
       return false;
@@ -552,6 +568,38 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.dnd.press(that.$element, event.pageX, event.pageY);
       that.focus(that.$element);
     });
+};
+
+/**
+ * Contain tooltips.
+ *
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.containTooltips = function () {
+  var that = this;
+
+  var containerWidth = that.$container.outerWidth();
+
+  this.$list.find('.h5p-dragnbar-tooltip').each(function() {
+    // Get correct offset even if element is a child
+    var width = ns.$(this).outerWidth();
+    var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
+
+    // Center the tooltip
+    ns.$(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
+
+    var offsetLeft = ns.$(this).position().left += ns.$(this).parents('.h5p-dragnbar-li').last().position().left;
+
+    // If outside left edge
+    if (offsetLeft <= 0) {
+      ns.$(this).css('left', 0);
+    }
+
+    // If outside right edge
+    if (offsetLeft + width > containerWidth) {
+      ns.$(this).css('left', -(width - parentWidth));
+    }
+  });
 };
 
 /**
