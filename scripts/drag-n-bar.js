@@ -718,6 +718,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
   else {
     options.element = $element;
+    options.disableResize = (options.hasDimensions === false);
     newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
@@ -729,7 +730,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
     $element.attr('tabindex', 1);
   }
 
-  if (this.isEditor) {
+  if (this.isEditor && options.hasDND !== false) {
     $element.mousedown(function (event) {
       if (event.which !== 1) {
         return;
@@ -743,9 +744,11 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
     });
   }
 
-  $element.focus(function () {
-    self.focus($element);
-  });
+  if (options.hasDND !== false) {
+    $element.focus(function () {
+      self.focus($element);
+    });
+  }
 
   return newElement;
 };

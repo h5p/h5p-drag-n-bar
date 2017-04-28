@@ -25,6 +25,18 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.options = options || {};
     if (!this.options.disableContextMenu) {
       this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates, this.options.disableResize);
+
+      if (options.buttonWhitelist) {
+        // Filter away buttons not in whitelist
+        var buttonsKept = [];
+        for (var i = 0; i < this.contextMenu.buttons.length; i++) {
+          if (options.buttonWhitelist.indexOf(this.contextMenu.buttons[i].name) !== -1) {
+            buttonsKept.push(this.contextMenu.buttons[i]);
+          }
+        }
+        this.contextMenu.buttons = buttonsKept;
+        this.contextMenu.updateContextMenu();
+      }
     }
     this.focused = false;
 
