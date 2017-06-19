@@ -1,0 +1,24 @@
+{
+  "libraryStrings": {
+    "englishTransformLabel": "Transform",
+    "transformLabel": "Transformirati",
+    "englishEditLabel": "Edit",
+    "editLabel": "Uredi",
+    "englishLremoveLabel": "Remove",
+    "removeLabel": "Ukloniti",
+    "englishBringToFrontLabel": "Bring to Front",
+    "bringToFrontLabel": "Postavi ispred",
+    "englishSendToBackLabel": "Send to Back",
+    "sendToBackLabel": "Postavi iza",
+    "englishUnableToPaste": "Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.",
+    "unableToPaste": "Nije moguće prenijeti ovaj objekat. Nažalost, objekat koji pokušavate prenijeti nije podržan u ovom sadržaju ili verziji sadržaja.",
+    "englishSizeLabel": "Size",
+    "sizeLabel": "Veličina",
+    "englishPositionLabel": "Position",
+    "positionLabel": "Pozisija",
+    "englishHeightLabel": "Height",
+    "heightLabel": "Visina",
+    "englishWidthLabel": "Width",
+    "widthLabel": "Širina"
+  }
+}
