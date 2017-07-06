@@ -9,7 +9,12 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
    * @param {H5P.jQuery} $videoWrapper needed for positioning of dialog
    */
   function Dialog($container, $videoWrapper) {
+    var KEY_CODE_ESC = 27;
+    var KEY_CODE_ENTER = 13;
+    var KEY_CODE_SPACE = 32;
+
     var self = this;
+    var titleId = 'dialog-title-' + H5P.createUUID();
 
     // Initialize event inheritance
     EventDispatcher.call(self);
@@ -26,10 +31,19 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       }
     });
     var $dialog = $('<div/>', {
+      role: 'dialog',
       'class': 'h5p-dialog h5p-big',
+      'aria-labelledby': titleId,
+      tabindex: '-1',
       on: {
         click: function (event) {
           event.stopPropagation();
+        },
+        keydown: function(event) {
+          var isClosable = $close.is(':visible');
+          if(event.which === KEY_CODE_ESC && isClosable) {
+            self.close();
+          }
         }
       }
     }).appendTo($wrapper);
@@ -41,11 +55,13 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     });
     var $title = $('<div/>', {
       'class': 'h5p-dialog-title',
+      id: titleId,
       appendTo: $titleBar
     });
     var $close = $('<div/>', {
-      'class': 'h5p-dialog-close',
-      tabindex: 0,
+      'role': 'button',
+       'class': 'h5p-dialog-close',
+      tabindex: '0',
       title: H5P.t('close'),
       on: {
         click: function (event) {
@@ -54,7 +70,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
           }
         },
         keypress: function (event) {
-          if (event.which === 32) {
+          if (event.which === KEY_CODE_SPACE || event.which === KEY_CODE_ENTER) {
             self.close();
           }
         }
