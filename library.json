@@ -8,6 +8,10 @@
   "runnable": 0,
   "machineName": "H5P.DragNBar",
   "author": "Joubel",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 14
+  },
   "preloadedJs": [
     {
       "path": "scripts/drag-n-bar.js"

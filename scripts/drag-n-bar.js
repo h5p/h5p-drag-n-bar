@@ -333,36 +333,24 @@ H5P.DragNBar.keydownHandler = function (event) {
       }
 
       // Update file URLs
-      if (clipboardData.contentId !== H5PEditor.contentId) {
-        var prefix;
-        if (clipboardData.contentId) {
+      H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
+        var isTmpFile = (path.substr(-4,4) === '#tmp');
+        if (isTmpFile) {
+          return path; // Will automatically be looked for in tmp folder
+        }
+        else if (clipboardData.contentId) {
           // Comes from existing content
 
           if (H5PEditor.contentId) {
             // .. to existing content
-            prefix = '../';
+            return '../' + clipboardData.contentId + '/' + path;
           }
           else {
             // .. to new content
-            prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
-          }
-          prefix += clipboardData.contentId + '/';
-        }
-        else {
-          // Comes from new content
-
-          if (H5PEditor.contentId) {
-            // .. to existing content
-            prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
-          }
-          else {
-            // .. to new content
-            prefix = '../';
+            return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
           }
         }
-
-        H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
-      }
+      });
 
       if (clipboardData.generic) {
         // Use reference instead of key
@@ -473,17 +461,17 @@ H5P.DragNBar.prototype.initClickListeners = function () {
  * Update file URLs. Useful when copying between different contents.
  *
  * @param {object} params Reference
- * @param {number} contentId From source
+ * @param {function} handler Modifies the path to work when pasted
  */
-H5P.DragNBar.updateFileUrls = function (params, prefix) {
+H5P.DragNBar.updateFileUrls = function (params, handler) {
   for (var prop in params) {
     if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
-        obj.path = prefix + obj.path;
+        obj.path = handler(obj.path);
       }
       else {
-        H5P.DragNBar.updateFileUrls(obj, prefix);
+        H5P.DragNBar.updateFileUrls(obj, handler);
       }
     }
   }
