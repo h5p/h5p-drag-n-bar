@@ -455,6 +455,13 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     self.removeStaticWidth = function () {
       $dialog.css('width', '');
     };
+
+    /**
+     * Focuses on the dialog
+     */
+    self.focus = function () {
+      $dialog.focus();
+    };
   }
 
   // Extends the event dispatcher
