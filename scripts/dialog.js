@@ -39,9 +39,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         click: function (event) {
           event.stopPropagation();
         },
-        keydown: function(event) {
+        keydown: function (event) {
           var isClosable = $close.is(':visible');
-          if(event.which === KEY_CODE_ESC && isClosable) {
+          if (event.which === KEY_CODE_ESC && isClosable) {
             self.close();
           }
         }
@@ -60,7 +60,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     });
     var $close = $('<div/>', {
       'role': 'button',
-       'class': 'h5p-dialog-close',
+      'class': 'h5p-dialog-close',
       tabindex: '0',
       title: H5P.t('close'),
       on: {
