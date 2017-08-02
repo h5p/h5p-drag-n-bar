@@ -760,12 +760,12 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
 
   $element.addClass('h5p-dragnbar-element');
 
-  if ($element.attr('tabindex') === undefined) {
-    // Make it possible to tab between elements.
-    $element.attr('tabindex', 1);
-  }
-
   if (this.isEditor) {
+    if ($element.attr('tabindex') === undefined) {
+      // Make it possible to tab between elements.
+      $element.attr('tabindex', '0');
+    }
+
     $element.mousedown(function (event) {
       if (event.which !== 1) {
         return;
