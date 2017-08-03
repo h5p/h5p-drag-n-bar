@@ -278,18 +278,30 @@ H5P.DragNBar.keydownHandler = function (event) {
   }
 
   if (event.which === LEFT && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(-snapAmount, 0);
   }
   else if (event.which === UP && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(0, -snapAmount);
   }
   else if (event.which === RIGHT && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(snapAmount, 0);
   }
   else if (event.which === DOWN && self.focusedElement) {
+    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+      return;
+    }
     event.preventDefault();
     self.moveWithKeys(0, snapAmount);
   }
@@ -321,36 +333,24 @@ H5P.DragNBar.keydownHandler = function (event) {
       }
 
       // Update file URLs
-      if (clipboardData.contentId !== H5PEditor.contentId) {
-        var prefix;
-        if (clipboardData.contentId) {
+      H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
+        var isTmpFile = (path.substr(-4,4) === '#tmp');
+        if (isTmpFile) {
+          return path; // Will automatically be looked for in tmp folder
+        }
+        else if (clipboardData.contentId) {
           // Comes from existing content
 
           if (H5PEditor.contentId) {
             // .. to existing content
-            prefix = '../';
+            return '../' + clipboardData.contentId + '/' + path;
           }
           else {
             // .. to new content
-            prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/');
-          }
-          prefix += clipboardData.contentId + '/';
-        }
-        else {
-          // Comes from new content
-
-          if (H5PEditor.contentId) {
-            // .. to existing content
-            prefix = (H5PEditor.editorRelUrl ? H5PEditor.editorRelUrl : '../../editor/');
-          }
-          else {
-            // .. to new content
-            prefix = '../';
+            return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
           }
         }
-
-        H5P.DragNBar.updateFileUrls(clipboardData.specific, prefix);
-      }
+      });
 
       if (clipboardData.generic) {
         // Use reference instead of key
@@ -400,7 +400,7 @@ H5P.DragNBar.keyupHandler = function (event) {
   if (self.focusedElement && (event.which === LEFT || event.which === UP || event.which === RIGHT || event.which === DOWN)) {
     // Store position of element after moving
     var position = self.getElementSizeNPosition();
-    self.stopMoving(position.left, position.top);
+    self.stopMoving(Math.round(position.left), Math.round(position.top));
   }
 };
 
@@ -461,17 +461,17 @@ H5P.DragNBar.prototype.initClickListeners = function () {
  * Update file URLs. Useful when copying between different contents.
  *
  * @param {object} params Reference
- * @param {number} contentId From source
+ * @param {function} handler Modifies the path to work when pasted
  */
-H5P.DragNBar.updateFileUrls = function (params, prefix) {
+H5P.DragNBar.updateFileUrls = function (params, handler) {
   for (var prop in params) {
     if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
-        obj.path = prefix + obj.path;
+        obj.path = handler(obj.path);
       }
       else {
-        H5P.DragNBar.updateFileUrls(obj, prefix);
+        H5P.DragNBar.updateFileUrls(obj, handler);
       }
     }
   }
@@ -484,6 +484,7 @@ H5P.DragNBar.updateFileUrls = function (params, prefix) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var that = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -510,6 +511,8 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
     this.addButton(button, $list);
   }
+
+  this.containTooltips();
 };
 
 /**
@@ -523,8 +526,21 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  H5P.jQuery('<li class="h5p-dragnbar-li" aria-label="' + button.title + '"><a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a></li>')
-    .appendTo($list)
+  $button = ns.$(
+    '<li class="h5p-dragnbar-li" data-label="Image">' +
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
+    '</li>'
+  ).appendTo($list);
+
+  $tooltip = ns.$('<span/>', {
+    'class': 'h5p-dragnbar-tooltip',
+    'text': button.title
+  }).appendTo($button);
+
+  $button
+    .hover(function() {
+      that.containTooltips();
+    })
     .children()
     .click(function () {
       return false;
@@ -540,6 +556,38 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.dnd.press(that.$element, event.pageX, event.pageY);
       that.focus(that.$element);
     });
+};
+
+/**
+ * Contain tooltips.
+ *
+ * @returns {undefined}
+ */
+H5P.DragNBar.prototype.containTooltips = function () {
+  var that = this;
+
+  var containerWidth = that.$container.outerWidth();
+
+  this.$list.find('.h5p-dragnbar-tooltip').each(function() {
+    // Get correct offset even if element is a child
+    var width = ns.$(this).outerWidth();
+    var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
+
+    // Center the tooltip
+    ns.$(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
+
+    var offsetLeft = ns.$(this).position().left += ns.$(this).parents('.h5p-dragnbar-li').last().position().left;
+
+    // If outside left edge
+    if (offsetLeft <= 0) {
+      ns.$(this).css('left', 0);
+    }
+
+    // If outside right edge
+    if (offsetLeft + width > containerWidth) {
+      ns.$(this).css('left', -(width - parentWidth));
+    }
+  });
 };
 
 /**
@@ -712,12 +760,12 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
 
   $element.addClass('h5p-dragnbar-element');
 
-  if ($element.attr('tabindex') === undefined) {
-    // Make it possible to tab between elements.
-    $element.attr('tabindex', 1);
-  }
-
   if (this.isEditor) {
+    if ($element.attr('tabindex') === undefined) {
+      // Make it possible to tab between elements.
+      $element.attr('tabindex', '0');
+    }
+
     $element.mousedown(function (event) {
       if (event.which !== 1) {
         return;
@@ -936,6 +984,7 @@ if (window.H5PEditor) {
       editLabel: 'Edit',
       removeLabel: 'Remove',
       bringToFrontLabel: 'Bring to Front',
+      sendToBackLabel: 'Send to Back',
       unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
       sizeLabel: 'Size',
       positionLabel: 'Position',
