@@ -364,8 +364,10 @@ H5P.DragNBar.keydownHandler = function (event) {
     }
   }
   else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
-    self.focusedElement.contextMenu.trigger('contextMenuRemove');
-    event.preventDefault(); // Prevent browser navigating back
+    if (self.pressed === undefined) {
+      self.focusedElement.contextMenu.trigger('contextMenuRemove');
+      event.preventDefault(); // Prevent browser navigating back
+    }
   }
 };
 
