@@ -466,14 +466,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         }
       }, false);
     };
-
-    /**
-     * Returns dialog element
-     * @return {[type]} [description]
-     */
-    self.getDialogElement = function() {
-      return $dialog;
-    }
   }
 
   // Extends the event dispatcher
