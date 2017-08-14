@@ -189,11 +189,14 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       self.trigger('open');
 
-      setTimeout(function () {
+      $dialog.one('transitionend', function(event) {
         if ($inner.find('input').length) {
           $inner.find('input').get(0).focus();
         }
-      }, 100);
+        else {
+          $dialog.focus();
+        }
+      });
     };
 
     self.resize = function () {
@@ -454,17 +457,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.removeStaticWidth = function () {
       $dialog.css('width', '');
-    };
-
-    /**
-     * Focuses on the dialog only after it is visible
-     */
-    self.focus = function () {
-      $dialog.one('transitionend', function(event) {
-        if (self.isOpen()) {
-          $dialog.focus();
-        }
-      });
     };
   }
 
