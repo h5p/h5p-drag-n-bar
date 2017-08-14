@@ -460,11 +460,11 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * Focuses on the dialog only after it is visible
      */
     self.focus = function () {
-      $dialog.get(0).addEventListener('transitionend', function(event) {
+      $dialog.one('transitionend', function(event) {
         if (self.isOpen()) {
           $dialog.focus();
         }
-      }, false);
+      });
     };
   }
 
