@@ -20,6 +20,23 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     EventDispatcher.call(self);
 
     /**
+     * Makes it impossible to "tab out of the dialog". Will give focus to close
+     * button
+     *
+     * @param {H5P.jQuery} $container to append to
+     */
+    var addTabTrapper = function ($container) {
+      // Tab trapper
+      $('<span>', {
+        tabindex: 0,
+        focus: function (event) {
+          $close.focus();
+        },
+        appendTo: $container
+      })
+    };
+
+    /**
      * Stops propagating an event
      *
      * @param {Event} event
@@ -62,6 +79,8 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         }
       }
     }).appendTo($wrapper);
+
+    addTabTrapper($dialog);
 
     // Create title bar
     var $titleBar = $('<div/>', {
@@ -172,6 +191,8 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       showOverlay();
       $inner.children().detach().end().append($element);
 
+      addTabTrapper($inner);
+
       // Reset positioning
       resetPosition();
       $dialog.addClass('h5p-big');
@@ -205,8 +226,10 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       self.trigger('open');
 
       $dialog.one('transitionend', function(event) {
-        if ($inner.find('input').length) {
-          $inner.find('input').get(0).focus();
+        // Find visible enabled inputs:
+        var $inputs = $inner.find('input:visible:not(:disabled)');
+        if ($inputs.length) {
+          $inputs.get(0).focus();
         }
         else {
           $dialog.focus();
