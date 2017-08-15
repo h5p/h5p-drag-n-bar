@@ -413,15 +413,21 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Close the currently open dialog.
      */
-    self.close = function () {
+    self.close = function (closeInstant) {
       $wrapper.addClass('h5p-hidden');
 
-
-      setTimeout(function () {
+      if (closeInstant) {
         $wrapper.hide();
         self.disableOverlay = false;
         $close.show();
-      }, 201);
+      }
+      else {
+        setTimeout(function () {
+          $wrapper.hide();
+          self.disableOverlay = false;
+          $close.show();
+        }, 201);
+      }
 
       self.trigger('close');
 

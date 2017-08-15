@@ -600,7 +600,12 @@ H5P.DragNBar.prototype.containTooltips = function () {
  */
 H5P.DragNBar.prototype.setContainer = function ($container) {
   this.$container = $container;
-  this.dnd.$container = $container;
+  if (this.dnd) {
+    this.dnd.$container = $container;
+  }
+  if (this.dnr) {
+    this.dnr.$container = $container;
+  }
 };
 
 /**
