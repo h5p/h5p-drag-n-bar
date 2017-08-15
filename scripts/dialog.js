@@ -19,15 +19,30 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     // Initialize event inheritance
     EventDispatcher.call(self);
 
+    /**
+     * Stops propagating an event
+     *
+     * @param {Event} event
+     */
+    var stopEventPropagation = function (event) {
+      event.stopPropagation();
+    };
+
     // Create DOM elements for dialog
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function () {
+        click: function (event) {
           if (!self.disableOverlay)  {
             self.close();
           }
-        }
+          else if ($dialog) {
+            // set focus on dialog
+            $dialog.focus();
+          }
+        },
+        keyup: stopEventPropagation,
+        keydown: stopEventPropagation
       }
     });
     var $dialog = $('<div/>', {
