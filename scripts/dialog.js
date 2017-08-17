@@ -20,23 +20,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     EventDispatcher.call(self);
 
     /**
-     * Makes it impossible to "tab out of the dialog". Will give focus to close
-     * button
-     *
-     * @param {H5P.jQuery} $container to append to
-     */
-    var addTabTrapper = function ($container) {
-      // Tab trapper
-      $('<span>', {
-        tabindex: 0,
-        focus: function (event) {
-          $close.focus();
-        },
-        appendTo: $container
-      })
-    };
-
-    /**
      * Stops propagating an event
      *
      * @param {Event} event
@@ -79,8 +62,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         }
       }
     }).appendTo($wrapper);
-
-    addTabTrapper($dialog);
 
     // Create title bar
     var $titleBar = $('<div/>', {
@@ -188,10 +169,24 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {H5P.jQuery} [$buttons] Use custom buttons for dialog
      */
     self.open = function ($element, title, classes, $buttons) {
+
+      // Make all other elements in container not tabbable. When dialog is open,
+      // it's like the elements behind does not exist.
+      self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
+        var $tabbable = $(this);
+        if (!$.contains($wrapper.get(0), $tabbable.get(0))) {
+          // Store current tabindex, so we can set it back when dialog closes
+          $tabbable.data('tabindex', $tabbable.attr('tabindex'));
+          // Make it non tabbable
+          $tabbable.attr('tabindex', '-1');
+          return true;
+        }
+        // If element is part of dialog wrapper, just ignore it
+        return false;
+      });
+
       showOverlay();
       $inner.children().detach().end().append($element);
-
-      addTabTrapper($inner);
 
       // Reset positioning
       resetPosition();
@@ -438,6 +433,21 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.close = function (closeInstant) {
       $wrapper.addClass('h5p-hidden');
+
+      // Resetting tabindex on background elements
+      if (self.$tabbables) {
+        self.$tabbables.each(function () {
+          var $element = $(this);
+          var tabindex = $element.data('tabindex');
+          if (tabindex !== undefined) {
+            $element.attr('tabindex', tabindex);
+            $element.removeData('tabindex');
+          }
+          else {
+            $element.removeAttr('tabindex');
+          }
+        });
+      }
 
       if (closeInstant) {
         $wrapper.hide();
