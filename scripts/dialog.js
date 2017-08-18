@@ -19,15 +19,30 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     // Initialize event inheritance
     EventDispatcher.call(self);
 
+    /**
+     * Stops propagating an event
+     *
+     * @param {Event} event
+     */
+    var stopEventPropagation = function (event) {
+      event.stopPropagation();
+    };
+
     // Create DOM elements for dialog
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function () {
+        click: function (event) {
           if (!self.disableOverlay)  {
             self.close();
           }
-        }
+          else if ($dialog) {
+            // set focus on dialog
+            $dialog.focus();
+          }
+        },
+        keyup: stopEventPropagation,
+        keydown: stopEventPropagation
       }
     });
     var $dialog = $('<div/>', {
@@ -154,6 +169,22 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {H5P.jQuery} [$buttons] Use custom buttons for dialog
      */
     self.open = function ($element, title, classes, $buttons) {
+
+      // Make all other elements in container not tabbable. When dialog is open,
+      // it's like the elements behind does not exist.
+      self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
+        var $tabbable = $(this);
+        if (!$.contains($wrapper.get(0), $tabbable.get(0))) {
+          // Store current tabindex, so we can set it back when dialog closes
+          $tabbable.data('tabindex', $tabbable.attr('tabindex'));
+          // Make it non tabbable
+          $tabbable.attr('tabindex', '-1');
+          return true;
+        }
+        // If element is part of dialog wrapper, just ignore it
+        return false;
+      });
+
       showOverlay();
       $inner.children().detach().end().append($element);
 
@@ -189,11 +220,16 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       self.trigger('open');
 
-      setTimeout(function () {
-        if ($inner.find('input').length) {
-          $inner.find('input').get(0).focus();
+      $dialog.one('transitionend', function(event) {
+        // Find visible enabled inputs:
+        var $inputs = $inner.find('input:visible:not(:disabled)');
+        if ($inputs.length) {
+          $inputs.get(0).focus();
         }
-      }, 100);
+        else {
+          $dialog.focus();
+        }
+      });
     };
 
     self.resize = function () {
@@ -395,15 +431,36 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     /**
      * Close the currently open dialog.
      */
-    self.close = function () {
+    self.close = function (closeInstant) {
       $wrapper.addClass('h5p-hidden');
 
+      // Resetting tabindex on background elements
+      if (self.$tabbables) {
+        self.$tabbables.each(function () {
+          var $element = $(this);
+          var tabindex = $element.data('tabindex');
+          if (tabindex !== undefined) {
+            $element.attr('tabindex', tabindex);
+            $element.removeData('tabindex');
+          }
+          else {
+            $element.removeAttr('tabindex');
+          }
+        });
+      }
 
-      setTimeout(function () {
+      if (closeInstant) {
         $wrapper.hide();
         self.disableOverlay = false;
         $close.show();
-      }, 201);
+      }
+      else {
+        setTimeout(function () {
+          $wrapper.hide();
+          self.disableOverlay = false;
+          $close.show();
+        }, 201);
+      }
 
       self.trigger('close');
 
@@ -454,13 +511,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.removeStaticWidth = function () {
       $dialog.css('width', '');
-    };
-
-    /**
-     * Focuses on the dialog
-     */
-    self.focus = function () {
-      $dialog.focus();
     };
   }
 

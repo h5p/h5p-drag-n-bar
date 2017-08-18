@@ -364,8 +364,10 @@ H5P.DragNBar.keydownHandler = function (event) {
     }
   }
   else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
-    self.focusedElement.contextMenu.trigger('contextMenuRemove');
-    event.preventDefault(); // Prevent browser navigating back
+    if (self.pressed === undefined) {
+      self.focusedElement.contextMenu.trigger('contextMenuRemove');
+      event.preventDefault(); // Prevent browser navigating back
+    }
   }
 };
 
@@ -552,6 +554,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       that.pressed = true;
       var createdElement = button.createElement();
       that.$element = createdElement;
+      that.$container.css('overflow', 'visible');
       that.dnd.press(that.$element, event.pageX, event.pageY);
       that.focus(that.$element);
     });
@@ -597,7 +600,12 @@ H5P.DragNBar.prototype.containTooltips = function () {
  */
 H5P.DragNBar.prototype.setContainer = function ($container) {
   this.$container = $container;
-  this.dnd.$container = $container;
+  if (this.dnd) {
+    this.dnd.$container = $container;
+  }
+  if (this.dnr) {
+    this.dnr.$container = $container;
+  }
 };
 
 /**
