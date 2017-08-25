@@ -1,4 +1,5 @@
 H5P.DragNBar = (function (EventDispatcher) {
+  var nextInstanceIndex = 0;
 
   /**
    * Constructor. Initializes the drag and drop menu bar.
@@ -28,6 +29,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     options = H5P.jQuery.extend(defaultOptions, options);
     this.isEditor = !options.disableEditor;
     this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
+    this.instanceIndex = nextInstanceIndex++;
 
     /**
      * Keeps track of created DragNBar elements
@@ -421,15 +423,16 @@ H5P.DragNBar.clickHandler = function (event) {
  */
 H5P.DragNBar.prototype.initClickListeners = function () {
   var self = this;
+  var index = self.instanceIndex;
 
   // Register event listeners
   var eventData = {
     instance: self
   };
-  H5P.$body.keydown(eventData, H5P.DragNBar.keydownHandler)
-           .keypress(eventData, H5P.DragNBar.keypressHandler)
-           .keyup(eventData, H5P.DragNBar.keyupHandler)
-           .click(eventData, H5P.DragNBar.clickHandler);
+  H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
+           .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
+           .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
+           .on('click.dnb' + index,eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -978,9 +981,12 @@ H5P.DragNBar.fitElementInside = function (sizeNPosition) {
  * Clean up any event listeners
  */
 H5P.DragNBar.prototype.remove = function () {
-  H5P.$body.unbind('keydown', H5P.DragNBar.keydownHandler)
-           .unbind('keyup', H5P.DragNBar.keyupHandler)
-           .unbind('click', H5P.DragNBar.clickHandler);
+  var index = this.instanceIndex;
+
+  H5P.$body.off('keydown.dnb' + index, H5P.DragNBar.keydownHandler)
+           .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
+           .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
+           .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
 
 if (window.H5PEditor) {
