@@ -337,10 +337,7 @@ H5P.DragNBar.keydownHandler = function (event) {
       // Update file URLs
       H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
         var isTmpFile = (path.substr(-4,4) === '#tmp');
-        if (isTmpFile) {
-          return path; // Will automatically be looked for in tmp folder
-        }
-        else if (clipboardData.contentId) {
+        if (!isTmpFile && clipboardData.contentId) {
           // Comes from existing content
 
           if (H5PEditor.contentId) {
@@ -352,6 +349,7 @@ H5P.DragNBar.keydownHandler = function (event) {
             return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
           }
         }
+        return path; // Will automatically be looked for in tmp folder
       });
 
       if (clipboardData.generic) {
