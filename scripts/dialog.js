@@ -87,6 +87,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         keypress: function (event) {
           if (event.which === KEY_CODE_SPACE || event.which === KEY_CODE_ENTER) {
             self.close();
+            event.preventDefault();
           }
         }
       },
