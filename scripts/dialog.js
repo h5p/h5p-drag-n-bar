@@ -170,12 +170,14 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {H5P.jQuery} [$buttons] Use custom buttons for dialog
      */
     self.open = function ($element, title, classes, $buttons) {
-
       // Make all other elements in container not tabbable. When dialog is open,
       // it's like the elements behind does not exist.
       self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
         var $tabbable = $(this);
-        if (!$.contains($wrapper.get(0), $tabbable.get(0))) {
+        var insideWrapper = $.contains($wrapper.get(0), $tabbable.get(0));
+        var isInInteraction = $tabbable.closest('.h5p-interaction').size() > 0; // keeps concurrent interacitons in IV functional
+
+        if (!insideWrapper && !isInInteraction) {
           // Store current tabindex, so we can set it back when dialog closes
           $tabbable.data('tabindex', $tabbable.attr('tabindex'));
           // Make it non tabbable
