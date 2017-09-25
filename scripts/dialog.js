@@ -46,7 +46,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       }
     });
     var $dialog = $('<div/>', {
-      role: 'dialog',
       'class': 'h5p-dialog h5p-big',
       'aria-labelledby': titleId,
       tabindex: '-1',
