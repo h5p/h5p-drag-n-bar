@@ -48,7 +48,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     var $dialog = $('<div/>', {
       'class': 'h5p-dialog h5p-big',
       'aria-labelledby': titleId,
-      tabindex: '-1',
       on: {
         click: function (event) {
           event.stopPropagation();
