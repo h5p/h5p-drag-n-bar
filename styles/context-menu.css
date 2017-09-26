@@ -179,14 +179,14 @@
 }
 
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.sendtoback:after {
-  font-family: "h5pFontIcons";
+  font-family: "H5PFontIcons";
   content: "\e90f";
   padding: 3px;
   font-size: 1.05em;
   vertical-align: bottom;
 }
 
-.ui-widget .h5p-dragnbar-coordinates input,
+.ui-widget .h5p-dragnbar-coordinates > div > input,
 .h5p-dragnbar-coordinates input {
   font-size: 13px;
   background: none repeat scroll 0 0 transparent;
