@@ -203,8 +203,15 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       $dialog.one('transitionend', function(event) {
         // Find visible enabled inputs:
         var $inputs = $inner.find('input:visible:not(:disabled)');
+        var $tabbables = $inner.find('[tabindex]');
+
+        // Prioritize the focusing of inputs before other elements
         if ($inputs.length) {
           $inputs.get(0).focus();
+        }
+        // If other tabbables exist like h5p-text, focus on them
+        else if ($tabbables.length) {
+          $tabbables.get(0).focus();
         }
       });
     };
