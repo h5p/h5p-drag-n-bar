@@ -443,14 +443,13 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
         var $tabbable = $(this);
         var insideWrapper = $.contains($wrapper.get(0), $tabbable.get(0));
-        var isInInteraction = $tabbable.closest('.h5p-interaction').size() > 0; // keeps concurrent interacitons in IV functional
 
         // tabIndex has already been modified, keep it in the set.
         if ($tabbable.data('tabindex')) {
           return true;
         }
 
-        if (!insideWrapper && !isInInteraction) {
+        if (!insideWrapper) {
           // Store current tabindex, so we can set it back when dialog closes
           var tabIndex = $tabbable.attr('tabindex');
           $tabbable.data('tabindex', tabIndex);
@@ -466,13 +465,19 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
     /**
      * Restore tab indexes that was previously disabled.
+     * @param {H5P.jQuery} $withinContainer Only restore tab indexes of elements within this container.
      */
-    self.restoreTabIndexes = function () {
+    self.restoreTabIndexes = function ($withinContainer) {
       // Resetting tabindex on background elements
       if (self.$tabbables) {
         self.$tabbables.each(function () {
           var $element = $(this);
           var tabindex = $element.data('tabindex');
+
+          // Only restore elements within container when specified
+          if ($withinContainer && !$.contains($withinContainer.get(0), $element.get(0))) {
+            return true;
+          }
 
           // Specifically handle jquery ui slider, since it overwrites data in an inconsistent way
           if ($element.hasClass('ui-slider-handle')) {
@@ -488,8 +493,11 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
           }
         });
 
-        // Has been restored, remove reference
-        self.$tabbables = undefined;
+        // Do not remove reference if only restored partially
+        if (!$withinContainer) {
+          // Has been restored, remove reference
+          self.$tabbables = undefined;
+        }
       }
     };
 
