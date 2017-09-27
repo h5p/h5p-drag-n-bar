@@ -36,10 +36,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
           if (!self.disableOverlay)  {
             self.close();
           }
-          else if ($dialog) {
-            // set focus on dialog
-            $dialog.focus();
-          }
         },
         keyup: stopEventPropagation,
         keydown: stopEventPropagation
@@ -209,9 +205,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         var $inputs = $inner.find('input:visible:not(:disabled)');
         if ($inputs.length) {
           $inputs.get(0).focus();
-        }
-        else {
-          $dialog.focus();
         }
       });
     };
