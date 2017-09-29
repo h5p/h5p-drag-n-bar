@@ -1,3 +1,4 @@
+
 H5P.DragNBar = (function (EventDispatcher) {
   var nextInstanceIndex = 0;
 
@@ -122,7 +123,7 @@ H5P.DragNBar.prototype.initEditor = function () {
     }
   }
 
-  this.dnd.startMovingCallback = function (x, y) {
+  this.dnd.startMovingCallback = function () {
     that.dnd.min = {x: 0, y: 0};
     that.dnd.max = {
       x: that.$container.width() - that.$element.outerWidth(),
@@ -138,7 +139,7 @@ H5P.DragNBar.prototype.initEditor = function () {
     return true;
   };
 
-  this.dnd.stopMovingCallback = function (event) {
+  this.dnd.stopMovingCallback = function () {
     var pos = {};
 
     if (that.newElement) {
@@ -253,7 +254,6 @@ var DOWN = 40;
 
 // Keep track of key state
 var ctrlDown = false;
-var shiftDown = false;
 
 // How many pixels to move
 var snapAmount = 1;
@@ -275,7 +275,6 @@ H5P.DragNBar.keydownHandler = function (event) {
   }
 
   if (event.which === SHIFT) {
-    shiftDown = true;
     snapAmount = self.dnd.snap;
   }
 
@@ -395,7 +394,6 @@ H5P.DragNBar.keyupHandler = function (event) {
     self.dnd.snap = 10;
   }
   if (event.which === SHIFT) {
-    shiftDown = false;
     snapAmount = 1;
   }
 
@@ -487,7 +485,6 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
-  var that = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -529,13 +526,13 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  $button = ns.$(
+  var $button = ns.$(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
       '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
     '</li>'
   ).appendTo($list);
 
-  $tooltip = ns.$('<span/>', {
+  ns.$('<span/>', {
     'class': 'h5p-dragnbar-tooltip',
     'text': button.title
   }).appendTo($button);

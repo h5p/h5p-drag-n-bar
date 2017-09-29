@@ -32,7 +32,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function (event) {
+        click: function () {
           if (!self.disableOverlay)  {
             self.close();
           }
@@ -164,7 +164,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {H5P.jQuery} [$buttons] Use custom buttons for dialog
      */
     self.open = function ($element, title, classes, $buttons) {
-      self.disableTabIndexes();
       showOverlay();
       $inner.children().detach().end().append($element);
 
@@ -200,7 +199,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       self.trigger('open');
 
-      $dialog.one('transitionend', function(event) {
+      $dialog.one('transitionend', function() {
         // Find visible enabled inputs:
         var $inputs = $inner.find('input:visible:not(:disabled)');
         var $tabbables = $inner.find('[tabindex]');
@@ -417,7 +416,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.close = function (closeInstant) {
       $wrapper.addClass('h5p-hidden');
-      self.restoreTabIndexes();
 
       if (closeInstant) {
         $wrapper.hide();
@@ -442,77 +440,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     };
 
     /**
-     * Disable tab indexes hidden behind overlay.
-     */
-    self.disableTabIndexes = function () {
-      // Make all other elements in container not tabbable. When dialog is open,
-      // it's like the elements behind does not exist.
-      self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
-        var $tabbable = $(this);
-        var insideWrapper = $.contains($wrapper.get(0), $tabbable.get(0));
-
-        // tabIndex has already been modified, keep it in the set.
-        if ($tabbable.data('tabindex')) {
-          return true;
-        }
-
-        if (!insideWrapper) {
-          // Store current tabindex, so we can set it back when dialog closes
-          var tabIndex = $tabbable.attr('tabindex');
-          $tabbable.data('tabindex', tabIndex);
-
-          // Make it non tabbable
-          $tabbable.attr('tabindex', '-1');
-          return true;
-        }
-        // If element is part of dialog wrapper, just ignore it
-        return false;
-      });
-    };
-
-    /**
-     * Restore tab indexes that was previously disabled.
-     * @param {H5P.jQuery} $withinContainer Only restore tab indexes of elements within this container.
-     */
-    self.restoreTabIndexes = function ($withinContainer) {
-      // Resetting tabindex on background elements
-      if (self.$tabbables) {
-        self.$tabbables.each(function () {
-          var $element = $(this);
-          var tabindex = $element.data('tabindex');
-
-          // Only restore elements within container when specified
-          if ($withinContainer && !$.contains($withinContainer.get(0), $element.get(0))) {
-            return true;
-          }
-
-          // Specifically handle jquery ui slider, since it overwrites data in an inconsistent way
-          if ($element.hasClass('ui-slider-handle')) {
-            $element.attr('tabindex', 0);
-            $element.removeData('tabindex');
-          }
-          else if (tabindex !== undefined) {
-            $element.attr('tabindex', tabindex);
-            $element.removeData('tabindex');
-          }
-          else {
-            $element.removeAttr('tabindex');
-          }
-        });
-
-        // Do not remove reference if only restored partially
-        if (!$withinContainer) {
-          // Has been restored, remove reference
-          self.$tabbables = undefined;
-        }
-      }
-    };
-
-    /**
      * Open overlay only.
      */
     self.openOverlay = function () {
-      self.disableTabIndexes();
       self.disableOverlay = true;
       $dialog.hide();
       showOverlay();
@@ -522,7 +452,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * Close overlay only.
      */
     self.closeOverlay = function () {
-      self.restoreTabIndexes();
       $wrapper.addClass('h5p-hidden');
       hideOverlay(function () {
         $dialog.show();
