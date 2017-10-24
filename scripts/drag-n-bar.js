@@ -815,6 +815,10 @@ H5P.DragNBar.prototype.focus = function ($element) {
     this.focusedElement.hideContextMenu();
   }
 
+  if (!$element.is(':visible')) {
+    return; // Do not focus invisible items (fixes FF refocus issue)
+  }
+
   // Keep track of the element we have in focus
   self.$element = $element;
   this.dnd.setElement($element);
