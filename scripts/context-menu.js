@@ -402,7 +402,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
             $input.select(); // Select again
           }
         },
-        click: function (event) {
+        click: function () {
           $input.select();
         }
       },

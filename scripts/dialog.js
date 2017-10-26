@@ -32,13 +32,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
     var $wrapper = $('<div/>', {
       'class': 'h5p-dialog-wrapper h5p-ie-transparent-background h5p-hidden',
       on: {
-        click: function (event) {
+        click: function () {
           if (!self.disableOverlay)  {
             self.close();
-          }
-          else if ($dialog) {
-            // set focus on dialog
-            $dialog.focus();
           }
         },
         keyup: stopEventPropagation,
@@ -46,10 +42,8 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       }
     });
     var $dialog = $('<div/>', {
-      role: 'dialog',
       'class': 'h5p-dialog h5p-big',
       'aria-labelledby': titleId,
-      tabindex: '-1',
       on: {
         click: function (event) {
           event.stopPropagation();
@@ -87,6 +81,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         keypress: function (event) {
           if (event.which === KEY_CODE_SPACE || event.which === KEY_CODE_ENTER) {
             self.close();
+            event.preventDefault();
           }
         }
       },
@@ -169,22 +164,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {H5P.jQuery} [$buttons] Use custom buttons for dialog
      */
     self.open = function ($element, title, classes, $buttons) {
-
-      // Make all other elements in container not tabbable. When dialog is open,
-      // it's like the elements behind does not exist.
-      self.$tabbables = $container.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
-        var $tabbable = $(this);
-        if (!$.contains($wrapper.get(0), $tabbable.get(0))) {
-          // Store current tabindex, so we can set it back when dialog closes
-          $tabbable.data('tabindex', $tabbable.attr('tabindex'));
-          // Make it non tabbable
-          $tabbable.attr('tabindex', '-1');
-          return true;
-        }
-        // If element is part of dialog wrapper, just ignore it
-        return false;
-      });
-
       showOverlay();
       $inner.children().detach().end().append($element);
 
@@ -220,14 +199,18 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       self.trigger('open');
 
-      $dialog.one('transitionend', function(event) {
+      $dialog.one('transitionend', function() {
         // Find visible enabled inputs:
         var $inputs = $inner.find('input:visible:not(:disabled)');
+        var $tabbables = $inner.find('[tabindex]');
+
+        // Prioritize the focusing of inputs before other elements
         if ($inputs.length) {
           $inputs.get(0).focus();
         }
-        else {
-          $dialog.focus();
+        // If other tabbables exist like h5p-text, focus on them
+        else if ($tabbables.length) {
+          $tabbables.get(0).focus();
         }
       });
     };
@@ -433,21 +416,6 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      */
     self.close = function (closeInstant) {
       $wrapper.addClass('h5p-hidden');
-
-      // Resetting tabindex on background elements
-      if (self.$tabbables) {
-        self.$tabbables.each(function () {
-          var $element = $(this);
-          var tabindex = $element.data('tabindex');
-          if (tabindex !== undefined) {
-            $element.attr('tabindex', tabindex);
-            $element.removeData('tabindex');
-          }
-          else {
-            $element.removeAttr('tabindex');
-          }
-        });
-      }
 
       if (closeInstant) {
         $wrapper.hide();
