@@ -25,7 +25,10 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {Event} event
      */
     var stopEventPropagation = function (event) {
-      event.stopPropagation();
+      // k is used to stop and start an interactive video 
+      if (event.which === 'k') {
+        event.stopPropagation();
+      }
     };
 
     // Create DOM elements for dialog
