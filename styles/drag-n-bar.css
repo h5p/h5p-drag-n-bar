@@ -45,3 +45,9 @@
 .h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover > .h5p-dragnbar-tooltip {
   visibility: visible;
 }
+
+.h5p-dragnbar-input > input[disabled] {
+  background-color: #fff;
+  color: #888;
+  pointer-events: none;
+}
