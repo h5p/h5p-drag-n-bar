@@ -274,6 +274,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     var updateDimensions = function (type) {
       var target = parseFloat(this.value);
+
       if (isNaN(target)) {
         return;
       }
@@ -355,8 +356,13 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
     var $element = self.dnbElement.getElement();
     var elementSize = window.getComputedStyle($element[0]);
-    self.$width.val(Math.round(parseFloat(elementSize.width)));
-    self.$height.val(Math.round(parseFloat(elementSize.height)));
+
+    // Re-add any padding removed while updating size
+    var paddingX = $element[0].getBoundingClientRect()['width'] - parseFloat(elementSize['width']);
+    var paddingY = $element[0].getBoundingClientRect()['height'] - parseFloat(elementSize['height']);
+
+    self.$width.val(Math.round(parseFloat(elementSize.width) + paddingX));
+    self.$height.val(Math.round(parseFloat(elementSize.height) + paddingY));
   };
 
   /**
