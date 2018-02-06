@@ -272,7 +272,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      * @param {Object} [size] Sets a size for the dialog, useful for images.
      * @param {boolean} [medium=false] Sets a min. size for medium dialogs.
      */
-    self.position = function ($button, size, medium) {
+    self.position = function ($button, size, medium, big) {
       resetPosition();
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
@@ -301,6 +301,11 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
 
       if (medium) {
         $dialog.addClass('h5p-medium');
+      }
+
+      if (big) {
+        $dialog.addClass('h5p-big');
+        $dialog.addClass('h5p-stretch');
       }
 
       var buttonWidth = $button.outerWidth(true);
@@ -344,21 +349,24 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         marginTop = 0;
       }
 
-      var top = (medium ? 0 : (buttonPosition.top + marginTop));
-      var totalHeight = top + $dialog.outerHeight(true);
-      if (totalHeight > containerHeight) {
-        top -= totalHeight - containerHeight;
+      // Set dialog size for normally sized dialogs
+      if (!big) {
+        var top = (medium ? 0 : (buttonPosition.top + marginTop));
+        var totalHeight = top + $dialog.outerHeight(true);
+        if (totalHeight > containerHeight) {
+          top -= totalHeight - containerHeight;
+        }
+        var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
+        var fontSize = toNum($container.css('fontSize'));
+
+        $dialog.css({
+          top: (top / (containerHeight / 100)) + '%',
+          left: (left / (containerWidth / 100)) + '%',
+          width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
+          maxHeight: (maxHeight / fontSize) + 'em'
+        });
+        $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
       }
-      var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
-      var fontSize = toNum($container.css('fontSize'));
-      // Set dialog size
-      $dialog.css({
-        top: (top / (containerHeight / 100)) + '%',
-        left: (left / (containerWidth / 100)) + '%',
-        width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
-        maxHeight: (maxHeight / fontSize) + 'em'
-      });
-      $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
     };
 
     /**
