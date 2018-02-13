@@ -270,9 +270,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      *
      * @param {H5P.jQuery} $button
      * @param {Object} [size] Sets a size for the dialog, useful for images.
-     * @param {boolean} [medium=false] Sets a min. size for medium dialogs.
+     * @param {string} [type] Sets a min. size for medium or big dialogs.
      */
-    self.position = function ($button, size, medium, big) {
+    self.position = function ($button, size, type) {
       resetPosition();
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
@@ -299,11 +299,11 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         }
       }
 
-      if (medium) {
+      if (type === 'medium') {
         $dialog.addClass('h5p-medium');
       }
 
-      if (big) {
+      if (type === 'big') {
         $dialog.addClass('h5p-big');
         $dialog.addClass('h5p-stretch');
       }
@@ -316,7 +316,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       // Position dialog horizontally
       var left = buttonPosition.left;
       var dialogWidth = $dialog.outerWidth(true);
-      if (medium && dialogWidth > containerWidth) {
+      if (type === 'medium' && dialogWidth > containerWidth) {
         // If dialog is too big to fit within the container, display as h5p-big instead.
         // Only medium dialogs can become big
         $dialog.addClass('h5p-big');
@@ -349,9 +349,9 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         marginTop = 0;
       }
 
-      // Set dialog size for normally sized dialogs
-      if (!big) {
-        var top = (medium ? 0 : (buttonPosition.top + marginTop));
+      // Set dialog size for dialogs which aren't stretched
+      if (type !== 'big') {
+        var top = (type === 'medium' ? 0 : (buttonPosition.top + marginTop));
         var totalHeight = top + $dialog.outerHeight(true);
         if (totalHeight > containerHeight) {
           top -= totalHeight - containerHeight;
