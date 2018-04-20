@@ -270,9 +270,16 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      *
      * @param {H5P.jQuery} $button
      * @param {Object} [size] Sets a size for the dialog, useful for images.
-     * @param {string} [type] Sets a min. size for medium or big dialogs.
+     * @param {string|boolean} [type] Type of dialog. Possible values are
+     * 'medium' and 'big'. It also supports an older version of the function,
+     * i.e: type = true means 'medium'
      */
     self.position = function ($button, size, type) {
+      // Still support old version of this function
+      if (type === true) {
+        type = 'medium';
+      }
+
       resetPosition();
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
