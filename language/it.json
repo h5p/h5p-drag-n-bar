@@ -1,0 +1,14 @@
+{
+  "libraryStrings":{
+    "transformLabel":"Trasforma",
+    "editLabel":"Modifica",
+    "removeLabel":"Rimuovi",
+    "bringToFrontLabel":"Porta in primo piano",
+    "sendToBackLabel":"Porta sullo sfondo",
+    "unableToPaste":"Non è possibile incollare questo oggetto. Purtroppo, l'oggetto che stai tentando di incollare non è supportato da questa versione o da questo tipo di contenuto.",
+    "sizeLabel":"Dimensione",
+    "positionLabel":"Posizione",
+    "heightLabel":"Altezza",
+    "widthLabel":"Larghezza"
+  }
+}
