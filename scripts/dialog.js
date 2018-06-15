@@ -270,9 +270,16 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
      *
      * @param {H5P.jQuery} $button
      * @param {Object} [size] Sets a size for the dialog, useful for images.
-     * @param {boolean} [medium=false] Sets a min. size for medium dialogs.
+     * @param {string|boolean} [type] Type of dialog. Possible values are
+     * 'medium' and 'big'. It also supports an older version of the function,
+     * i.e: type = true means 'medium'
      */
-    self.position = function ($button, size, medium) {
+    self.position = function ($button, size, type) {
+      // Still support old version of this function
+      if (type === true) {
+        type = 'medium';
+      }
+
       resetPosition();
       $dialog.removeClass('h5p-big h5p-medium');
       var titleBarHeight = Number($inner[0].style.marginTop.replace('em', ''));
@@ -299,8 +306,13 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         }
       }
 
-      if (medium) {
+      if (type === 'medium') {
         $dialog.addClass('h5p-medium');
+      }
+
+      if (type === 'big') {
+        $dialog.addClass('h5p-big');
+        $dialog.addClass('h5p-stretch');
       }
 
       var buttonWidth = $button.outerWidth(true);
@@ -311,7 +323,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       // Position dialog horizontally
       var left = buttonPosition.left;
       var dialogWidth = $dialog.outerWidth(true);
-      if (medium && dialogWidth > containerWidth) {
+      if (type === 'medium' && dialogWidth > containerWidth) {
         // If dialog is too big to fit within the container, display as h5p-big instead.
         // Only medium dialogs can become big
         $dialog.addClass('h5p-big');
@@ -344,21 +356,24 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
         marginTop = 0;
       }
 
-      var top = (medium ? 0 : (buttonPosition.top + marginTop));
-      var totalHeight = top + $dialog.outerHeight(true);
-      if (totalHeight > containerHeight) {
-        top -= totalHeight - containerHeight;
+      // Set dialog size for dialogs which aren't stretched
+      if (type !== 'big') {
+        var top = (type === 'medium' ? 0 : (buttonPosition.top + marginTop));
+        var totalHeight = top + $dialog.outerHeight(true);
+        if (totalHeight > containerHeight) {
+          top -= totalHeight - containerHeight;
+        }
+        var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
+        var fontSize = toNum($container.css('fontSize'));
+
+        $dialog.css({
+          top: (top / (containerHeight / 100)) + '%',
+          left: (left / (containerWidth / 100)) + '%',
+          width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
+          maxHeight: (maxHeight / fontSize) + 'em'
+        });
+        $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
       }
-      var maxHeight = $container.height() - top + $dialog.height() - $dialog.outerHeight(true);
-      var fontSize = toNum($container.css('fontSize'));
-      // Set dialog size
-      $dialog.css({
-        top: (top / (containerHeight / 100)) + '%',
-        left: (left / (containerWidth / 100)) + '%',
-        width: (window.getComputedStyle($dialog[0]).width / fontSize) + 'em',
-        maxHeight: (maxHeight / fontSize) + 'em'
-      });
-      $inner.css('maxHeight', ((maxHeight - $titleBar.outerHeight(true)) / fontSize) + 'em');
     };
 
     /**
