@@ -109,7 +109,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @param {Boolean} [e.data.showTransformPanel] Show transform panel
      */
     self.on('contextMenuTransform', function (e) {
-      if (e && e.data.showTransformPanel) {
+      if (e && e.data.showTransformPanel !== undefined) {
         // Use event data
         self.showingTransformPanel = e.data.showTransformPanel;
       }
