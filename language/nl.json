@@ -9,6 +9,8 @@
     "sizeLabel":"Maat",
     "positionLabel":"Positie",
     "heightLabel":"Hoogte",
-    "widthLabel":"Breedte"
+    "widthLabel":"Breedte",
+    "paste": "Paste",
+    "moreElements": "More elements"
   }
 }

@@ -317,56 +317,78 @@ H5P.DragNBar.keydownHandler = function (event) {
     self.focusedElement.toClipboard(width, height);
   }
   else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
-    if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
-      // Don't allow paste if dialog is open or active element can be modified
-      return;
-    }
-
-    var clipboardData = localStorage.getItem('h5pClipboard');
-    if (clipboardData) {
-      // Parse
-      try {
-        clipboardData = JSON.parse(clipboardData);
-      }
-      catch (err) {
-        console.error('Unable to parse JSON from clipboard.', err);
-        return;
-      }
-
-      // Update file URLs
-      H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
-        var isTmpFile = (path.substr(-4,4) === '#tmp');
-        if (!isTmpFile && clipboardData.contentId) {
-          // Comes from existing content
-
-          if (H5PEditor.contentId) {
-            // .. to existing content
-            return '../' + clipboardData.contentId + '/' + path;
-          }
-          else {
-            // .. to new content
-            return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
-          }
-        }
-        return path; // Will automatically be looked for in tmp folder
-      });
-
-      if (clipboardData.generic) {
-        // Use reference instead of key
-        clipboardData.generic = clipboardData.specific[clipboardData.generic];
-
-        // Avoid multiple content with same ID
-        delete clipboardData.generic.subContentId;
-      }
-
-      self.trigger('paste', clipboardData);
-    }
+    self.pasteHandler(event);
   }
   else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
     if (self.pressed === undefined) {
       self.focusedElement.contextMenu.trigger('contextMenuRemove');
       event.preventDefault(); // Prevent browser navigating back
     }
+  }
+};
+
+/**
+ * Paste object.
+ * @param {Event} event - Event to check for pastable content.
+ */
+H5P.DragNBar.prototype.pasteHandler = function (event) {
+  var self = event.data.instance;
+  var activeElement = document.activeElement;
+
+  if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+    // Don't allow paste if dialog is open or active element can be modified
+    return;
+  }
+
+  var clipboardData = localStorage.getItem('h5pClipboard');
+  if (clipboardData) {
+    // Parse
+    try {
+      clipboardData = JSON.parse(clipboardData);
+    }
+    catch (err) {
+      console.error('Unable to parse JSON from clipboard.', err);
+      return;
+    }
+
+    // Update file URLs
+    H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
+      var isTmpFile = (path.substr(-4,4) === '#tmp');
+      if (!isTmpFile && clipboardData.contentId) {
+        // Comes from existing content
+
+        if (H5PEditor.contentId) {
+          // .. to existing content
+          return '../' + clipboardData.contentId + '/' + path;
+        }
+        else {
+          // .. to new content
+          return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
+        }
+      }
+      return path; // Will automatically be looked for in tmp folder
+    });
+
+    if (clipboardData.generic) {
+      // Use reference instead of key
+      clipboardData.generic = clipboardData.specific[clipboardData.generic];
+
+      // Avoid multiple content with same ID
+      delete clipboardData.generic.subContentId;
+    }
+
+    self.trigger('paste', clipboardData);
+  }
+};
+
+/**
+ * Set state of paste button.
+ * @param {boolean} canPaste - If true, button will be enabled
+ */
+H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
+  canPaste = canPaste || false;
+  if (this.$pasteButton) {
+    this.$pasteButton.toggleClass('disabled', !canPaste);
   }
 };
 
@@ -410,6 +432,13 @@ H5P.DragNBar.keyupHandler = function (event) {
 H5P.DragNBar.clickHandler = function (event) {
   var self = event.data.instance;
 
+  if (event.target.classList.contains('h5p-dragnbar-paste-button')) {
+    if (self.$pasteButton.hasClass('disabled')) {
+      return;
+    }
+    self.pasteHandler(event);
+  }
+
   // Remove pressed on click
   delete self.pressed;
 };
@@ -428,7 +457,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
   H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
            .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
            .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
-           .on('click.dnb' + index,eventData, H5P.DragNBar.clickHandler);
+           .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -485,6 +514,7 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var self = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -495,7 +525,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" id="h5p-dragnbar-more" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>')
+      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" id="h5p-dragnbar-more" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>')
         .appendTo($list)
         .click(function () {
           $list.stop().slideToggle(300);
@@ -514,6 +544,9 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     this.addButton(button, $list);
   }
 
+  // Paste button
+  this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a id="h5p-dragnbar-paste" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+  this.$pasteButton.insertAfter($list.parent());
   this.containTooltips();
 };
 
@@ -1003,7 +1036,9 @@ if (window.H5PEditor) {
       sizeLabel: 'Size',
       positionLabel: 'Position',
       heightLabel: 'Height',
-      widthLabel: 'Width'
+      widthLabel: 'Width',
+      paste: 'Paste',
+      moreElements: 'More elements'
     }
   };
 }
