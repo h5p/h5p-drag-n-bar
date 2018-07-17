@@ -10,6 +10,7 @@
     "positionLabel": "Position",
     "heightLabel": "Height",
     "widthLabel": "Width",
+    "copyLabel": "Copy",
     "paste": "Paste",
     "moreElements": "More elements"
   }

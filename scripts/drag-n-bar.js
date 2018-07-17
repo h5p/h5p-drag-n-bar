@@ -307,14 +307,7 @@ H5P.DragNBar.keydownHandler = function (event) {
     self.moveWithKeys(0, snapAmount);
   }
   else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
-    // Copy element params to clipboard
-    var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
-    var width = parseFloat(elementSize.width);
-    var height = parseFloat(elementSize.height) / width;
-    width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
-    height *= width;
-
-    self.focusedElement.toClipboard(width, height);
+    self.copyHandler(event);
   }
   else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
     self.pasteHandler(event);
@@ -325,6 +318,24 @@ H5P.DragNBar.keydownHandler = function (event) {
       event.preventDefault(); // Prevent browser navigating back
     }
   }
+};
+
+/**
+ * Copy object.
+ * @param {Event} event - Event to check for copyable content.
+ */
+H5P.DragNBar.prototype.copyHandler = function (event) {
+  var self = event.data.instance;
+
+  // Copy element params to clipboard
+  var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
+  var width = parseFloat(elementSize.width);
+  var height = parseFloat(elementSize.height) / width;
+  width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+  height *= width;
+
+  self.focusedElement.toClipboard(width, height);
+  H5P.externalDispatcher.trigger('datainclipboard', {reset: false});
 };
 
 /**
@@ -432,6 +443,12 @@ H5P.DragNBar.keyupHandler = function (event) {
 H5P.DragNBar.clickHandler = function (event) {
   var self = event.data.instance;
 
+  // Copy
+  if (event.target.classList.contains('h5p-dragnbar-context-menu-button') && event.target.classList.contains('copy')) {
+    self.copyHandler(event);
+  }
+
+  // Paste
   if (event.target.classList.contains('h5p-dragnbar-paste-button')) {
     if (self.$pasteButton.hasClass('disabled')) {
       return;
@@ -1037,6 +1054,7 @@ if (window.H5PEditor) {
       positionLabel: 'Position',
       heightLabel: 'Height',
       widthLabel: 'Width',
+      copyLabel: 'Copy',
       paste: 'Paste',
       moreElements: 'More elements'
     }

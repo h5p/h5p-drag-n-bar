@@ -10,6 +10,7 @@
     "positionLabel":"Positie",
     "heightLabel":"Hoogte",
     "widthLabel":"Breedte",
+    "copyLabel": "Copy",
     "paste": "Paste",
     "moreElements": "More elements"
   }

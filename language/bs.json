@@ -10,6 +10,7 @@
     "positionLabel":"Pozisija",
     "heightLabel":"Visina",
     "widthLabel":"Širina",
+    "copyLabel": "Copy",
     "paste": "Paste",
     "moreElements": "More elements"
   }
