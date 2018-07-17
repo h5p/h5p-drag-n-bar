@@ -563,7 +563,12 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
   // Paste button
   this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a id="h5p-dragnbar-paste" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
-  this.$pasteButton.insertAfter($list.parent());
+  if (this.buttons.length > this.overflowThreshold) {
+    this.$pasteButton.insertAfter($list.parent());
+  }
+  else {
+    this.$pasteButton.appendTo($list);
+  }
   this.containTooltips();
 };
 
