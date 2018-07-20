@@ -53,7 +53,6 @@ H5P.DragNBar = (function (EventDispatcher) {
         self.resize();
       });
     }
-    this.toastStyle = 'h5p-dragnbar-toast';
   }
 
   // Inherit support for events
@@ -336,10 +335,6 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
 
   self.focusedElement.toClipboard(width, height);
   H5P.externalDispatcher.trigger('datainclipboard', {reset: false});
-
-  // Show toast message
-  // const copyButton = document.getElementsByClassName('h5p-dragnbar-context-menu-button copy')[0];
-  // H5PEditor.attachToastTo(copyButton, H5PEditor.t('core', 'copiedToClipboard'), {style: this.toastStyle, position: {horizontal: 'left'}});
 };
 
 /**
@@ -394,9 +389,6 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
 
     self.trigger('paste', clipboardData);
   }
-  // else {
-  //   H5PEditor.attachToastTo(this.$pasteButton.get(0), H5PEditor.t('core', 'pasteNoContent'), {style: this.toastStyle, position: {horizontal: 'right'}});
-  // }
 };
 
 /**
