@@ -12,6 +12,7 @@ H5P.DragNBar = (function (EventDispatcher) {
    * @param {object} [options] Collection of options
    * @param {boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
    * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
+   * @param {object} [options.libraries] Libraries to check against for paste notification
    */
   function DragNBar(buttons, $container, $dialogContainer, options) {
     var self = this;
@@ -30,6 +31,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     options = H5P.jQuery.extend(defaultOptions, options);
     this.isEditor = !options.disableEditor;
     this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
+    this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
 
     /**
@@ -345,6 +347,24 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
+  if (self.$pasteButton.hasClass('disabled')) {
+    // Inform user why pasting is not possible
+    const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
+    if (pasteCheck.canPaste !== true) {
+      if (pasteCheck.reason === 'pasteTooOld' || pasteCheck.reason === 'pasteTooNew') {
+        self.confirmPasteError(pasteCheck.description, 0, function() {});
+      }
+      else {
+        H5PEditor.attachToastTo(
+          self.$pasteButton.get(0),
+          pasteCheck.description,
+          {position: {horizontal: 'center', vertical: 'above', noOverflowX: true}}
+        );
+      }
+      return;
+    }
+  }
+
   if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
     // Don't allow paste if dialog is open or active element can be modified
     return;
@@ -403,6 +423,24 @@ H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
 };
 
 /**
+ * Confirm replace if there is content selected
+ *
+ * @param {number} top Offset
+ * @param {function} next Next callback
+ */
+H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
+  // Confirm changing library
+  var confirmReplace = new H5P.ConfirmationDialog({
+    headerText: H5PEditor.t('core', 'pasteError'),
+    dialogText: message,
+    cancelText: ' ',
+    confirmText: H5PEditor.t('core', 'ok')
+  }).appendTo(document.body);
+  confirmReplace.on('confirmed', next);
+  confirmReplace.show(top);
+};
+
+/**
  * Handle keypress events for the entire frame
  */
 H5P.DragNBar.keypressHandler = function (event) {
@@ -449,9 +487,6 @@ H5P.DragNBar.clickHandler = function (event) {
 
   // Paste
   if (event.target.classList.contains('h5p-dragnbar-paste-button')) {
-    if (self.$pasteButton.hasClass('disabled')) {
-      return;
-    }
     self.pasteHandler(event);
   }
 
