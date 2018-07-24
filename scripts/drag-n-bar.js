@@ -576,7 +576,8 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" id="h5p-dragnbar-more" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>')
+      const $buttonMore = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+      $list = $buttonMore
         .appendTo($list)
         .click(function () {
           $list.stop().slideToggle(300);
@@ -586,7 +587,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
         // Close "more" on click somewhere else
         H5P.jQuery(document).click(function (event) {
-          if (!H5P.jQuery(event.target).is('#h5p-dragnbar-more') && $list.css('display') !== 'none') {
+          if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
             $list.stop().slideToggle(300);
           }
         });
