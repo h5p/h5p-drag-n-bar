@@ -166,6 +166,12 @@
   content: '\f040';
 }
 
+.h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.copy:after {
+  font-family: 'H5P';
+  content: "\e905";
+  font-size: 1.25em;
+}
+
 .h5p-dragnbar-context-menu .h5p-dragnbar-context-menu-button.remove:after {
   content: '\f1f8';
 }
