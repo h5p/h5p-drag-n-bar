@@ -10,8 +10,8 @@
     "positionLabel": "Posição",
     "heightLabel": "Altura",
     "widthLabel": "Largura",
-    "copyLabel": "Copy",
-    "paste": "Paste",
-    "moreElements": "More elements"
+    "copyLabel": "Copiar",
+    "paste": "Colar",
+    "moreElements": "Mais elementos"
   }
 }
