@@ -267,6 +267,11 @@ H5P.DragNBar.keydownHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
+  // Don't care about keystrokes if parent editor is not in focus
+  if (self.isInactive()) {
+    return;
+  }
+
   if (event.which === CTRL) {
     ctrlDown = true;
 
@@ -340,17 +345,27 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
 };
 
 /**
+ * Check if I am currently inactive (i.e: is not in focus)
+ *
+ * Since we may have several editors on the same page, and we are listening
+ * to keyevents on H5P.$body, this function can be used to check if I should
+ * react to the event or not.
+ *
+ * @return {boolean}
+ */
+H5P.DragNBar.prototype.isInactive = function () {
+  var activeElement = document.activeElement;
+  return this.$dialogContainer.find(activeElement).length === 0 &&
+         this.$dialogContainer.get(0) !== activeElement;
+};
+
+/**
  * Paste object.
  * @param {Event} event - Event to check for pastable content.
  */
 H5P.DragNBar.prototype.pasteHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
-
-  // Don't paste if parent editor is not in focus
-  if (this.$dialogContainer.find(activeElement).length === 0 && this.$dialogContainer.get(0) !== activeElement) {
-    return;
-  }
 
   if (self.$pasteButton.hasClass('disabled')) {
     // Inform user why pasting is not possible
@@ -484,6 +499,10 @@ H5P.DragNBar.keyupHandler = function (event) {
  */
 H5P.DragNBar.clickHandler = function (event) {
   var self = event.data.instance;
+
+  if (self.isInactive()) {
+    return;
+  }
 
   // Copy
   if (event.target.classList.contains('h5p-dragnbar-context-menu-button') && event.target.classList.contains('copy')) {
