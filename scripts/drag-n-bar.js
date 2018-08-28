@@ -347,6 +347,11 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
+  // Don't paste if parent editor is not in focus
+  if (this.$dialogContainer.find(activeElement).length === 0 && this.$dialogContainer.get(0) !== activeElement) {
+    return;
+  }
+
   if (self.$pasteButton.hasClass('disabled')) {
     // Inform user why pasting is not possible
     const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
