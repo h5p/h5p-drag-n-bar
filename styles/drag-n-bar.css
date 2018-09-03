@@ -45,3 +45,8 @@
 .h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover > .h5p-dragnbar-tooltip {
   visibility: visible;
 }
+
+.h5p-dragnbar-paste-button:before {
+  font-family: 'H5P';
+  content: "\e90a";
+}

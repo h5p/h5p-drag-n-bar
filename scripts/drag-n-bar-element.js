@@ -57,7 +57,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       if (clipboardData && localStorage) {
         clipboardData.width = width;
         clipboardData.height = height;
-        localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
+        H5P.setClipboard(clipboardData);
       }
     };
   }

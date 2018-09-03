@@ -96,6 +96,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      */
     this.buttons = [
       {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
+      {name: 'Copy', label: H5PEditor.t('H5P.DragNBar', 'copyLabel')},
       {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')},
       {name: 'SendToBack', label: H5PEditor.t('H5P.DragNBar', 'sendToBackLabel')},
       {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
@@ -109,7 +110,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @param {Boolean} [e.data.showTransformPanel] Show transform panel
      */
     self.on('contextMenuTransform', function (e) {
-      if (e && e.data.showTransformPanel) {
+      if (e && e.data.showTransformPanel !== undefined) {
         // Use event data
         self.showingTransformPanel = e.data.showTransformPanel;
       }
