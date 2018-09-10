@@ -167,7 +167,8 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       var newLeft = left - contextMenuWidth;
       this.contextMenu.$contextMenu.css('left', newLeft + 'px');
       this.contextMenu.$contextMenu.addClass('left-aligned');
-    } else {
+    }
+    else {
       this.contextMenu.$contextMenu.removeClass('left-aligned');
     }
   };

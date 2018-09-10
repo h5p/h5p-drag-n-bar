@@ -108,12 +108,12 @@ H5P.DragNBar.prototype.initEditor = function () {
    * Hide transform panel listeners
    */
   this.dnr.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
   this.dnd.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
@@ -387,7 +387,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
     const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
     if (pasteCheck.canPaste !== true) {
       if (pasteCheck.reason === 'pasteTooOld' || pasteCheck.reason === 'pasteTooNew') {
-        self.confirmPasteError(pasteCheck.description, 0, function() {});
+        self.confirmPasteError(pasteCheck.description, 0, function () {});
       }
       else {
         H5PEditor.attachToastTo(
@@ -545,9 +545,9 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     instance: self
   };
   H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
-           .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
-           .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
-           .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
+    .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
+    .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
+    .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -604,7 +604,6 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
-  var self = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -624,12 +623,12 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
         .children(':first')
         .next();
 
-        // Close "more" on click somewhere else
-        H5P.jQuery(document).click(function (event) {
-          if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
-            $list.stop().slideToggle(300);
-          }
-        });
+      // Close "more" on click somewhere else
+      H5P.jQuery(document).click(function (event) {
+        if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
+          $list.stop().slideToggle(300);
+        }
+      });
     }
 
     this.addButton(button, $list);
@@ -672,7 +671,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   }).appendTo($button);
 
   $button
-    .hover(function() {
+    .hover(function () {
       that.containTooltips();
     })
     .children()
@@ -702,7 +701,7 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   var containerWidth = that.$container.outerWidth();
 
-  this.$list.find('.h5p-dragnbar-tooltip').each(function() {
+  this.$list.find('.h5p-dragnbar-tooltip').each(function () {
     // Get correct offset even if element is a child
     var width = ns.$(this).outerWidth();
     var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
@@ -1118,9 +1117,9 @@ H5P.DragNBar.prototype.remove = function () {
   var index = this.instanceIndex;
 
   H5P.$body.off('keydown.dnb' + index, H5P.DragNBar.keydownHandler)
-           .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
-           .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
-           .off('click.dnb' + index, H5P.DragNBar.clickHandler);
+    .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
+    .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
+    .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
 
 if (window.H5PEditor) {

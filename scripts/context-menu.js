@@ -184,7 +184,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.$x = this.$coordinates.find('.h5p-dragnbar-x');
     this.$y = this.$coordinates.find('.h5p-dragnbar-y');
 
-    this.$x.add(this.$y).on('change keydown', function(event) {
+    this.$x.add(this.$y).on('change keydown', function (event) {
       if (event.type === 'change' || event.which === 13) {
 
         // Get input
