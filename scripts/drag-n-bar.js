@@ -34,6 +34,8 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
 
+    this.$dialogContainer.attr('tabindex', 0);
+
     /**
      * Keeps track of created DragNBar elements
      * @type {Array}
