@@ -12,8 +12,9 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @param {H5P.DragNBarElement} DragNBarElement
    * @param {boolean} [hasCoordinates] Decides if coordinates will be displayed
    * @param {boolean} [disableResize] No input for dimensions
+   * @param {boolean} [disableCopy] Disable copy button
    */
-  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize) {
+  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize, disableCopy) {
     var self = this;
     EventDispatcher.call(this);
 
@@ -96,11 +97,14 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      */
     this.buttons = [
       {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
-      {name: 'Copy', label: H5PEditor.t('H5P.DragNBar', 'copyLabel')},
       {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')},
       {name: 'SendToBack', label: H5PEditor.t('H5P.DragNBar', 'sendToBackLabel')},
       {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
     ];
+
+    if (!disableCopy) {
+      this.buttons.splice(1, 0, {name: 'Copy', label: H5PEditor.t('H5P.DragNBar', 'copyLabel')});
+    }
 
     /**
      * Register transform listener
@@ -180,7 +184,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.$x = this.$coordinates.find('.h5p-dragnbar-x');
     this.$y = this.$coordinates.find('.h5p-dragnbar-y');
 
-    this.$x.add(this.$y).on('change keydown', function(event) {
+    this.$x.add(this.$y).on('change keydown', function (event) {
       if (event.type === 'change' || event.which === 13) {
 
         // Get input

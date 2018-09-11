@@ -11,6 +11,7 @@ H5P.DragNBar = (function (EventDispatcher) {
    * @param {H5P.jQuery} $dialogContainer
    * @param {object} [options] Collection of options
    * @param {boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
+   * @param {boolean} [options.enableCopyPaste=true] Determines if copy & paste is supported
    * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
    * @param {object} [options.libraries] Libraries to check against for paste notification
    */
@@ -26,13 +27,17 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.dnd.snap = 10;
     this.newElement = false;
     var defaultOptions = {
-      disableEditor: false
+      disableEditor: false,
+      enableCopyPaste: true
     };
     options = H5P.jQuery.extend(defaultOptions, options);
+    this.enableCopyPaste = options.enableCopyPaste;
     this.isEditor = !options.disableEditor;
     this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
     this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
+
+    this.$dialogContainer.attr('tabindex', 0);
 
     /**
      * Keeps track of created DragNBar elements
@@ -103,12 +108,12 @@ H5P.DragNBar.prototype.initEditor = function () {
    * Hide transform panel listeners
    */
   this.dnr.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
   this.dnd.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
@@ -332,6 +337,11 @@ H5P.DragNBar.keydownHandler = function (event) {
  * @param {Event} event - Event to check for copyable content.
  */
 H5P.DragNBar.prototype.copyHandler = function (event) {
+
+  if (!this.enableCopyPaste) {
+    return;
+  }
+
   var self = event.data.instance;
   // Copy element params to clipboard
   var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
@@ -368,7 +378,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
   var activeElement = document.activeElement;
 
   // Don't paste if parent editor is not in focus
-  if (this.$dialogContainer.find(activeElement).length === 0 && this.$dialogContainer.get(0) !== activeElement) {
+  if (!this.enableCopyPaste || this.isInactive()) {
     return;
   }
 
@@ -377,7 +387,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
     const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
     if (pasteCheck.canPaste !== true) {
       if (pasteCheck.reason === 'pasteTooOld' || pasteCheck.reason === 'pasteTooNew') {
-        self.confirmPasteError(pasteCheck.description, 0, function() {});
+        self.confirmPasteError(pasteCheck.description, 0, function () {});
       }
       else {
         H5PEditor.attachToastTo(
@@ -535,9 +545,9 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     instance: self
   };
   H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
-           .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
-           .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
-           .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
+    .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
+    .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
+    .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -594,7 +604,6 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
-  var self = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -614,25 +623,28 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
         .children(':first')
         .next();
 
-        // Close "more" on click somewhere else
-        H5P.jQuery(document).click(function (event) {
-          if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
-            $list.stop().slideToggle(300);
-          }
-        });
+      // Close "more" on click somewhere else
+      H5P.jQuery(document).click(function (event) {
+        if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
+          $list.stop().slideToggle(300);
+        }
+      });
     }
 
     this.addButton(button, $list);
   }
 
-  // Paste button
-  this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a id="h5p-dragnbar-paste" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
-  if (this.buttons.length > this.overflowThreshold) {
-    this.$pasteButton.insertAfter($list.parent());
+  if (this.enableCopyPaste) {
+    // Paste button
+    this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a id="h5p-dragnbar-paste" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+    if (this.buttons.length > this.overflowThreshold) {
+      this.$pasteButton.insertAfter($list.parent());
+    }
+    else {
+      this.$pasteButton.appendTo($list);
+    }
   }
-  else {
-    this.$pasteButton.appendTo($list);
-  }
+
   this.containTooltips();
 };
 
@@ -659,7 +671,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   }).appendTo($button);
 
   $button
-    .hover(function() {
+    .hover(function () {
       that.containTooltips();
     })
     .children()
@@ -689,7 +701,7 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   var containerWidth = that.$container.outerWidth();
 
-  this.$list.find('.h5p-dragnbar-tooltip').each(function() {
+  this.$list.find('.h5p-dragnbar-tooltip').each(function () {
     // Get correct offset even if element is a child
     var width = ns.$(this).outerWidth();
     var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
@@ -880,6 +892,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
   else {
     options.element = $element;
+    options.disableCopy = !this.enableCopyPaste;
     newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
@@ -1104,9 +1117,9 @@ H5P.DragNBar.prototype.remove = function () {
   var index = this.instanceIndex;
 
   H5P.$body.off('keydown.dnb' + index, H5P.DragNBar.keydownHandler)
-           .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
-           .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
-           .off('click.dnb' + index, H5P.DragNBar.clickHandler);
+    .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
+    .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
+    .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
 
 if (window.H5PEditor) {
