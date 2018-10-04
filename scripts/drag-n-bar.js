@@ -1121,24 +1121,3 @@ H5P.DragNBar.prototype.remove = function () {
     .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
     .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
-
-if (window.H5PEditor) {
-  // Add translations
-  H5PEditor.language['H5P.DragNBar'] = {
-    libraryStrings: {
-      transformLabel: 'Transform',
-      editLabel: 'Edit',
-      removeLabel: 'Remove',
-      bringToFrontLabel: 'Bring to Front',
-      sendToBackLabel: 'Send to Back',
-      unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
-      sizeLabel: 'Size',
-      positionLabel: 'Position',
-      heightLabel: 'Height',
-      widthLabel: 'Width',
-      copyLabel: 'Copy',
-      paste: 'Paste',
-      moreElements: 'More elements'
-    }
-  };
-}
