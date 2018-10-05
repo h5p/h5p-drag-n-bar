@@ -227,6 +227,7 @@
   display: inline-block;
   position: relative;
 }
+.h5p-course-presentation.editor .h5p-dragnbar-input > input,
 .h5p-dragnbar-input > input {
 	width: 3.25em;
 	height: 36px;
@@ -238,18 +239,23 @@
   vertical-align: top;
   font-size: 13px;
 }
+.h5p-course-presentation.editor .h5p-dragnbar-input > input:hover,
+.h5p-course-presentation.editor .h5p-dragnbar-input > input:focus,
 .h5p-dragnbar-input > input:hover,
 .h5p-dragnbar-input > input:focus {
 	color: #044c7c;
 }
+.h5p-course-presentation.editor .ui-widget .h5p-dragnbar-input > input,
 .ui-widget .h5p-dragnbar-input > input {
   font-size: 13px;
   font-family: inherit;
 }
+.h5p-course-presentation.editor .h5p-dragnbar-width > input,
 .h5p-dragnbar-width > input {
 	text-align: right;
 	padding-right: 0.25em;
 }
+.h5p-course-presentation.editor .h5p-dragnbar-height > input,
 .h5p-dragnbar-height > input {
 	padding-left: 0.25em;
 }
