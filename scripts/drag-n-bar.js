@@ -37,8 +37,6 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
 
-    this.$dialogContainer.attr('tabindex', 0);
-
     /**
      * Keeps track of created DragNBar elements
      * @type {Array}
@@ -272,11 +270,6 @@ H5P.DragNBar.keydownHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
-  // Don't care about keystrokes if parent editor is not in focus
-  if (self.isInactive()) {
-    return;
-  }
-
   if (event.which === CTRL) {
     ctrlDown = true;
 
@@ -342,7 +335,7 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
     return;
   }
 
-  var self = event.data.instance;
+  var self = event === undefined ? this : event.data.instance;
   // Copy element params to clipboard
   var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
   var width = parseFloat(elementSize.width);
@@ -355,30 +348,16 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
 };
 
 /**
- * Check if I am currently inactive (i.e: is not in focus)
- *
- * Since we may have several editors on the same page, and we are listening
- * to keyevents on H5P.$body, this function can be used to check if I should
- * react to the event or not.
- *
- * @return {boolean}
- */
-H5P.DragNBar.prototype.isInactive = function () {
-  var activeElement = document.activeElement;
-  return this.$dialogContainer.find(activeElement).length === 0 &&
-         this.$dialogContainer.get(0) !== activeElement;
-};
-
-/**
  * Paste object.
  * @param {Event} event - Event to check for pastable content.
  */
 H5P.DragNBar.prototype.pasteHandler = function (event) {
-  var self = event.data.instance;
+  var self = event === undefined ? this : event.data.instance;
   var activeElement = document.activeElement;
 
   // Don't paste if parent editor is not in focus
-  if (!this.enableCopyPaste || this.isInactive()) {
+  if (!this.enableCopyPaste || self.preventPaste || self.dialog.isOpen() ||
+      activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
     return;
   }
 
@@ -398,11 +377,6 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
       }
       return;
     }
-  }
-
-  if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
-    // Don't allow paste if dialog is open or active element can be modified
-    return;
   }
 
   var clipboardData = localStorage.getItem('h5pClipboard');
@@ -515,20 +489,6 @@ H5P.DragNBar.keyupHandler = function (event) {
 H5P.DragNBar.clickHandler = function (event) {
   var self = event.data.instance;
 
-  if (self.isInactive()) {
-    return;
-  }
-
-  // Copy
-  if (event.target.classList.contains('h5p-dragnbar-context-menu-button') && event.target.classList.contains('copy')) {
-    self.copyHandler(event);
-  }
-
-  // Paste
-  if (event.target.classList.contains('h5p-dragnbar-paste-button')) {
-    self.pasteHandler(event);
-  }
-
   // Remove pressed on click
   delete self.pressed;
 };
@@ -604,6 +564,7 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var self = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -637,6 +598,10 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
   if (this.enableCopyPaste) {
     // Paste button
     this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+    this.$pasteButton.find('.h5p-dragnbar-paste-button').click(function (event) {
+      event.preventDefault(); // Avoid anchor click making window scroll
+      self.pasteHandler();
+    });
     if (this.buttons.length > this.overflowThreshold) {
       this.$pasteButton.insertAfter($list.parent());
     }
@@ -900,6 +865,12 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   $element.addClass('h5p-dragnbar-element');
 
   if (this.isEditor) {
+    if (newElement.contextMenu) {
+      newElement.contextMenu.on('contextMenuCopy', function () {
+        self.copyHandler();
+      });
+    }
+
     if ($element.attr('tabindex') === undefined) {
       // Make it possible to tab between elements.
       $element.attr('tabindex', '0');
