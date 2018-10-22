@@ -46,7 +46,29 @@
   visibility: visible;
 }
 
-.h5p-dragnbar-paste-button:before {
+/* Paste button */
+.h5p-dragnbar-li.paste-button {
+  cursor: pointer;
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li.paste-button.disabled {
+  opacity: 0.3;
+  cursor: auto;
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li .h5p-dragnbar-paste-button {
+  background: #e6f1fa;
+  background: linear-gradient(0deg, #add1ef 1%, #e6f1fa 100%);
+  border: 2px solid #bccee8;
+  color: #0061a2;
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li:not(.disabled) .h5p-dragnbar-paste-button:hover {
+  background: linear-gradient(0deg, #e6f1fa 3%, #add1ef 100%);
+  border-color: #a2c4f7;
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li:not(.disabled) .h5p-dragnbar-paste-button:active {
+  background: linear-gradient(0deg, #cde2f7 3%, #9cbbe6 100%);
+  border-color: #69a3f8;
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li .h5p-dragnbar-paste-button:before {
   font-family: 'H5P';
   content: "\e90a";
 }
