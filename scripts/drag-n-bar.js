@@ -270,6 +270,13 @@ H5P.DragNBar.keydownHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
+  // Don't care about keys if parent editor is not in focus
+  // This means all editors using drag-n-bar need to set a tabindex
+  // (it's not done inside this library)
+  if (self.$dialogContainer.find(activeElement).length === 0 && self.$dialogContainer.get(0) !== activeElement) {
+    return;
+  }
+
   if (event.which === CTRL) {
     ctrlDown = true;
 
