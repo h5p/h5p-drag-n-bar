@@ -597,7 +597,17 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
   if (this.enableCopyPaste) {
     // Paste button
-    this.$pasteButton = H5P.jQuery('<li class="h5p-dragnbar-li paste-button disabled"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'paste') + '" class="h5p-dragnbar-a h5p-dragnbar-paste-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+    this.$pasteButton = H5P.jQuery(
+      '<li class="h5p-dragnbar-li paste-button disabled">' +
+        '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-paste-button" />' +
+      '</li>'
+    );
+
+    H5P.jQuery('<span>', {
+      'class': 'h5p-dragnbar-tooltip',
+      'text': H5PEditor.t('H5P.DragNBar', 'paste')
+    }).appendTo(this.$pasteButton);
+
     this.$pasteButton.find('.h5p-dragnbar-paste-button').click(function (event) {
       event.preventDefault(); // Avoid anchor click making window scroll
       self.pasteHandler();
