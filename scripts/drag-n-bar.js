@@ -11,7 +11,9 @@ H5P.DragNBar = (function (EventDispatcher) {
    * @param {H5P.jQuery} $dialogContainer
    * @param {object} [options] Collection of options
    * @param {boolean} [options.disableEditor=false] Determines if DragNBar should be displayed in view or editor mode
+   * @param {boolean} [options.enableCopyPaste=true] Determines if copy & paste is supported
    * @param {H5P.jQuery} [options.$blurHandlers] When clicking these element(s) dnb focus will be lost
+   * @param {object} [options.libraries] Libraries to check against for paste notification
    */
   function DragNBar(buttons, $container, $dialogContainer, options) {
     var self = this;
@@ -25,11 +27,14 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.dnd.snap = 10;
     this.newElement = false;
     var defaultOptions = {
-      disableEditor: false
+      disableEditor: false,
+      enableCopyPaste: true
     };
     options = H5P.jQuery.extend(defaultOptions, options);
+    this.enableCopyPaste = options.enableCopyPaste;
     this.isEditor = !options.disableEditor;
     this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
+    this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
 
     /**
@@ -101,12 +106,12 @@ H5P.DragNBar.prototype.initEditor = function () {
    * Hide transform panel listeners
    */
   this.dnr.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
   this.dnd.on('hideTransformPanel', function () {
-    if(!that.transformButtonActive) {
+    if (!that.transformButtonActive) {
       transformPanel(false);
     }
   });
@@ -265,6 +270,13 @@ H5P.DragNBar.keydownHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
+  // Don't care about keys if parent editor is not in focus
+  // This means all editors using drag-n-bar need to set a tabindex
+  // (it's not done inside this library)
+  if (self.$dialogContainer.find(activeElement).length === 0 && self.$dialogContainer.get(0) !== activeElement) {
+    return;
+  }
+
   if (event.which === CTRL) {
     ctrlDown = true;
 
@@ -307,60 +319,10 @@ H5P.DragNBar.keydownHandler = function (event) {
     self.moveWithKeys(0, snapAmount);
   }
   else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
-    // Copy element params to clipboard
-    var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
-    var width = parseFloat(elementSize.width);
-    var height = parseFloat(elementSize.height) / width;
-    width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
-    height *= width;
-
-    self.focusedElement.toClipboard(width, height);
+    self.copyHandler(event);
   }
   else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
-    if (self.preventPaste || self.dialog.isOpen() || activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
-      // Don't allow paste if dialog is open or active element can be modified
-      return;
-    }
-
-    var clipboardData = localStorage.getItem('h5pClipboard');
-    if (clipboardData) {
-      // Parse
-      try {
-        clipboardData = JSON.parse(clipboardData);
-      }
-      catch (err) {
-        console.error('Unable to parse JSON from clipboard.', err);
-        return;
-      }
-
-      // Update file URLs
-      H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
-        var isTmpFile = (path.substr(-4,4) === '#tmp');
-        if (!isTmpFile && clipboardData.contentId) {
-          // Comes from existing content
-
-          if (H5PEditor.contentId) {
-            // .. to existing content
-            return '../' + clipboardData.contentId + '/' + path;
-          }
-          else {
-            // .. to new content
-            return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
-          }
-        }
-        return path; // Will automatically be looked for in tmp folder
-      });
-
-      if (clipboardData.generic) {
-        // Use reference instead of key
-        clipboardData.generic = clipboardData.specific[clipboardData.generic];
-
-        // Avoid multiple content with same ID
-        delete clipboardData.generic.subContentId;
-      }
-
-      self.trigger('paste', clipboardData);
-    }
+    self.pasteHandler(event);
   }
   else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
     if (self.pressed === undefined) {
@@ -368,6 +330,130 @@ H5P.DragNBar.keydownHandler = function (event) {
       event.preventDefault(); // Prevent browser navigating back
     }
   }
+};
+
+/**
+ * Copy object.
+ * @param {Event} event - Event to check for copyable content.
+ */
+H5P.DragNBar.prototype.copyHandler = function (event) {
+
+  if (!this.enableCopyPaste) {
+    return;
+  }
+
+  var self = event === undefined ? this : event.data.instance;
+  // Copy element params to clipboard
+  var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
+  var width = parseFloat(elementSize.width);
+  var height = parseFloat(elementSize.height) / width;
+  width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+  height *= width;
+
+  self.focusedElement.toClipboard(width, height);
+  H5P.externalDispatcher.trigger('datainclipboard', {reset: false});
+};
+
+/**
+ * Paste object.
+ * @param {Event} event - Event to check for pastable content.
+ */
+H5P.DragNBar.prototype.pasteHandler = function (event) {
+  var self = event === undefined ? this : event.data.instance;
+  var activeElement = document.activeElement;
+
+  // Don't paste if parent editor is not in focus
+  if (!this.enableCopyPaste || self.preventPaste || self.dialog.isOpen() ||
+      activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+    return;
+  }
+
+  if (self.$pasteButton.hasClass('disabled')) {
+    // Inform user why pasting is not possible
+    const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
+    if (pasteCheck.canPaste !== true) {
+      if (pasteCheck.reason === 'pasteTooOld' || pasteCheck.reason === 'pasteTooNew') {
+        self.confirmPasteError(pasteCheck.description, 0, function () {});
+      }
+      else {
+        H5PEditor.attachToastTo(
+          self.$pasteButton.get(0),
+          pasteCheck.description,
+          {position: {horizontal: 'center', vertical: 'above', noOverflowX: true}}
+        );
+      }
+      return;
+    }
+  }
+
+  var clipboardData = localStorage.getItem('h5pClipboard');
+  if (clipboardData) {
+    // Parse
+    try {
+      clipboardData = JSON.parse(clipboardData);
+    }
+    catch (err) {
+      console.error('Unable to parse JSON from clipboard.', err);
+      return;
+    }
+
+    // Update file URLs
+    H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
+      var isTmpFile = (path.substr(-4,4) === '#tmp');
+      if (!isTmpFile && clipboardData.contentId) {
+        // Comes from existing content
+
+        if (H5PEditor.contentId) {
+          // .. to existing content
+          return '../' + clipboardData.contentId + '/' + path;
+        }
+        else {
+          // .. to new content
+          return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
+        }
+      }
+      return path; // Will automatically be looked for in tmp folder
+    });
+
+    if (clipboardData.generic) {
+      // Use reference instead of key
+      clipboardData.generic = clipboardData.specific[clipboardData.generic];
+
+      // Avoid multiple content with same ID
+      delete clipboardData.generic.subContentId;
+    }
+
+    self.trigger('paste', clipboardData);
+  }
+};
+
+/**
+ * Set state of paste button.
+ * @param {boolean} canPaste - If true, button will be enabled
+ */
+H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
+  canPaste = canPaste || false;
+  if (this.$pasteButton) {
+    this.$pasteButton.toggleClass('disabled', !canPaste);
+  }
+};
+
+/**
+ * Confirm replace if there is content selected
+ *
+ * @param {number} top Offset
+ * @param {function} next Next callback
+ */
+H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
+  // Confirm changing library
+  var confirmReplace = new H5P.ConfirmationDialog({
+    headerText: H5PEditor.t('core', 'pasteError'),
+    dialogText: message,
+    cancelText: ' ',
+    confirmText: H5PEditor.t('core', 'ok')
+  }).appendTo(document.body);
+  confirmReplace.on('confirmed', next);
+  confirmReplace.show(top);
 };
 
 /**
@@ -426,9 +512,9 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     instance: self
   };
   H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
-           .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
-           .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
-           .on('click.dnb' + index,eventData, H5P.DragNBar.clickHandler);
+    .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
+    .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
+    .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -485,6 +571,7 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @returns {undefined}
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
+  var self = this;
   $wrapper.html('');
   $wrapper.addClass('h5peditor-dragnbar');
 
@@ -495,21 +582,49 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      $list = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + 'More elements' + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>')
+      const $buttonMore = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+      $list = $buttonMore
         .appendTo($list)
         .click(function () {
-          return false;
-        })
-        .hover(function () {
-          $list.stop().slideToggle(300);
-        }, function () {
           $list.stop().slideToggle(300);
         })
         .children(':first')
         .next();
+
+      // Close "more" on click somewhere else
+      H5P.jQuery(document).click(function (event) {
+        if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
+          $list.stop().slideToggle(300);
+        }
+      });
     }
 
     this.addButton(button, $list);
+  }
+
+  if (this.enableCopyPaste) {
+    // Paste button
+    this.$pasteButton = H5P.jQuery(
+      '<li class="h5p-dragnbar-li paste-button disabled">' +
+        '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-paste-button" />' +
+      '</li>'
+    );
+
+    H5P.jQuery('<span>', {
+      'class': 'h5p-dragnbar-tooltip',
+      'text': H5PEditor.t('H5P.DragNBar', 'paste')
+    }).appendTo(this.$pasteButton);
+
+    this.$pasteButton.find('.h5p-dragnbar-paste-button').click(function (event) {
+      event.preventDefault(); // Avoid anchor click making window scroll
+      self.pasteHandler();
+    });
+    if (this.buttons.length > this.overflowThreshold) {
+      this.$pasteButton.insertAfter($list.parent());
+    }
+    else {
+      this.$pasteButton.appendTo($list);
+    }
   }
 
   this.containTooltips();
@@ -538,7 +653,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   }).appendTo($button);
 
   $button
-    .hover(function() {
+    .hover(function () {
       that.containTooltips();
     })
     .children()
@@ -568,7 +683,7 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   var containerWidth = that.$container.outerWidth();
 
-  this.$list.find('.h5p-dragnbar-tooltip').each(function() {
+  this.$list.find('.h5p-dragnbar-tooltip').each(function () {
     // Get correct offset even if element is a child
     var width = ns.$(this).outerWidth();
     var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
@@ -759,6 +874,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
   else {
     options.element = $element;
+    options.disableCopy = !this.enableCopyPaste;
     newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
@@ -766,6 +882,12 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   $element.addClass('h5p-dragnbar-element');
 
   if (this.isEditor) {
+    if (newElement.contextMenu) {
+      newElement.contextMenu.on('contextMenuCopy', function () {
+        self.copyHandler();
+      });
+    }
+
     if ($element.attr('tabindex') === undefined) {
       // Make it possible to tab between elements.
       $element.attr('tabindex', '0');
@@ -983,25 +1105,7 @@ H5P.DragNBar.prototype.remove = function () {
   var index = this.instanceIndex;
 
   H5P.$body.off('keydown.dnb' + index, H5P.DragNBar.keydownHandler)
-           .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
-           .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
-           .off('click.dnb' + index, H5P.DragNBar.clickHandler);
+    .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
+    .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
+    .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
-
-if (window.H5PEditor) {
-  // Add translations
-  H5PEditor.language['H5P.DragNBar'] = {
-    libraryStrings: {
-      transformLabel: 'Transform',
-      editLabel: 'Edit',
-      removeLabel: 'Remove',
-      bringToFrontLabel: 'Bring to Front',
-      sendToBackLabel: 'Send to Back',
-      unableToPaste: 'Cannot paste this object. Unfortunately, the object you are trying to paste is not supported by this content type or version.',
-      sizeLabel: 'Size',
-      positionLabel: 'Position',
-      heightLabel: 'Height',
-      widthLabel: 'Width'
-    }
-  };
-}
