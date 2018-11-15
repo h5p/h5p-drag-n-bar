@@ -9,6 +9,9 @@
     "sizeLabel":"Veličina",
     "positionLabel":"Pozisija",
     "heightLabel":"Visina",
-    "widthLabel":"Širina"
+    "widthLabel":"Širina",
+    "copyLabel": "Copy",
+    "paste": "Paste",
+    "moreElements": "More elements"
   }
 }

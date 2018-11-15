@@ -14,6 +14,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
    * @param {Function} [options.createElement] Function for creating element from button
+   * @param {Function} [options.disableCopy] Copy button disabled or enabled?
    * @param {boolean} [options.hasCoordinates] Decides if element will display coordinates
    * @param {H5P.jQuery} [options.element] Element
    */
@@ -24,7 +25,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.dnb = dragNBar;
     this.options = options || {};
     if (!this.options.disableContextMenu) {
-      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates, this.options.disableResize, this.options.directionLock);
+      this.contextMenu = new ContextMenu(this.dnb.$dialogContainer, this, this.options.hasCoordinates, this.options.disableResize, this.options.directionLock, this.options.disableCopy);
     }
     this.focused = false;
 
@@ -57,7 +58,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       if (clipboardData && localStorage) {
         clipboardData.width = width;
         clipboardData.height = height;
-        localStorage.setItem('h5pClipboard', JSON.stringify(clipboardData));
+        H5P.setClipboard(clipboardData);
       }
     };
   }
@@ -166,7 +167,8 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       var newLeft = left - contextMenuWidth;
       this.contextMenu.$contextMenu.css('left', newLeft + 'px');
       this.contextMenu.$contextMenu.addClass('left-aligned');
-    } else {
+    }
+    else {
       this.contextMenu.$contextMenu.removeClass('left-aligned');
     }
   };

@@ -12,8 +12,9 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @param {H5P.DragNBarElement} DragNBarElement
    * @param {boolean} [hasCoordinates] Decides if coordinates will be displayed
    * @param {boolean} [disableResize] No input for dimensions
+   * @param {boolean} [disableCopy] Disable copy button
    */
-  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize, directionLock) {
+  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize, directionLock, disableCopy) {
     var self = this;
     EventDispatcher.call(this);
 
@@ -103,6 +104,10 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
     ];
 
+    if (!disableCopy) {
+      this.buttons.splice(1, 0, {name: 'Copy', label: H5PEditor.t('H5P.DragNBar', 'copyLabel')});
+    }
+
     /**
      * Register transform listener
      *
@@ -111,7 +116,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @param {Boolean} [e.data.showTransformPanel] Show transform panel
      */
     self.on('contextMenuTransform', function (e) {
-      if (e && e.data.showTransformPanel) {
+      if (e && e.data.showTransformPanel !== undefined) {
         // Use event data
         self.showingTransformPanel = e.data.showTransformPanel;
       }
@@ -181,7 +186,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     this.$x = this.$coordinates.find('.h5p-dragnbar-x');
     this.$y = this.$coordinates.find('.h5p-dragnbar-y');
 
-    this.$x.add(this.$y).on('change keydown', function(event) {
+    this.$x.add(this.$y).on('change keydown', function (event) {
       if (event.type === 'change' || event.which === 13) {
 
         // Get input
@@ -276,6 +281,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
 
     var updateDimensions = function (type) {
       var target = parseFloat(this.value);
+
       if (isNaN(target)) {
         return;
       }
@@ -357,8 +363,13 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     var self = this;
     var $element = self.dnbElement.getElement();
     var elementSize = window.getComputedStyle($element[0]);
-    self.$width.val(Math.round(parseFloat(elementSize.width)));
-    self.$height.val(Math.round(parseFloat(elementSize.height)));
+
+    // Re-add any padding removed while updating size
+    var paddingX = $element[0].getBoundingClientRect()['width'] - parseFloat(elementSize['width']);
+    var paddingY = $element[0].getBoundingClientRect()['height'] - parseFloat(elementSize['height']);
+
+    self.$width.val(Math.round(parseFloat(elementSize.width) + paddingX));
+    self.$height.val(Math.round(parseFloat(elementSize.height) + paddingY));
   };
 
   /**

@@ -9,6 +9,9 @@
     "sizeLabel":"Dimensions",
     "positionLabel":"Position",
     "heightLabel":"Hauteur",
-    "widthLabel":"Largeur"
+    "widthLabel":"Largeur",
+    "copyLabel": "Copy",
+    "paste": "Paste",
+    "moreElements": "More elements"
   }
 }
