@@ -709,7 +709,8 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         var createdElement = button.createElement();
         that.$element = createdElement;
         that.$container.css('overflow', 'visible');
-        that.dnd.press(that.$element, event.pageX, event.pageY);
+        // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
+        that.dnd.press(that.$element, event.pageX, 0);
         that.focus(that.$element);
       }
     });
