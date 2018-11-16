@@ -748,7 +748,7 @@ H5P.DragNBar.prototype.addHoverHandler = function (elements, callback) {
             });
             callback();
           }
-        }, 0); // Give other element time to get entered
+        }, 100); // Give other element time to get entered
       });
   });
 };
