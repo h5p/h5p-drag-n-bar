@@ -741,10 +741,10 @@ H5P.DragNBar.prototype.addHoverHandler = function (elements, callback) {
         counter++;
       })
       .on('mouseleave', function () {
-        counter--;
         setTimeout(function () {
+          counter--;
           if (counter === 0) {
-            elements.forEach(function () {
+            elements.forEach(function (element) {
               element.off('mouseenter').off('mouseleave');
             });
             callback();
