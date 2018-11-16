@@ -694,6 +694,13 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
           // Show dropdown and hide buttons tooltip
           $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
           $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+
+          if (!$buttonGroup.hasClass('h5peditor-dragnbar-gone')) {
+            that.addHoverHandler([$button, $buttonGroup], function () {
+              $buttonGroup.toggleClass('h5peditor-dragnbar-gone', true);
+              $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone', false);
+            });
+          }
         }
       }
       else {
@@ -706,6 +713,44 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         that.focus(that.$element);
       }
     });
+};
+
+/**
+ * Run handler as soon as all elements have been left.
+ *
+ * Assumes that one of the items is already hovered.
+ *
+ * @param {object[]} elements List of jQuery elements to be listened to.
+ * @param {function} callback Handler callback.
+ */
+H5P.DragNBar.prototype.addHoverHandler = function (elements, callback) {
+  // Count elements that are hovered (should be 1 normally)
+  let counter = elements.reduce(function (a, b) {
+    return a + b.get(0).matches(':hover') ? 1 : 0;
+  }, 0);
+
+  if (counter === 0) {
+    callback();
+    return; // Skip
+  }
+
+  elements.forEach(function (element, index, elements) {
+    element
+      .on('mouseenter', function () {
+        counter++;
+      })
+      .on('mouseleave', function () {
+        counter--;
+        setTimeout(function () {
+          if (counter === 0) {
+            elements.forEach(function () {
+              element.off('mouseenter').off('mouseleave');
+            });
+            callback();
+          }
+        }, 0); // Give other element time to get entered
+      });
+  });
 };
 
 /**
