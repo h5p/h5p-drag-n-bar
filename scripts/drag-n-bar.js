@@ -641,13 +641,13 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  var $button = ns.$(
+  var $button = H5P.jQuery(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
       '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
     '</li>'
   ).appendTo($list);
 
-  ns.$('<span/>', {
+  H5P.jQuery('<span/>', {
     'class': 'h5p-dragnbar-tooltip',
     'text': button.title
   }).appendTo($button);
@@ -751,22 +751,22 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   this.$list.find('.h5p-dragnbar-tooltip').each(function () {
     // Get correct offset even if element is a child
-    var width = ns.$(this).outerWidth();
-    var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
+    var width = H5P.jQuery(this).outerWidth();
+    var parentWidth = H5P.jQuery(this).parents('.h5p-dragnbar-li').last().outerWidth();
 
     // Center the tooltip
-    ns.$(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
+    H5P.jQuery(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
 
-    var offsetLeft = ns.$(this).position().left += ns.$(this).parents('.h5p-dragnbar-li').last().position().left;
+    var offsetLeft = H5P.jQuery(this).position().left += H5P.jQuery(this).parents('.h5p-dragnbar-li').last().position().left;
 
     // If outside left edge
     if (offsetLeft <= 0) {
-      ns.$(this).css('left', 0);
+      H5P.jQuery(this).css('left', 0);
     }
 
     // If outside right edge
     if (offsetLeft + width > containerWidth) {
-      ns.$(this).css('left', -(width - parentWidth));
+      H5P.jQuery(this).css('left', -(width - parentWidth));
     }
   });
 };
