@@ -652,6 +652,23 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     'text': button.title
   }).appendTo($button);
 
+  let $buttonGroup;
+  if (button.type === 'group') {
+    // Create dropdown button group
+    $buttonGroup = this.addButtonGroup(button.buttons, $button, {title: button.titleGroup});
+    $buttonGroup.addClass('h5peditor-dragnbar-gone');
+
+    // Close group on click somewhere else
+    H5P.jQuery(document).click(function (event) {
+      const hitButton = H5P.jQuery(event.target).is($button); // Closing handled by button itself
+      const hitButtonGroup = H5P.jQuery(event.target).closest('.h5p-dragnbar-button-group').length === 1;
+      if (!hitButton && !hitButtonGroup) {
+        $buttonGroup.toggleClass('h5peditor-dragnbar-gone', true);
+        $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone', false);
+      }
+    });
+  }
+
   $button
     .hover(function () {
       that.containTooltips();
@@ -663,14 +680,63 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       if (event.which !== 1) {
         return;
       }
-      that.newElement = true;
-      that.pressed = true;
-      var createdElement = button.createElement();
-      that.$element = createdElement;
-      that.$container.css('overflow', 'visible');
-      that.dnd.press(that.$element, event.pageX, event.pageY);
-      that.focus(that.$element);
+
+      // Switch between normal button and dropdown button group
+      if (button.type === 'group') {
+        if ($buttonGroup !== undefined) {
+          // Set position here, because content types might add buttons out of order
+          const offset = parseFloat($button.closest('.h5p-dragnbar').css('padding-left'));
+          const position = $button.position().left - $buttonGroup.position().left - offset;
+          if (position > 0) {
+            $buttonGroup.css('left', position);
+          }
+
+          // Show dropdown and hide buttons tooltip
+          $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
+          $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+        }
+      }
+      else {
+        that.newElement = true;
+        that.pressed = true;
+        var createdElement = button.createElement();
+        that.$element = createdElement;
+        that.$container.css('overflow', 'visible');
+        that.dnd.press(that.$element, event.pageX, event.pageY);
+        that.focus(that.$element);
+      }
     });
+};
+
+/**
+ * Add button group.
+ *
+ * @param {object[]} Buttons.
+ * @param {H5P.jQuery} $button Button to add button group to.
+ * @param {object} [options] Options.
+ * @param {string} [options.title] Title for the group.
+ */
+H5P.DragNBar.prototype.addButtonGroup = function (buttons, $button, options) {
+  const that = this;
+
+  const $buttonGroup = H5P.jQuery('<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>');
+  // Add optional title to the group
+  if (options && options.title && options.title !=='') {
+    H5P.jQuery('<div class="h5p-dragnbar-button-title">' + options.title + '</div>')
+      .appendTo($buttonGroup);
+  }
+
+  // Container for buttons
+  const $buttonGroupButtons = H5P.jQuery('<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>')
+    .appendTo($buttonGroup);
+
+  // Add buttons
+  buttons.forEach(function (button) {
+    that.addButton(button, $buttonGroupButtons);
+  });
+
+  $buttonGroup.insertAfter($button.parent());
+  return $buttonGroup;
 };
 
 /**
