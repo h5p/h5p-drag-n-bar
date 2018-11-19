@@ -113,6 +113,7 @@
   background: none;
   border: none;
   position: relative;
+  height: auto;
 }
 
 .h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-buttons li:last-child {
