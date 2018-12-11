@@ -726,8 +726,8 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
  */
 H5P.DragNBar.prototype.addHoverHandler = function (elements, callback) {
   // Count elements that are hovered (should be 1 normally)
-  let counter = elements.reduce(function (a, b) {
-    return a + b.get(0).matches(':hover') ? 1 : 0;
+  let counter = elements.reduce(function (accu, current) {
+    return accu + current.get(0).matches(':hover') ? 1 : 0;
   }, 0);
 
   if (counter === 0) {
