@@ -58,6 +58,36 @@ H5P.DragNBar = (function (EventDispatcher) {
         self.resize();
       });
     }
+
+    /**
+     * Add button group.
+     *
+     * @private
+     * @param {object[]} Buttons.
+     * @param {H5P.jQuery} $button Button to add button group to.
+     * @param {object} [options] Options.
+     * @param {string} [options.title] Title for the group.
+     */
+    this.addButtonGroup = function (buttons, $button, options) {
+      const $buttonGroup = H5P.jQuery('<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>');
+      // Add optional title to the group
+      if (options && options.title && options.title !=='') {
+        H5P.jQuery('<div class="h5p-dragnbar-button-title">' + options.title + '</div>')
+          .appendTo($buttonGroup);
+      }
+
+      // Container for buttons
+      const $buttonGroupButtons = H5P.jQuery('<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>')
+        .appendTo($buttonGroup);
+
+      // Add buttons
+      buttons.forEach(function (button) {
+        self.addButton(button, $buttonGroupButtons);
+      });
+
+      $buttonGroup.insertAfter($button.parent());
+      return $buttonGroup;
+    };
   }
 
   // Inherit support for events
@@ -707,37 +737,6 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         that.focus(that.$element);
       }
     });
-};
-
-/**
- * Add button group.
- *
- * @param {object[]} Buttons.
- * @param {H5P.jQuery} $button Button to add button group to.
- * @param {object} [options] Options.
- * @param {string} [options.title] Title for the group.
- */
-H5P.DragNBar.prototype.addButtonGroup = function (buttons, $button, options) {
-  const that = this;
-
-  const $buttonGroup = H5P.jQuery('<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>');
-  // Add optional title to the group
-  if (options && options.title && options.title !=='') {
-    H5P.jQuery('<div class="h5p-dragnbar-button-title">' + options.title + '</div>')
-      .appendTo($buttonGroup);
-  }
-
-  // Container for buttons
-  const $buttonGroupButtons = H5P.jQuery('<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>')
-    .appendTo($buttonGroup);
-
-  // Add buttons
-  buttons.forEach(function (button) {
-    that.addButton(button, $buttonGroupButtons);
-  });
-
-  $buttonGroup.insertAfter($button.parent());
-  return $buttonGroup;
 };
 
 /**
