@@ -671,16 +671,21 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
+  const hasTitle = (button.title && button.title !== '');
+  const ariaLabel = hasTitle ? ' aria-label="' + button.title + '"' : '';
   var $button = H5P.jQuery(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
-      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"' + ariaLabel + '></a>' +
     '</li>'
   ).appendTo($list);
 
-  H5P.jQuery('<span/>', {
-    'class': 'h5p-dragnbar-tooltip',
-    'text': button.title
-  }).appendTo($button);
+  // Prevent empty tooltips (would show on Firefox)
+  if (hasTitle) {
+    H5P.jQuery('<span/>', {
+      'class': 'h5p-dragnbar-tooltip',
+      'text': button.title
+    }).appendTo($button);
+  }
 
   let $buttonGroup;
   if (button.type === 'group') {
