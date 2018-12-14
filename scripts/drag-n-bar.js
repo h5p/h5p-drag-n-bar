@@ -674,7 +674,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   const ariaLabel = (button.title && button.title !== '') ? 'aria-label="' + button.title + '"' : '';
   var $button = H5P.jQuery(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
-      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"' + ariaLabel + '></a>' +
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" ' + ariaLabel + '></a>' +
     '</li>'
   ).appendTo($list);
 
