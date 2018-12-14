@@ -13,8 +13,11 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @param {boolean} [hasCoordinates] Decides if coordinates will be displayed
    * @param {boolean} [disableResize] No input for dimensions
    * @param {boolean} [disableCopy] Disable copy button
+   * @param {string} [directionLock] Which way to lock resizing. Possible values:
+   *  - 'vertical'
+   *  - 'horizontal'
    */
-  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize, disableCopy) {
+  function ContextMenu($container, DragNBarElement, hasCoordinates, disableResize, disableCopy, directionLock) {
     var self = this;
     EventDispatcher.call(this);
 
@@ -24,6 +27,8 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @type {H5P.DragNBar}
      */
     this.dnb = DragNBarElement.dnb;
+
+    this.directionLock = directionLock;
 
     /**
      * Keeps track of DnBElement object
@@ -315,7 +320,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     };
 
     // Add input for width
-    self.$width = self.getNewInput('width', H5PEditor.t('H5P.DragNBar', 'widthLabel'), self.$dimensions, updateDimensions);
+    self.$width = self.getNewInput('width', H5PEditor.t('H5P.DragNBar', 'widthLabel'), self.$dimensions, updateDimensions, self.directionLock === 'vertical');
 
     $('<span/>', {
       'class': 'h5p-dragnbar-dimensions-separator',
@@ -323,7 +328,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       appendTo: self.$dimensions
     });
 
-    self.$height = self.getNewInput('height', H5PEditor.t('H5P.DragNBar', 'heightLabel'), self.$dimensions, updateDimensions);
+    self.$height = self.getNewInput('height', H5PEditor.t('H5P.DragNBar', 'heightLabel'), self.$dimensions, updateDimensions, self.directionLock === 'horizontal');
 
     self.dnb.dnr.on('moveResizing', function () {
       self.updateDimensions();
@@ -377,9 +382,10 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    * @param {string} label
    * @param {H5P.jQuery} $container
    * @param {function} handler
+   * @param {boolean} disabled
    * @returns {H5P.jQuery}
    */
-  ContextMenu.prototype.getNewInput = function (type, label, $container, handler) {
+  ContextMenu.prototype.getNewInput = function (type, label, $container, handler, disabled) {
     // Wrap input element with label (implicit labeling)
     var $wrapper = $('<div/>', {
       'class': 'h5p-dragnbar-input h5p-dragnbar-' + type,
@@ -390,6 +396,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Create input field
     var $input = $('<input/>', {
       maxLength: 5,
+      disabled: disabled === true,
       on: {
         change: function () {
           handler.call(this, type);

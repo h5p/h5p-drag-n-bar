@@ -75,6 +75,7 @@ H5P.DragNBarDialog = (function ($, EventDispatcher) {
       'class': 'h5p-dialog-close',
       tabindex: '0',
       title: H5P.t('close'),
+      'aria-label': H5P.t('close'),
       on: {
         click: function (event) {
           if (event.which === 1) {

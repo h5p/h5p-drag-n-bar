@@ -46,6 +46,12 @@
   visibility: visible;
 }
 
+.h5p-dragnbar-input > input[disabled] {
+  background-color: #fff;
+  color: #888;
+  pointer-events: none;
+}
+
 /* Paste button */
 .h5p-dragnbar-li.paste-button {
   cursor: pointer;
@@ -71,4 +77,66 @@
 .h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li .h5p-dragnbar-paste-button:before {
   font-family: 'H5P';
   content: "\e90a";
+}
+.h5peditor-dragnbar .h5p-dragnbar-button-group {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 0;
+  border: 0;
+  padding: 0.5em;
+  box-shadow: 0 0 0.5em 0 rgba(105, 105, 105, 0.4);
+  height: auto;
+}
+.h5peditor-dragnbar .h5p-dragnbar-button-group:hover {
+  background: #fff;
+  border-radius: 0;
+  border: 0;
+  padding: 0.5em;
+  box-shadow: 0 0 0.5em 0 rgba(105, 105, 105, 0.4);
+  margin-bottom: 1em;
+}
+
+.h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-title {
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.6em;
+  margin-bottom: 1em;
+}
+
+.h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-buttons li {
+  float: left;
+  margin: 0;
+  padding: 0;
+  margin-right: 0.25em;
+  background: none;
+  border: none;
+  position: relative;
+  height: auto;
+}
+
+.h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-buttons li:last-child {
+  margin-right: 0;
+}
+
+.h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-buttons li a {
+  width: 0.75em;
+  line-height: 1.2em;
+  text-align: center;
+  background: linear-gradient(to bottom,#fff 0,#f2f2f2 100%);
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  display: block;
+  padding: 0.25em 0.6em 0.25em 0.4em;
+  height: 1.2em;
+}
+
+.h5peditor-dragnbar .h5p-dragnbar-button-group .h5p-dragnbar-button-buttons a {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.h5peditor-dragnbar .h5peditor-dragnbar-gone {
+  display: none;
 }

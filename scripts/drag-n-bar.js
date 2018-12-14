@@ -58,6 +58,36 @@ H5P.DragNBar = (function (EventDispatcher) {
         self.resize();
       });
     }
+
+    /**
+     * Add button group.
+     *
+     * @private
+     * @param {object[]} Buttons.
+     * @param {H5P.jQuery} $button Button to add button group to.
+     * @param {object} [options] Options.
+     * @param {string} [options.title] Title for the group.
+     */
+    this.addButtonGroup = function (buttons, $button, options) {
+      const $buttonGroup = H5P.jQuery('<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>');
+      // Add optional title to the group
+      if (options && options.title && options.title !=='') {
+        H5P.jQuery('<div class="h5p-dragnbar-button-title">' + options.title + '</div>')
+          .appendTo($buttonGroup);
+      }
+
+      // Container for buttons
+      const $buttonGroupButtons = H5P.jQuery('<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>')
+        .appendTo($buttonGroup);
+
+      // Add buttons
+      buttons.forEach(function (button) {
+        self.addButton(button, $buttonGroupButtons);
+      });
+
+      $buttonGroup.insertAfter($button.parent());
+      return $buttonGroup;
+    };
   }
 
   // Inherit support for events
@@ -641,16 +671,38 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  var $button = ns.$(
+  const hasTitle = (button.title && button.title !== '');
+  const ariaLabel = hasTitle ? ' aria-label="' + button.title + '"' : '';
+  var $button = H5P.jQuery(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
-      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button" aria-label="' + button.title + '"></a>' +
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"' + ariaLabel + '></a>' +
     '</li>'
   ).appendTo($list);
 
-  ns.$('<span/>', {
-    'class': 'h5p-dragnbar-tooltip',
-    'text': button.title
-  }).appendTo($button);
+  // Prevent empty tooltips (would show on Firefox)
+  if (hasTitle) {
+    H5P.jQuery('<span/>', {
+      'class': 'h5p-dragnbar-tooltip',
+      'text': button.title
+    }).appendTo($button);
+  }
+
+  let $buttonGroup;
+  if (button.type === 'group') {
+    // Create dropdown button group
+    $buttonGroup = this.addButtonGroup(button.buttons, $button, {title: button.titleGroup});
+    $buttonGroup.addClass('h5peditor-dragnbar-gone');
+
+    // Close group on click somewhere else
+    H5P.jQuery(document).click(function (event) {
+      const hitButton = H5P.jQuery(event.target).is($button); // Closing handled by button itself
+      const hitButtonGroup = H5P.jQuery(event.target).closest('.h5p-dragnbar-button-group').length === 1;
+      if (!hitButton && !hitButtonGroup) {
+        $buttonGroup.toggleClass('h5peditor-dragnbar-gone', true);
+        $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone', false);
+      }
+    });
+  }
 
   $button
     .hover(function () {
@@ -663,13 +715,32 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       if (event.which !== 1) {
         return;
       }
-      that.newElement = true;
-      that.pressed = true;
-      var createdElement = button.createElement();
-      that.$element = createdElement;
-      that.$container.css('overflow', 'visible');
-      that.dnd.press(that.$element, event.pageX, event.pageY);
-      that.focus(that.$element);
+
+      // Switch between normal button and dropdown button group
+      if (button.type === 'group') {
+        if ($buttonGroup !== undefined) {
+          // Set position here, because content types might add buttons out of order
+          const offset = parseFloat($button.closest('.h5p-dragnbar').css('padding-left'));
+          const position = $button.position().left - $buttonGroup.position().left - offset;
+          if (position > 0) {
+            $buttonGroup.css('left', position);
+          }
+
+          // Show dropdown and hide buttons tooltip
+          $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
+          $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+        }
+      }
+      else {
+        that.newElement = true;
+        that.pressed = true;
+        var createdElement = button.createElement();
+        that.$element = createdElement;
+        that.$container.css('overflow', 'visible');
+        // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
+        that.dnd.press(that.$element, event.pageX, 0);
+        that.focus(that.$element);
+      }
     });
 };
 
@@ -685,22 +756,22 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   this.$list.find('.h5p-dragnbar-tooltip').each(function () {
     // Get correct offset even if element is a child
-    var width = ns.$(this).outerWidth();
-    var parentWidth = ns.$(this).parents('.h5p-dragnbar-li').last().outerWidth();
+    var width = H5P.jQuery(this).outerWidth();
+    var parentWidth = H5P.jQuery(this).parents('.h5p-dragnbar-li').last().outerWidth();
 
     // Center the tooltip
-    ns.$(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
+    H5P.jQuery(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
 
-    var offsetLeft = ns.$(this).position().left += ns.$(this).parents('.h5p-dragnbar-li').last().position().left;
+    var offsetLeft = H5P.jQuery(this).position().left += H5P.jQuery(this).parents('.h5p-dragnbar-li').last().position().left;
 
     // If outside left edge
     if (offsetLeft <= 0) {
-      ns.$(this).css('left', 0);
+      H5P.jQuery(this).css('left', 0);
     }
 
     // If outside right edge
     if (offsetLeft + width > containerWidth) {
-      ns.$(this).css('left', -(width - parentWidth));
+      H5P.jQuery(this).css('left', -(width - parentWidth));
     }
   });
 };
