@@ -615,8 +615,9 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
       const $buttonMore = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
       $list = $buttonMore
         .appendTo($list)
-        .click(function () {
+        .click(function (e) {
           $list.stop().slideToggle(300);
+          e.preventDefault();
         })
         .children(':first')
         .next();
