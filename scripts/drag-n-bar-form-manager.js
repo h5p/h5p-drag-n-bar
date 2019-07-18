@@ -9,7 +9,7 @@
    * @param {*} parent
    * @param {Object} l10n
    */
-  DragNBar.FormManager = function (parent, l10n) {
+  DragNBar.FormManager = function (parent, l10n, customIconClass) {
     /** @alias H5P.DragNBar.FormManager# */
     var self = this;
 
@@ -47,7 +47,7 @@
       // Check if we can has fullscreen
       if (H5PEditor.semiFullscreen !== undefined) {
         // Create and insert fullscreen button into header
-        head.appendChild(createButton('fullscreen', '<>', function () {
+        const fullscreenButton = createButton('fullscreen', '', function () {
           if (manager.exitSemiFullscreen) {
             // Trigger semi-fullscreen exit
             manager.exitSemiFullscreen();
@@ -56,12 +56,18 @@
           else {
             // Trigger semi-fullscreen enter
             manager.exitSemiFullscreen = H5PEditor.semiFullscreen([manager.formContainer], function () {
+              fullscreenButton.setAttribute('aria-label', l10n.exitFullscreenButtonLabel);
+              fullscreenButton.classList.add('form-manager-exit');
               self.trigger('formentersemifullscreen');
             }, function () {
+              fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
+              fullscreenButton.classList.remove('form-manager-exit');
               self.trigger('formexitsemifullscreen');
             });
           }
-        }));
+        });
+        fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
+        head.appendChild(fullscreenButton);
       }
 
       // Create a container for the action buttons
@@ -115,14 +121,17 @@
      * @param {H5PEditor.Library} libraryField
      * @return {Element}
      */
-    const createTitle = function (libraryField) {
+    const createTitle = function (libraryField, customTitle, customIconId) {
 
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
 
       // Set correct starting title
-      if (libraryField.params.metadata && libraryField.params.metadata.title &&
+      if (customTitle) {
+        title.innerText = customTitle
+      }
+      else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
           libraryField.params.metadata.title.substr(0, 8) !== 'Untitled') {
         title.innerText = getText(libraryField.params.metadata.title);
       }
@@ -140,12 +149,14 @@
         // Listen for title updates
         libraryField.metadataForm.on('titlechange', function (e) {
           title.innerText = getText(libraryField.params.metadata.title);
-          // TODO: Check for issues when changing content types
         });
       }
 
-      const iconId = (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
-      title.classList.add('h5p-dragnbar-' + iconId + '-button');
+      const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
+      title.classList.add('form-manager-icon-' + iconId);
+      if (customIconClass) {
+        title.classList.add('form-manager-' + customIconClass);
+      }
 
       return title;
     };
@@ -230,10 +241,10 @@
       }
 
       const title = manager.formBreadcrumb.lastChild;
+      const headHeight = manager.formContainer.firstChild.getBoundingClientRect().height;
 
       // Freeze container height to avoid jumping while showing elements
-      manager.formContainer.style.height = (subForm.getBoundingClientRect().height + 40) + 'px';
-      // TODO: Use proper top value instead of 40.
+      manager.formContainer.style.height = (subForm.getBoundingClientRect().height + headHeight) + 'px';
 
       // Make underlay visible again
       if (subForm.previousSibling.classList.contains('form-manager-form')) {
@@ -258,8 +269,7 @@
       manager.formContainer.style.height = '';
 
       // Set sub-form height to cover container
-      subForm.style.height = (manager.formContainer.getBoundingClientRect().height - 40) + 'px';
-      // TODO: Use proper top value instead of 40.
+      subForm.style.height = (manager.formContainer.getBoundingClientRect().height - headHeight) + 'px';
 
       // Clean up when the final transition animation is finished
       onlyOnce(subForm, 'transitionend', function () {
@@ -309,7 +319,7 @@
      * @param {H5PEditor.Library} libraryField
      * @param {Element} formElement
      */
-    self.openForm = function (libraryField, formElement, customClass) {
+    self.openForm = function (libraryField, formElement, customClass, customTitle, customIconId) {
       if (isOpen) {
         return; // Prevent opening more than one sub-form at a time per editor.
       }
@@ -328,16 +338,14 @@
       subForm.appendChild(formElement);
 
       // Ensure same height as container
-      subForm.style.height = (manager.formContainer.getBoundingClientRect().height - 40) + 'px';
-      // TODO: Use proper top value instead of 40.
+      const headHeight = manager.formContainer.firstChild.getBoundingClientRect().height;
+      subForm.style.height = (manager.formContainer.getBoundingClientRect().height - headHeight) + 'px';
 
       // Insert into DOM
       manager.formContainer.appendChild(subForm);
 
-      // TODO: Make prev breadcrumb clickable
-
       // Add breadcrumb section
-      const title = createTitle(libraryField);
+      const title = createTitle(libraryField, customTitle, customIconId);
       manager.formBreadcrumb.appendChild(title);
 
       // Show our buttons

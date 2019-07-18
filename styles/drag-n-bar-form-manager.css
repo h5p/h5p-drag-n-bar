@@ -34,7 +34,7 @@
   left: 100%;
   z-index: 9;
   border-left: 1px solid #ededed;
-  transition: left 2s linear, opacity 2s linear;
+  transition: left 0.3s linear, opacity 0.3s linear;
   opacity: 0;
 }
 .form-manager-form.form-manager-slidein {
@@ -50,12 +50,51 @@
   float: right
 }
 
+.form-manager-button {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  color: #414141;
+  opacity: 0.7;
+}
+.form-manager-button:hover {
+  opacity: 1;
+}
+.form-manager-fullscreen {
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+}
+.form-manager-fullscreen:before {
+  font-family: 'H5PFontAwesome4';
+  content: "\f065";
+}
+.form-manager-exit.form-manager-fullscreen:before {
+  content: "\f066";
+}
+.form-manager-done,
+.form-manager-delete {
+  display: block;
+  float: left;
+  padding: 5px 10px 4px;
+  margin-right: 5px;
+}
+.form-manager-done {
+  background: #166df7;
+  color: #fff;
+}
+.form-manager-delete {
+  color: #ff2000;
+}
+
 .form-manager-title {
   position: relative;
   margin-left: 120px;
   padding-left: 26px;
   opacity: 0;
-  transition: margin-left 2s linear, opacity 2s linear;
+  transition: margin-left 0.3s linear, opacity 0.3s linear;
 }
 .form-manager-title.form-manager-comein {
   margin-left: 20px;
@@ -65,18 +104,167 @@
   margin-left: 0;
 }
 .form-manager-title:before {
-  font-family: H5PCoursePresentation;
+  font-family: 'H5PFontAwesome4';
   color: #494949;
   position: absolute;
   left: 0;
+  line-height: 1.45;
+  text-align: center;
+  width: 24px;
 }
-
 .form-manager-buttons {
   transform: scale(0, 0);
   opacity: 0;
-  transition: transform 2s linear, opacity 2s linear;
+  transition: transform 0.3s linear, opacity 0.3s linear;
 }
 .form-manager-buttons.form-manager-comein {
   transform: scale(1, 1);
   opacity: 1;
+}
+
+.form-manager-icon-nil:before {
+  content: "\f146";
+}
+.form-manager-icon-text:before {
+  content: "T";
+}
+.form-manager-icon-table:before {
+  content: "\f0ce";
+}
+.form-manager-icon-link:before {
+  content: "\f0c1";
+}
+.form-manager-icon-image:before {
+  content: "\f03e";
+}
+.form-manager-icon-audio:before {
+  content: "\f028";
+}
+.form-manager-icon-video:before {
+  content: "\f008";
+}
+.form-manager-icon-twitteruserfeed:before {
+  content: "\f099";
+}
+.form-manager-icon-interactivevideo:before {
+  content: "\f01d";
+}
+.form-manager-icon-gotoquestion:before {
+  content: "\f277";
+}
+.form-manager-icon-chart:before {
+  content: "\f200";
+}
+.form-manager-icon-truefalse:before,
+.form-manager-icon-coursepresentation:before {
+  font-family: 'H5PFontIcons';
+}
+.form-manager-icon-truefalse:before {
+  content: "\e902";
+}
+.form-manager-icon-coursepresentation:before {
+  content: "\E90B";
+}
+
+/* Interactive Video icons */
+.form-manager-interactivevideo.form-manager-icon-dragquestion:before,
+.form-manager-interactivevideo.form-manager-icon-multichoice:before,
+.form-manager-interactivevideo.form-manager-icon-blanks:before,
+.form-manager-interactivevideo.form-manager-icon-summary:before,
+.form-manager-interactivevideo.form-manager-icon-markthewords:before,
+.form-manager-interactivevideo.form-manager-icon-dragtext:before,
+.form-manager-interactivevideo.form-manager-icon-singlechoiceset:before,
+.form-manager-interactivevideo.form-manager-icon-questionnaire:before,
+.form-manager-interactivevideo.form-manager-icon-ivhotspot:before,
+.form-manager-interactivevideo.form-manager-icon-freetextquestion:before {
+  font-family: 'H5PInteractiveVideoEditor';
+}
+.form-manager-interactivevideo.form-manager-icon-dragquestion:before {
+  content: "\e991";
+}
+.form-manager-interactivevideo.form-manager-icon-multichoice:before {
+  content: "\e603";
+}
+.form-manager-interactivevideo.form-manager-icon-blanks:before {
+  content: "\e994";
+}
+.form-manager-interactivevideo.form-manager-icon-summary:before {
+  content: "\e992";
+}
+.form-manager-interactivevideo.form-manager-icon-markthewords:before {
+  content: "\e601";
+}
+.form-manager-interactivevideo.form-manager-icon-dragtext:before {
+  content: "\e600";
+}
+.form-manager-interactivevideo.form-manager-icon-singlechoiceset:before {
+  content: "\e993";
+}
+.form-manager-interactivevideo.form-manager-icon-questionnaire:before {
+  content: "\e902";
+}
+.form-manager-interactivevideo.form-manager-icon-ivhotspot:before {
+  content: "\e901";
+}
+.form-manager-interactivevideo.form-manager-icon-freetextquestion:before {
+  content: "\e900";
+}
+
+/* Course Presentation icons */
+.form-manager-coursepresentation.form-manager-icon-interactivevideo:before {
+  content: "\f03d";
+}
+.form-manager-coursepresentation.form-manager-icon-advancedtext:before,
+.form-manager-coursepresentation.form-manager-icon-dragquestion:before,
+.form-manager-coursepresentation.form-manager-icon-blanks:before,
+.form-manager-coursepresentation.form-manager-icon-multichoice:before,
+.form-manager-coursepresentation.form-manager-icon-summary:before,
+.form-manager-coursepresentation.form-manager-icon-continuoustext:before,
+.form-manager-coursepresentation.form-manager-icon-exportabletextarea:before,
+.form-manager-coursepresentation.form-manager-icon-markthewords:before,
+.form-manager-coursepresentation.form-manager-icon-dragtext:before,
+.form-manager-coursepresentation.form-manager-icon-gotoslide:before,
+.form-manager-coursepresentation.form-manager-icon-singlechoiceset:before,
+.form-manager-coursepresentation.form-manager-icon-dialogcards:before,
+.form-manager-coursepresentation.form-manager-icon-shape:before {
+  font-family: 'H5PCoursePresentation';
+}
+.form-manager-coursepresentation.form-manager-icon-advancedtext:before {
+  content: "\e997";
+}
+.form-manager-coursepresentation.form-manager-icon-dragquestion:before {
+  content: "\e991";
+}
+.form-manager-coursepresentation.form-manager-icon-blanks:before {
+  content: "\e994";
+}
+.form-manager-coursepresentation.form-manager-icon-multichoice:before {
+  content: "\e603";
+}
+.form-manager-coursepresentation.form-manager-icon-summary:before {
+  content: "\e992";
+}
+.form-manager-coursepresentation.form-manager-icon-continuoustext:before {
+  content: "\e996";
+}
+.form-manager-coursepresentation.form-manager-icon-exportabletextarea:before {
+  content: "\e995";
+}
+.form-manager-coursepresentation.form-manager-icon-markthewords:before {
+  content: "\e601";
+}
+.form-manager-coursepresentation.form-manager-icon-dragtext:before {
+  content: "\e600";
+}
+.form-manager-coursepresentation.form-manager-icon-gotoslide:before {
+  content: "\e602";
+}
+.form-manager-coursepresentation.form-manager-icon-singlechoiceset:before {
+  content: "\e993";
+}
+.form-manager-coursepresentation.form-manager-icon-dialogcards:before {
+  content: "\e900";
+}
+.form-manager-coursepresentation.form-manager-icon-shape:before {
+  content: "\e91c";
 }
