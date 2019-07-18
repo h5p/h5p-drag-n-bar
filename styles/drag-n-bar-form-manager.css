@@ -1,0 +1,82 @@
+.form-manager {
+  position: relative;
+  border: 1px solid #ededed;
+  padding-bottom: 20px;
+  background: #fcfcfc;
+  overflow: hidden;
+}
+.form-manager.h5peditor-semi-fullscreen {
+  margin: 0;
+  position: fixed;
+  overflow: auto;
+}
+.form-manager > .field {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.form-manager-head {
+  background: #f5f5f5;
+  color: #414141;
+  border-bottom: 1px solid #ededed;
+  padding: 0.5em;
+  overflow: hidden;
+  height: 24px;
+}
+.form-manager-form {
+  background: #fcfcfc;
+  padding: 20px;
+}
+.form-manager-movable {
+  position: absolute;
+  width: 100%;
+  box-sizing: border-box;
+  top: 40px;
+  left: 100%;
+  z-index: 9;
+  border-left: 1px solid #ededed;
+  transition: left 2s linear, opacity 2s linear;
+  opacity: 0;
+}
+.form-manager-form.form-manager-slidein {
+  left: -1px;
+  opacity: 1;
+}
+.form-manager-breadcrumb,
+.form-manager-title {
+  float: left;
+}
+.form-manager-fullscreen,
+.form-manager-buttons {
+  float: right
+}
+
+.form-manager-title {
+  position: relative;
+  margin-left: 120px;
+  padding-left: 26px;
+  opacity: 0;
+  transition: margin-left 2s linear, opacity 2s linear;
+}
+.form-manager-title.form-manager-comein {
+  margin-left: 20px;
+  opacity: 1;
+}
+.form-manager-title:first-child {
+  margin-left: 0;
+}
+.form-manager-title:before {
+  font-family: H5PCoursePresentation;
+  color: #494949;
+  position: absolute;
+  left: 0;
+}
+
+.form-manager-buttons {
+  transform: scale(0, 0);
+  opacity: 0;
+  transition: transform 2s linear, opacity 2s linear;
+}
+.form-manager-buttons.form-manager-comein {
+  transform: scale(1, 1);
+  opacity: 1;
+}
