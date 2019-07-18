@@ -45,10 +45,6 @@
 .form-manager-title {
   float: left;
 }
-.form-manager-fullscreen,
-.form-manager-buttons {
-  float: right
-}
 
 .form-manager-button {
   background: transparent;
@@ -75,18 +71,25 @@
   content: "\f066";
 }
 .form-manager-done,
-.form-manager-delete {
+.form-manager-delete,
+.form-manager-proceed {
   display: block;
   float: left;
   padding: 5px 10px 4px;
   margin-right: 5px;
 }
-.form-manager-done {
+.form-manager-done,
+.form-manager-proceed {
   background: #166df7;
   color: #fff;
 }
 .form-manager-delete {
   color: #ff2000;
+}
+.form-manager-fullscreen,
+.form-manager-buttons,
+.form-manager-proceed {
+  float: right;
 }
 
 .form-manager-title {

@@ -17,7 +17,7 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let isOpen, handleTransitionend;
+    let isOpen, handleTransitionend, proceedButton;
 
     /**
      * Initialize the FormManager.
@@ -56,10 +56,20 @@
           else {
             // Trigger semi-fullscreen enter
             manager.exitSemiFullscreen = H5PEditor.semiFullscreen([manager.formContainer], function () {
+              if (isOpen) {
+                hideElement(self.formButtons);
+              }
+              showElement(proceedButton);
+
               fullscreenButton.setAttribute('aria-label', l10n.exitFullscreenButtonLabel);
               fullscreenButton.classList.add('form-manager-exit');
               self.trigger('formentersemifullscreen');
             }, function () {
+              if (isOpen) {
+                showElement(self.formButtons);
+              }
+              hideElement(proceedButton);
+
               fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
               fullscreenButton.classList.remove('form-manager-exit');
               self.trigger('formexitsemifullscreen');
@@ -90,6 +100,17 @@
         formTargets[formTargets.length - 1].trigger('formdone');
         closeForm();
       }));
+
+      // Create 'Proceed to save' button
+      proceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
+        if (manager.exitSemiFullscreen) {
+          // Trigger semi-fullscreen exit
+          manager.exitSemiFullscreen();
+          manager.exitSemiFullscreen = null;
+        }
+      });
+      hideElement(proceedButton);
+      head.appendChild(proceedButton);
 
       // Insert everything in the top of the form DOM
       self.formContainer.insertBefore(head, self.formContainer.firstChild);
