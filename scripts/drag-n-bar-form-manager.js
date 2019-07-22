@@ -17,7 +17,9 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let isOpen, handleTransitionend, proceedButton;
+    let isSubformOpen, handleTransitionend, proceedButton;
+
+    let isFullscreen = false;
 
     /**
      * Initialize the FormManager.
@@ -56,19 +58,15 @@
           else {
             // Trigger semi-fullscreen enter
             manager.exitSemiFullscreen = H5PEditor.semiFullscreen([manager.formContainer], function () {
-              if (isOpen) {
-                hideElement(self.formButtons);
-              }
-              showElement(proceedButton);
+              isFullscreen = true;
+              toggleProceedButton();
 
               fullscreenButton.setAttribute('aria-label', l10n.exitFullscreenButtonLabel);
               fullscreenButton.classList.add('form-manager-exit');
               self.trigger('formentersemifullscreen');
             }, function () {
-              if (isOpen) {
-                showElement(self.formButtons);
-              }
-              hideElement(proceedButton);
+              isFullscreen = false;
+              toggleProceedButton();
 
               fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
               fullscreenButton.classList.remove('form-manager-exit');
@@ -232,6 +230,15 @@
     };
 
     /**
+     * Toggle visibility of the procees button
+     */
+    const toggleProceedButton = function () {
+      // Show button only for main content (in fullscreen only)
+      const func = (isFullscreen && !isSubformOpen ? showElement : hideElement);
+      func(proceedButton);
+    }
+
+    /**
      * Closes the current form.
      *
      * @private
@@ -305,6 +312,8 @@
       // Start the animation
       subForm.classList.remove('form-manager-slidein');
       title.classList.remove('form-manager-comein');
+
+      toggleProceedButton();
     };
 
     /**
@@ -331,7 +340,7 @@
      * @param {boolean} state
      */
     self.setFormOpenState = function (state) {
-      isOpen = state;
+      isSubformOpen = state;
     };
 
     /**
@@ -341,10 +350,10 @@
      * @param {Element} formElement
      */
     self.openForm = function (libraryField, formElement, customClass, customTitle, customIconId) {
-      if (isOpen) {
+      if (isSubformOpen) {
         return; // Prevent opening more than one sub-form at a time per editor.
       }
-      isOpen = true;
+      isSubformOpen = true;
 
       // Tell manager that we should be receiving the next buttons events
       manager.addFormTarget(self);
@@ -396,6 +405,8 @@
         title.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
       }, 0);
+
+      toggleProceedButton();
     }
 
     /**
@@ -404,7 +415,7 @@
      * @return {boolean}
      */
     self.isFormOpen = function () {
-      return isOpen && !handleTransitionend;
+      return isSubformOpen && !handleTransitionend;
     }
 
     // Figure out which manager to use.
