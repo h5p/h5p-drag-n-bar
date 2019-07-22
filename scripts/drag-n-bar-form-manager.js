@@ -144,30 +144,40 @@
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
 
+      let innerText;
+
       // Set correct starting title
       if (customTitle) {
-        title.innerText = customTitle
+        innerText = customTitle;
       }
       else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
           libraryField.params.metadata.title.substr(0, 8) !== 'Untitled') {
-        title.innerText = getText(libraryField.params.metadata.title);
+        innerText = getText(libraryField.params.metadata.title);
       }
       else {
         if (libraryField.$select !== undefined) {
-          title.innerText = libraryField.$select.children(':selected').text();
+          innerText = libraryField.$select.children(':selected').text();
         }
         else {
           // There is no way to get the title from the Hub, use the default one
-          title.innerText = l10n.defaultTitle;
+          innerText = l10n.defaultTitle;
         }
       }
 
       if (libraryField.metadataForm) {
         // Listen for title updates
         libraryField.metadataForm.on('titlechange', function (e) {
-          title.innerText = getText(libraryField.params.metadata.title);
+          innerText = getText(libraryField.params.metadata.title);
         });
       }
+
+      if (isSubformOpen) {
+        const arrowTipContainer = document.createElement('div');
+        arrowTipContainer.classList.add('arrow-tip-container');
+        title.appendChild(arrowTipContainer);
+      }
+
+      title.appendChild(document.createTextNode(innerText));
 
       const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
       title.classList.add('form-manager-icon-' + iconId);

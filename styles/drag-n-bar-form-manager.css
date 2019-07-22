@@ -22,9 +22,9 @@
   background: #f5f5f5;
   color: #414141;
   border-bottom: 1px solid #ededed;
-  padding: 0.5em;
   overflow: hidden;
-  height: 24px;
+  height: 40px;
+  line-height: 40px;
 }
 .h5peditor-semi-fullscreen .form-manager-head {
   position: fixed;
@@ -64,7 +64,6 @@
 .form-manager-title {
   float: left;
 }
-
 .form-manager-button {
   background: transparent;
   margin: 0;
@@ -81,6 +80,7 @@
   width: 24px;
   height: 24px;
   font-size: 20px;
+  margin-right: 0.5em;
 }
 .form-manager-fullscreen:before {
   font-family: 'H5PFontAwesome4';
@@ -90,25 +90,39 @@
   content: "\f066";
 }
 .form-manager-done,
-.form-manager-delete,
-.form-manager-proceed {
+.form-manager-proceed,
+.form-manager-delete {
   display: block;
   float: left;
+
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Open Sans, sans-serif;
+
   padding: 5px 10px 4px;
+  border-radius: 2px;
   margin-right: 5px;
 }
 .form-manager-done,
 .form-manager-proceed {
-  background: #166df7;
+  background: #186df7;
   color: #fff;
+}
+.form-manager-done:hover,
+.form-manager-proceed:hover {
+  background: #20588f;
 }
 .form-manager-delete {
   color: #ff2000;
+}
+.form-manager-delete:hover {
+  text-decoration: underline;
 }
 .form-manager-fullscreen,
 .form-manager-buttons,
 .form-manager-proceed {
   float: right;
+  margin-top: 0.4em;
 }
 .form-manager-title {
   position: relative;
@@ -116,6 +130,8 @@
   padding-left: 26px;
   opacity: 0;
   transition: margin-left 0.3s linear, opacity 0.3s linear;
+  font-weight: bold;
+  font-size: 14px;
 }
 .form-manager-title.form-manager-comein {
   margin-left: 20px;
@@ -125,13 +141,31 @@
   margin-left: 0;
 }
 .form-manager-title:before {
+  font-weight: normal;
   font-family: 'H5PFontAwesome4';
   color: #494949;
   position: absolute;
   left: 0;
-  line-height: 1.45;
   text-align: center;
   width: 24px;
+}
+.arrow-tip-container {
+  display: block;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 0px;
+  left: -20px;
+  overflow: hidden;
+}
+.arrow-tip-container:after {
+  display: block;
+  content: ' ';
+  width: 40px;
+  height: 40px;
+  margin: 0 0 0 -20px;
+  transform: rotate(45deg) skew(20deg,20deg);
+  border: 1px solid #dedede;
 }
 .form-manager-buttons {
   transform: scale(0, 0);
