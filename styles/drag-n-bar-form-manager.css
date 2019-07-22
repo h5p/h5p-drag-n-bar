@@ -33,6 +33,10 @@
   right: 0;
   z-index: 2;
 }
+/* TODO - should this be placed here? */
+.h5peditor-semi-fullscreen + .h5p-metadata-popup-overlay {
+  position: fixed;
+}
 .form-manager-form {
   background: #fcfcfc;
   padding: 20px;
