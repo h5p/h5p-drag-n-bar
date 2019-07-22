@@ -19,6 +19,8 @@
     const formTargets = [self];
     let isSubformOpen, handleTransitionend, proceedButton;
 
+    let fullscreenButton;
+
     let isFullscreen = false;
 
     /**
@@ -49,7 +51,7 @@
       // Check if we can has fullscreen
       if (H5PEditor.semiFullscreen !== undefined) {
         // Create and insert fullscreen button into header
-        const fullscreenButton = createButton('fullscreen', '', function () {
+        fullscreenButton = createButton('fullscreen', '', function () {
           if (manager.exitSemiFullscreen) {
             // Trigger semi-fullscreen exit
             manager.exitSemiFullscreen();
@@ -60,21 +62,17 @@
             manager.exitSemiFullscreen = H5PEditor.semiFullscreen([manager.formContainer], function () {
               isFullscreen = true;
               toggleProceedButton();
-
-              fullscreenButton.setAttribute('aria-label', l10n.exitFullscreenButtonLabel);
-              fullscreenButton.classList.add('form-manager-exit');
+              updateFullscreenButton();
               self.trigger('formentersemifullscreen');
             }, function () {
               isFullscreen = false;
               toggleProceedButton();
-
-              fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
-              fullscreenButton.classList.remove('form-manager-exit');
+              updateFullscreenButton();
               self.trigger('formexitsemifullscreen');
             });
           }
         });
-        fullscreenButton.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
+        updateFullscreenButton();
         head.appendChild(fullscreenButton);
       }
 
@@ -236,6 +234,17 @@
       // Show button only for main content (in fullscreen only)
       const func = (isFullscreen && !isSubformOpen ? showElement : hideElement);
       func(proceedButton);
+    }
+
+    /**
+     * Update fuillscreen button's attributes dependent on fullscreen or not
+     */
+    const updateFullscreenButton = function () {
+      const title = isFullscreen ? l10n.exitFullscreenButtonLabel : l10n.enterFullscreenButtonLabel;
+
+      fullscreenButton.setAttribute('aria-label', title);
+      fullscreenButton.setAttribute('title', title);
+      fullscreenButton.classList[isFullscreen ? 'add' : 'remove']('form-manager-exit');
     }
 
     /**
