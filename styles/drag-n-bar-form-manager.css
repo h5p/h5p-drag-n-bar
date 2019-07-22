@@ -9,10 +9,14 @@
   margin: 0;
   position: fixed;
   overflow: auto;
+  margin-top: 40px;
 }
-.form-manager > .field {
-  margin-left: 20px;
-  margin-right: 20px;
+.form-manager > .tree > .field,
+.form-manager > .common {
+  max-width: 918px;
+  margin: 20px auto !important;
+  padding: 0 20px;
+  background-color: transparent !important;
 }
 .form-manager-head {
   background: #f5f5f5;
@@ -22,9 +26,20 @@
   overflow: hidden;
   height: 24px;
 }
+.h5peditor-semi-fullscreen .form-manager-head {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
 .form-manager-form {
   background: #fcfcfc;
   padding: 20px;
+  /* Set a max-width for the form */
+  max-width: 918px;
+  /* ... and center align it */
+  margin: 0 auto;
 }
 .form-manager-movable {
   position: absolute;
@@ -91,7 +106,6 @@
 .form-manager-proceed {
   float: right;
 }
-
 .form-manager-title {
   position: relative;
   margin-left: 120px;
@@ -124,7 +138,6 @@
   transform: scale(1, 1);
   opacity: 1;
 }
-
 .form-manager-icon-nil:before {
   content: "\f146";
 }
