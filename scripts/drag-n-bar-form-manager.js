@@ -30,7 +30,7 @@
     const initialize = function () {
 
       // Locate target container
-      self.formContainer = (parent instanceof H5PEditor.Library ? parent.$libraryWrapper : parent.$form.children('.tree'))[0];
+      self.formContainer = (parent instanceof H5PEditor.Library ? parent.$libraryWrapper : parent.$form)[0];
       self.formContainer.classList.add('form-manager');
 
       const head = document.createElement('div');
