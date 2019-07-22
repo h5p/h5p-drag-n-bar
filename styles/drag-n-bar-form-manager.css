@@ -1,7 +1,7 @@
-.form-manager {
+.form-manager.h5peditor-form {
   position: relative;
   border: 1px solid #ededed;
-  padding-bottom: 20px;
+  padding: 0;
   background: #fcfcfc;
   overflow: hidden;
 }
@@ -14,9 +14,9 @@
 .form-manager > .tree > .field,
 .form-manager > .common {
   max-width: 918px;
-  margin: 20px auto !important;
+  margin: 20px auto;
   padding: 0 20px;
-  background-color: transparent !important;
+  background-color: transparent !important; /* TODO */
 }
 .form-manager-head {
   background: #f5f5f5;
