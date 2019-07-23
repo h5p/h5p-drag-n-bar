@@ -8,8 +8,11 @@
 .form-manager.h5peditor-semi-fullscreen {
   margin: 0;
   position: fixed;
-  overflow: auto;
+  overflow-y: scroll;
   margin-top: 40px;
+  padding-bottom: 40px;
+  box-sizing: border-box;
+  height: 100%;
 }
 .form-manager > .tree > .field,
 .form-manager > .common {
@@ -56,8 +59,11 @@
   transition: left 0.3s linear, opacity 0.3s linear;
   opacity: 0;
 }
+.h5peditor-semi-fullscreen .form-manager-movable {
+  top: 0;
+}
 .form-manager-form.form-manager-slidein {
-  left: -1px;
+  left: 0;
   opacity: 1;
 }
 .form-manager-breadcrumb,
@@ -127,7 +133,7 @@
 .form-manager-title {
   position: relative;
   margin-left: 120px;
-  padding-left: 26px;
+  padding-left: 30px;
   opacity: 0;
   transition: margin-left 0.3s linear, opacity 0.3s linear;
   font-weight: bold;
@@ -143,9 +149,11 @@
 .form-manager-title:before {
   font-weight: normal;
   font-family: 'H5PFontAwesome4';
+  font-size: 1.5em;
   color: #494949;
   position: absolute;
-  left: 0;
+  left: 0.2em;
+  top: -0.1em;
   text-align: center;
   width: 24px;
 }
@@ -168,12 +176,13 @@
   border: 1px solid #dedede;
 }
 .form-manager-buttons {
-  transform: scale(0, 0);
+  position: relative;
+  left: 150px;
   opacity: 0;
-  transition: transform 0.3s linear, opacity 0.3s linear;
+  transition: left 0.3s linear, opacity 0.3s linear;
 }
 .form-manager-buttons.form-manager-comein {
-  transform: scale(1, 1);
+  left: 0;
   opacity: 1;
 }
 .form-manager-icon-nil:before {
@@ -279,8 +288,7 @@
 .form-manager-coursepresentation.form-manager-icon-dragtext:before,
 .form-manager-coursepresentation.form-manager-icon-gotoslide:before,
 .form-manager-coursepresentation.form-manager-icon-singlechoiceset:before,
-.form-manager-coursepresentation.form-manager-icon-dialogcards:before,
-.form-manager-coursepresentation.form-manager-icon-shape:before {
+.form-manager-coursepresentation.form-manager-icon-dialogcards:before {
   font-family: 'H5PCoursePresentation';
 }
 .form-manager-coursepresentation.form-manager-icon-advancedtext:before {
@@ -319,6 +327,8 @@
 .form-manager-coursepresentation.form-manager-icon-dialogcards:before {
   content: "\e900";
 }
+
 .form-manager-coursepresentation.form-manager-icon-shape:before {
+  font-family: 'H5PFontIcons';
   content: "\e91c";
 }

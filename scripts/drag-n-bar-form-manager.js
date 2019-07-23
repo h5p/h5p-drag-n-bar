@@ -221,6 +221,7 @@
       element.style.visibility = 'hidden';
       element.style.width = '100%';
       element.style.position = 'absolute';
+      element.style.opacity = '0';
       element.setAttribute('aria-hidden', true);
     };
 
@@ -234,6 +235,7 @@
       element.style.visibility = '';
       element.style.width = '';
       element.style.position = '';
+      element.style.opacity = '';
       element.removeAttribute('aria-hidden');
     };
 
@@ -308,6 +310,11 @@
         hideElement(manager.formButtons);
         manager.formButtons.classList.remove('form-manager-comein');
       }
+
+      // form-manager-movable sets the subform to absolute positioning - need
+      // to set the current margin
+      const subFormStyle = subForm.currentStyle || window.getComputedStyle(subForm);
+      subForm.style.marginLeft = subFormStyle.marginLeft;
 
       // Make the sub-form animatable
       subForm.classList.add('form-manager-movable');
@@ -420,6 +427,18 @@
 
       // Start animation on the next tick
       setTimeout(function () {
+
+        // form-manager-movable sets the subform to absolute positioning - need
+        // to use the current margin of the first field so it stops animating on
+        // the correct place.
+        const firstField = manager.formContainer.querySelector('.tree > .field');
+        const firstFieldStyle = firstField.currentStyle || window.getComputedStyle(firstField);
+        subForm.style.marginLeft = firstFieldStyle.marginLeft;
+        // Need to remove it when animation is finished. Then margin auto takes over
+        onlyOnce(subForm, 'transitionend', function () {
+          subForm.style.marginLeft = '';
+        });
+
         subForm.classList.add('form-manager-slidein');
         title.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
