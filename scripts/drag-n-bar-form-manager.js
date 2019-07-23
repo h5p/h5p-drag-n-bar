@@ -23,6 +23,8 @@
 
     let isFullscreen = false;
 
+    self.subforms = [];
+
     /**
      * Initialize the FormManager.
      * Create frame breadcrumbs, and fullscreen button.
@@ -139,10 +141,10 @@
      * @return {Element}
      */
     const createTitle = function (libraryField, customTitle, customIconId) {
-
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
+      title.setAttribute('data-index', manager.formBreadcrumb.children.length);
 
       let innerText;
 
@@ -171,19 +173,24 @@
         });
       }
 
-      if (isSubformOpen) {
-        const arrowTipContainer = document.createElement('div');
-        arrowTipContainer.classList.add('arrow-tip-container');
-        title.appendChild(arrowTipContainer);
-      }
-
       title.appendChild(document.createTextNode(innerText));
+
+      const arrowTipContainer = document.createElement('div');
+      arrowTipContainer.classList.add('arrow-tip-container');
+      title.appendChild(arrowTipContainer);
 
       const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
       title.classList.add('form-manager-icon-' + iconId);
       if (customIconClass) {
         title.classList.add('form-manager-' + customIconClass);
       }
+
+      title.addEventListener('click', function () {
+        if (title.classList.contains('clickable')) {
+          const index = title.getAttribute('data-index');
+          closeFormsSequencially(index);
+        }
+      })
 
       return title;
     };
@@ -243,6 +250,9 @@
      * Toggle visibility of the procees button
      */
     const toggleProceedButton = function () {
+      if (!proceedButton) {
+        return;
+      }
       // Show button only for main content (in fullscreen only)
       const func = (isFullscreen && !isSubformOpen ? showElement : hideElement);
       func(proceedButton);
@@ -278,10 +288,7 @@
       activeManager.trigger('formclose');
 
       // Locate open form
-      const subForm = manager.formContainer.lastChild;
-      if (!subForm.classList.contains('form-manager-form')) {
-        return; // Not a form
-      }
+      const subForm = manager.subforms.pop();
 
       if (handleTransitionend) {
         // Cancel callback for form if not fully opened.
@@ -296,9 +303,9 @@
       manager.formContainer.style.height = (subForm.getBoundingClientRect().height + headHeight) + 'px';
 
       // Make underlay visible again
-      if (subForm.previousSibling.classList.contains('form-manager-form')) {
+      if (manager.subforms.length !== 0) {
         // This is not our last sub-form
-        showElement(subForm.previousSibling);
+        showElement(manager.subforms[manager.subforms.length-1]);
       }
       else {
         // Show bottom form
@@ -333,6 +340,7 @@
       onlyOnce(title, 'transitionend', function () {
         // Remove last breadcrumb section
         manager.formBreadcrumb.removeChild(title);
+        manager.formBreadcrumb.lastChild.classList.remove('clickable');
       });
 
       // Start the animation
@@ -341,6 +349,22 @@
 
       toggleProceedButton();
     };
+
+    /**
+     * Close forms sequentially.
+     *
+     * @param {integer} keepIndex Close all forms after this index
+     */
+    const closeFormsSequencially = function (keepIndex) {
+      if (manager.subforms.length > keepIndex) {
+        onlyOnce(manager.subforms[manager.subforms.length-1], 'transitionend', function () {
+          closeFormsSequencially(keepIndex);
+        });
+
+        formTargets[formTargets.length - 1].trigger('formdone');
+        closeForm();
+      }
+    }
 
     /**
      * Retrieve the active manager.
@@ -386,6 +410,7 @@
 
       // Create the new sub-form
       const subForm = document.createElement('div');
+      manager.subforms.push(subForm);
       subForm.classList.add('form-manager-form');
       subForm.classList.add('form-manager-movable');
       if (customClass) {
@@ -402,6 +427,8 @@
 
       // Add breadcrumb section
       const title = createTitle(libraryField, customTitle, customIconId);
+
+      manager.formBreadcrumb.lastChild.classList.add('clickable');
       manager.formBreadcrumb.appendChild(title);
 
       // Show our buttons

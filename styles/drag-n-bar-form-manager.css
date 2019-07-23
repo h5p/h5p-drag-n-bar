@@ -77,7 +77,7 @@
   border: 0;
   cursor: pointer;
   color: #414141;
-  opacity: 0.7;
+  line-height: 1.4;
 }
 .form-manager-button:hover {
   opacity: 1;
@@ -146,6 +146,15 @@
 .form-manager-title:first-child {
   margin-left: 0;
 }
+.form-manager-title.clickable {
+  cursor: pointer;
+  color: blue;
+}
+.form-manager-title.clickable:hover,
+.form-manager-title.clickable:hover .arrow-tip-container:after {
+  text-decoration: underline;
+  background-color: lightblue;
+}
 .form-manager-title:before {
   font-weight: normal;
   font-family: 'H5PFontAwesome4';
@@ -158,13 +167,16 @@
   width: 24px;
 }
 .arrow-tip-container {
-  display: block;
+  display: none;
   width: 40px;
   height: 40px;
   position: absolute;
   top: 0px;
-  left: -20px;
+  right: -40px;
   overflow: hidden;
+}
+.clickable .arrow-tip-container {
+  display: block;
 }
 .arrow-tip-container:after {
   display: block;
