@@ -37,13 +37,25 @@
       self.formContainer = (parent instanceof H5PEditor.Library ? parent.$libraryWrapper : parent.$form)[0];
       self.formContainer.classList.add('form-manager');
 
-      const head = document.createElement('div');
-      head.classList.add('form-manager-head');
+      self.head = document.createElement('div');
+      self.head.classList.add('form-manager-head');
+
+      const mobileMenuButton = document.createElement('button');
+      mobileMenuButton.classList.add('mobile-menu-button');
+      mobileMenuButton.addEventListener('click', function () {
+        if (self.head.classList.contains('mobile-menu-open')) {
+          self.head.classList.remove('mobile-menu-open');
+        }
+        else {
+          self.head.classList.add('mobile-menu-open');
+        }
+      });
+      self.head.appendChild(mobileMenuButton);
 
       // Create breadcrumb wrapper
       self.formBreadcrumb = document.createElement('div');
       self.formBreadcrumb.classList.add('form-manager-breadcrumb');
-      head.appendChild(self.formBreadcrumb);
+      self.head.appendChild(self.formBreadcrumb);
 
       // Create the first part of the breadcrumb
       const title = createTitle(parent);
@@ -75,14 +87,14 @@
           }
         });
         updateFullscreenButton();
-        head.appendChild(fullscreenButton);
+        self.head.appendChild(fullscreenButton);
       }
 
       // Create a container for the action buttons
       self.formButtons = document.createElement('div');
       self.formButtons.classList.add('form-manager-buttons');
       hideElement(self.formButtons); // Buttons are hidden by default
-      head.appendChild(self.formButtons);
+      self.head.appendChild(self.formButtons);
 
       // Create 'Delete' button
       self.formButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
@@ -108,10 +120,14 @@
         }
       });
       hideElement(proceedButton);
-      head.appendChild(proceedButton);
+      self.head.appendChild(proceedButton);
+
+      window.addEventListener('resize', function () {
+        toggleMobileView();
+      });
 
       // Insert everything in the top of the form DOM
-      self.formContainer.insertBefore(head, self.formContainer.firstChild);
+      self.formContainer.insertBefore(self.head, self.formContainer.firstChild);
     };
 
     /**
@@ -132,6 +148,38 @@
       button.addEventListener('click', clickHandler);
       return button;
     };
+
+    /**
+     * Toggle mobile view
+     */
+    const toggleMobileView = function () {
+      /**
+       * The mobile view has three modes
+       * #1 - remove text from buttons (mobile-view-large)
+       * #2 - minimize the breadcrumb title width (mobile-view-medium)
+       * #3 - create a dropdown menu of the breadcrumb titles (mobile-view-small)
+       */
+
+      /**
+       * Helper to check if we have enough space
+       * @return {boolean}
+       */
+      const hasEnoughSpace = function () {
+        return manager.formButtons.getBoundingClientRect().top - manager.head.getBoundingClientRect().top < 10;
+      }
+
+      // First, we remove all classes to get the broadest non-mobile version
+      manager.head.classList.remove('mobile-view-large', 'mobile-view-medium', 'mobile-view-small', 'mobile-menu-open');
+
+      ['mobile-view-large', 'mobile-view-medium', 'mobile-view-small'].every(function (mode) {
+        if (hasEnoughSpace()) {
+          // If enough space, quit this "for-loop"
+          return false;
+        }
+        manager.head.classList.add(mode);
+        return true;
+      })
+    }
 
     /**
      * Create title element for breadcrumb.
@@ -173,7 +221,10 @@
         });
       }
 
-      title.appendChild(document.createTextNode(innerText));
+      const textNode = document.createElement('span');
+      textNode.classList.add('truncatable-text');
+      textNode.appendChild(document.createTextNode(innerText));
+      title.appendChild(textNode);
 
       const arrowTipContainer = document.createElement('div');
       arrowTipContainer.classList.add('arrow-tip-container');
@@ -297,7 +348,7 @@
       }
 
       const title = manager.formBreadcrumb.lastChild;
-      const headHeight = manager.formContainer.firstChild.getBoundingClientRect().height;
+      const headHeight = manager.head.getBoundingClientRect().height;
 
       // Freeze container height to avoid jumping while showing elements
       manager.formContainer.style.height = (subForm.getBoundingClientRect().height + headHeight) + 'px';
@@ -419,7 +470,7 @@
       subForm.appendChild(formElement);
 
       // Ensure same height as container
-      const headHeight = manager.formContainer.firstChild.getBoundingClientRect().height;
+      const headHeight = manager.head.getBoundingClientRect().height;
       subForm.style.height = (manager.formContainer.getBoundingClientRect().height - headHeight) + 'px';
 
       // Insert into DOM
@@ -469,6 +520,8 @@
         subForm.classList.add('form-manager-slidein');
         title.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
+
+        toggleMobileView();
       }, 0);
 
       toggleProceedButton();

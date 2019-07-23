@@ -25,9 +25,78 @@
   background: #f5f5f5;
   color: #414141;
   border-bottom: 1px solid #ededed;
-  overflow: hidden;
   height: 40px;
   line-height: 40px;
+}
+.mobile-menu-button {
+  display: none;
+  float: left;
+}
+.mobile-menu-button:after {
+  content: "☰";
+  font-size: 2em;
+  cursor: pointer;
+}
+.mobile-menu-open .mobile-menu-button:after {
+  content: "X";
+}
+/* Mobile-view: large */
+.form-manager-head.mobile-view-large .form-manager-delete,
+.form-manager-head.mobile-view-large .form-manager-done {
+  color: orange;
+  text-indent: -10em;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  width: 2em;
+}
+.form-manager-head.mobile-view-large .form-manager-delete:before,
+.form-manager-head.mobile-view-large .form-manager-done:before {
+  position: absolute;
+  right: -5em;
+  width: 2em;
+}
+.form-manager-head.mobile-view-large .form-manager-delete:before {
+  content: 'X';
+}
+.form-manager-head.mobile-view-large .form-manager-done:before {
+  content: 'V';
+}
+/* Mobile-view: medium */
+.form-manager-head.mobile-view-medium .truncatable-text {
+  max-width: 60px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+/* Mobile-view: small */
+.form-manager-head.mobile-view-small .mobile-menu-button {
+  display: block;
+}
+.form-manager-head.mobile-view-small .form-manager-breadcrumb {
+  display: none;
+}
+.form-manager-head.mobile-view-small .truncatable-text {
+  max-width: none;
+}
+.form-manager-head.mobile-view-small.mobile-menu-open .form-manager-breadcrumb {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40px;
+  background: #fff;
+  z-index: 2;
+}
+.form-manager-head.mobile-view-small.mobile-menu-open .form-manager-title {
+  clear: both;
+  width: 100%;
+  margin-left: 0.5em;
+  border-bottom: 1px solid yellow;
+}
+.mobile-view-small.mobile-menu-open .arrow-tip-container {
+  display:none;
 }
 .h5peditor-semi-fullscreen .form-manager-head {
   position: fixed;
@@ -36,7 +105,8 @@
   right: 0;
   z-index: 2;
 }
-/* TODO - should this be placed here? */
+/* TODO - should this be placed here? Might belong elsewhere (in core?)
+   Makes metadata popup look good in fullscreen */
 .h5peditor-semi-fullscreen + .h5p-metadata-popup-overlay {
   position: fixed;
 }
@@ -78,6 +148,7 @@
   cursor: pointer;
   color: #414141;
   line-height: 1.4;
+  position: relative;
 }
 .form-manager-button:hover {
   opacity: 1;
