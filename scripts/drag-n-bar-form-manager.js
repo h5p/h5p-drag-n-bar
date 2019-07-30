@@ -169,8 +169,10 @@
         textWrapper.innerText = customTitle;
       }
       else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
-          libraryField.params.metadata.title.substr(0, 8) !== 'Untitled') {
-        textWrapper.innerText = getText(libraryField.params.metadata.title);
+          libraryField.params.metadata.title.substr(0, 8) !== 'Untitled' ||
+          libraryField.metadata && libraryField.metadata.title &&
+          libraryField.metadata.title.substr(0, 8) !== 'Untitled') {
+        textWrapper.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
       }
       else {
         if (libraryField.$select !== undefined) {
@@ -185,7 +187,7 @@
       if (libraryField.metadataForm) {
         // Listen for title updates
         libraryField.metadataForm.on('titlechange', function (e) {
-          textWrapper.innerText = getText(libraryField.params.metadata.title);
+          textWrapper.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
         });
       }
 
