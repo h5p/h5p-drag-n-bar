@@ -134,7 +134,7 @@
   left: 100%;
   z-index: 9;
   border-left: 1px solid #ededed;
-  transition: left 2s linear, opacity 2s linear;
+  transition: left 0.3s linear, opacity 0.3s linear;
   opacity: 0;
 }
 .h5peditor-semi-fullscreen .form-manager-movable {
@@ -218,7 +218,7 @@
   padding-left: 30px;
   padding-right: 10px;
   opacity: 0;
-  transition: margin-left 2s linear, opacity 2s linear;
+  transition: margin-left 0.3s linear, opacity 0.3s linear;
   font-weight: bold;
   font-size: 14px;
 }
@@ -266,7 +266,7 @@
   position: relative;
   left: 150px;
   opacity: 0;
-  transition: left 2s linear, opacity 2s linear;
+  transition: left 0.3s linear, opacity 0.3s linear;
 }
 .form-manager-buttons.form-manager-comein {
   left: 0;
