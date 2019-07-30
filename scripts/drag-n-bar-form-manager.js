@@ -63,7 +63,6 @@
           if (manager.exitSemiFullscreen) {
             // Trigger semi-fullscreen exit
             manager.exitSemiFullscreen();
-            manager.exitSemiFullscreen = null;
           }
           else {
             // Trigger semi-fullscreen enter
@@ -74,6 +73,7 @@
               toggleFullscreenButtonState(fullscreenButton, true);
               self.trigger('formentersemifullscreen');
             }, function () {
+              manager.exitSemiFullscreen = null;
               if (!subForm) {
                 hideElement(proceedButton);
               }
