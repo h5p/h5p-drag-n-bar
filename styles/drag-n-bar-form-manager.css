@@ -5,6 +5,12 @@
   background: #fcfcfc;
   overflow: hidden;
 }
+.form-manager.libwrap {
+  position: relative;
+}
+.form-manager.libwrap > .form-manager-form {
+  padding: 20px 0 0 0;
+}
 .form-manager.h5peditor-semi-fullscreen {
   margin: 0;
   position: fixed;
@@ -13,13 +19,13 @@
   padding-bottom: 40px;
   box-sizing: border-box;
   height: 100%;
+  background: #fff;
 }
-.form-manager > .tree > .field,
-.form-manager > .common {
+.form-manager > .tree,
+.form-manager > .common,
+.h5peditor-semi-fullscreen > .field {
   max-width: 918px;
   margin: 20px auto;
-  padding: 0 20px;
-  background-color: transparent !important; /* TODO */
 }
 .form-manager-head {
   background: #f5f5f5;
@@ -27,6 +33,15 @@
   border-bottom: 1px solid #ededed;
   height: 40px;
   line-height: 40px;
+  box-sizing: border-box;
+}
+.truncatable-text {
+  display: block;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .mobile-menu-button {
   display: none;
@@ -64,10 +79,6 @@
 /* Mobile-view: medium */
 .form-manager-head.mobile-view-medium .truncatable-text {
   max-width: 60px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: block;
 }
 
 /* Mobile-view: small */
@@ -95,8 +106,8 @@
   margin-left: 0.5em;
   border-bottom: 1px solid yellow;
 }
-.mobile-view-small.mobile-menu-open .arrow-tip-container {
-  display:none;
+.mobile-view-small.mobile-menu-open .form-manager-title.clickable:after {
+  display: none;
 }
 .h5peditor-semi-fullscreen .form-manager-head {
   position: fixed;
@@ -105,17 +116,14 @@
   right: 0;
   z-index: 2;
 }
-/* TODO - should this be placed here? Might belong elsewhere (in core?)
-   Makes metadata popup look good in fullscreen */
+/* Makes metadata popup look good in fullscreen */
 .h5peditor-semi-fullscreen + .h5p-metadata-popup-overlay {
   position: fixed;
 }
 .form-manager-form {
-  background: #fcfcfc;
+  background: #fff;
   padding: 20px;
-  /* Set a max-width for the form */
   max-width: 918px;
-  /* ... and center align it */
   margin: 0 auto;
 }
 .form-manager-movable {
@@ -126,19 +134,22 @@
   left: 100%;
   z-index: 9;
   border-left: 1px solid #ededed;
-  transition: left 0.3s linear, opacity 0.3s linear;
+  transition: left 2s linear, opacity 2s linear;
   opacity: 0;
 }
 .h5peditor-semi-fullscreen .form-manager-movable {
   top: 0;
 }
 .form-manager-form.form-manager-slidein {
-  left: 0;
+  left: 20px;
   opacity: 1;
 }
 .form-manager-breadcrumb,
 .form-manager-title {
   float: left;
+}
+.form-manager-breadcrumb {
+  overflow: hidden;
 }
 .form-manager-button {
   background: transparent;
@@ -205,13 +216,14 @@
   position: relative;
   margin-left: 120px;
   padding-left: 30px;
+  padding-right: 10px;
   opacity: 0;
-  transition: margin-left 0.3s linear, opacity 0.3s linear;
+  transition: margin-left 2s linear, opacity 2s linear;
   font-weight: bold;
   font-size: 14px;
 }
 .form-manager-title.form-manager-comein {
-  margin-left: 20px;
+  margin-left: 10px;
   opacity: 1;
 }
 .form-manager-title:first-child {
@@ -222,7 +234,7 @@
   color: blue;
 }
 .form-manager-title.clickable:hover,
-.form-manager-title.clickable:hover .arrow-tip-container:after {
+.form-manager-title.clickable:hover:after {
   text-decoration: underline;
   background-color: lightblue;
 }
@@ -237,32 +249,24 @@
   text-align: center;
   width: 24px;
 }
-.arrow-tip-container {
-  display: none;
-  width: 40px;
-  height: 40px;
+.form-manager-title.clickable:after {
   position: absolute;
-  top: 0px;
-  right: -40px;
-  overflow: hidden;
-}
-.clickable .arrow-tip-container {
-  display: block;
-}
-.arrow-tip-container:after {
+  right: -12px;
+  top: 0;
   display: block;
   content: ' ';
   width: 40px;
   height: 40px;
   margin: 0 0 0 -20px;
-  transform: rotate(45deg) skew(20deg,20deg);
-  border: 1px solid #dedede;
+  transform: rotate(45deg) skew(20deg, 20deg);
+  border-right: 1px solid #dedede;
+  border-top: 1px solid #dedede;
 }
 .form-manager-buttons {
   position: relative;
   left: 150px;
   opacity: 0;
-  transition: left 0.3s linear, opacity 0.3s linear;
+  transition: left 2s linear, opacity 2s linear;
 }
 .form-manager-buttons.form-manager-comein {
   left: 0;
