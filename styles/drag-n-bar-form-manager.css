@@ -34,6 +34,43 @@
   height: 40px;
   line-height: 40px;
   box-sizing: border-box;
+  position: relative;
+}
+.form-manager-breadcrumb-menulist {
+  background: #f1f1f1;
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  margin-top: 1px;
+  top: 200%;
+  opacity: 0;
+  visibility: hidden;
+  transition: visibility 0s 0.2s, opacity 0.2s, top 0.2s;
+}
+.mobile-view-small .form-manager-breadcrumb-menulist.form-manager-comein {
+  visibility: visible;
+  opacity: 1;
+  top: 100%;
+  transition: visibility 0s 0s, opacity 0.2s, top 0.2s;
+}
+.form-manager-menutitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 2.4em;
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  color: #186df7;
+}
+.form-manager-menutitle:hover {
+  text-decoration: underline;
+}
+.form-manager-menutitle:first-child {
+  display: none;
 }
 .truncatable-text {
   display: block;
@@ -43,38 +80,38 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.mobile-menu-button {
-  display: none;
-  float: left;
-}
-.mobile-menu-button:after {
-  content: "☰";
-  font-size: 2em;
-  cursor: pointer;
-}
-.mobile-menu-open .mobile-menu-button:after {
-  content: "X";
-}
-/* Mobile-view: large */
 .form-manager-head.mobile-view-large .form-manager-delete,
-.form-manager-head.mobile-view-large .form-manager-done {
-  color: orange;
-  text-indent: -10em;
+.form-manager-head.mobile-view-large .form-manager-done,
+.form-manager-breadcrumb-menu {
+  text-indent: 2em;
+  white-space: nowrap;
   overflow: hidden;
-  border: 1px solid #ccc;
   width: 2em;
 }
 .form-manager-head.mobile-view-large .form-manager-delete:before,
-.form-manager-head.mobile-view-large .form-manager-done:before {
+.form-manager-head.mobile-view-large .form-manager-done:before,
+.form-manager-breadcrumb-menu:before {
+  font-family: 'H5PFontIcons';
+  font-weight: normal;
   position: absolute;
-  right: -5em;
-  width: 2em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1em;
+  font-size: 16px;
+  text-indent: 0;
 }
 .form-manager-head.mobile-view-large .form-manager-delete:before {
-  content: 'X';
+  content: '\e925';
 }
 .form-manager-head.mobile-view-large .form-manager-done:before {
-  content: 'V';
+  content: '\e924';
+}
+.form-manager-breadcrumb-menu:before {
+  content: "\e926";
+}
+.mobile-menu-open .form-manager-breadcrumb-menu:before {
+  content: "\e927";
 }
 /* Mobile-view: medium */
 .form-manager-head.mobile-view-medium .truncatable-text {
@@ -82,32 +119,15 @@
 }
 
 /* Mobile-view: small */
-.form-manager-head.mobile-view-small .mobile-menu-button {
-  display: block;
-}
-.form-manager-head.mobile-view-small .form-manager-breadcrumb {
+.form-manager-head.mobile-view-small .form-manager-title   {
   display: none;
+}
+.form-manager-head.mobile-view-small .form-manager-breadcrumb-menu,
+.form-manager-head.mobile-view-small .form-manager-title:last-child {
+  display: block;
 }
 .form-manager-head.mobile-view-small .truncatable-text {
   max-width: none;
-}
-.form-manager-head.mobile-view-small.mobile-menu-open .form-manager-breadcrumb {
-  display: block;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 40px;
-  background: #fff;
-  z-index: 2;
-}
-.form-manager-head.mobile-view-small.mobile-menu-open .form-manager-title {
-  clear: both;
-  width: 100%;
-  margin-left: 0.5em;
-  border-bottom: 1px solid yellow;
-}
-.mobile-view-small.mobile-menu-open .form-manager-title.clickable:after {
-  display: none;
 }
 .h5peditor-semi-fullscreen .form-manager-head {
   position: fixed;
@@ -179,7 +199,8 @@
 }
 .form-manager-done,
 .form-manager-proceed,
-.form-manager-delete {
+.form-manager-delete,
+.form-manager-breadcrumb-menu {
   display: block;
   float: left;
 
@@ -190,6 +211,12 @@
   padding: 5px 10px 4px;
   border-radius: 2px;
   margin-right: 5px;
+}
+.form-manager-breadcrumb-menu {
+  display: none;
+  margin-top: 0.4em;
+  margin-left: 0.4em;
+  margin-right: 0;
 }
 .form-manager-done,
 .form-manager-proceed {
@@ -215,6 +242,7 @@
 .form-manager-title {
   position: relative;
   margin-left: 120px;
+  margin-right: 10px;
   padding-left: 30px;
   padding-right: 10px;
   opacity: 0;
@@ -223,22 +251,19 @@
   font-size: 14px;
 }
 .form-manager-title.form-manager-comein {
-  margin-left: 10px;
-  opacity: 1;
-}
-.form-manager-title:first-child {
   margin-left: 0;
+  opacity: 1;
 }
 .form-manager-title.clickable {
   cursor: pointer;
-  color: blue;
+  color: #186df7;
 }
 .form-manager-title.clickable:hover,
 .form-manager-title.clickable:hover:after {
   text-decoration: underline;
-  background-color: lightblue;
 }
-.form-manager-title:before {
+.form-manager-title:before,
+.form-manager-menutitle:before {
   font-weight: normal;
   font-family: 'H5PFontAwesome4';
   font-size: 1.5em;
@@ -313,7 +338,7 @@
   content: "\e902";
 }
 .form-manager-icon-coursepresentation:before {
-  content: "\E90B";
+  content: "\e923";
 }
 
 /* Interactive Video icons */
@@ -361,9 +386,6 @@
 }
 
 /* Course Presentation icons */
-.form-manager-coursepresentation.form-manager-icon-interactivevideo:before {
-  content: "\f03d";
-}
 .form-manager-coursepresentation.form-manager-icon-advancedtext:before,
 .form-manager-coursepresentation.form-manager-icon-dragquestion:before,
 .form-manager-coursepresentation.form-manager-icon-blanks:before,
@@ -414,8 +436,7 @@
 .form-manager-coursepresentation.form-manager-icon-dialogcards:before {
   content: "\e900";
 }
-
 .form-manager-coursepresentation.form-manager-icon-shape:before {
   font-family: 'H5PFontIcons';
-  content: "\e91c";
+  content: "\e922";
 }

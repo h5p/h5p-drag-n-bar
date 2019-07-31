@@ -17,7 +17,7 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let head, subForm, title, handleTransitionend, proceedButton;
+    let head, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton;
 
     /**
      * Initialize the FormManager.
@@ -34,17 +34,14 @@
       head = document.createElement('div');
       head.classList.add('form-manager-head');
 
-      const mobileMenuButton = document.createElement('button');
-      mobileMenuButton.classList.add('mobile-menu-button');
-      mobileMenuButton.addEventListener('click', function () {
-        if (head.classList.contains('mobile-menu-open')) {
-          head.classList.remove('mobile-menu-open');
-        }
-        else {
-          head.classList.add('mobile-menu-open');
-        }
-      });
-      head.appendChild(mobileMenuButton);
+      // Create button to toggle preivous menu on narrow layouts
+      breadcrumbButton = createButton('breadcrumb-menu', l10n.expandBreadcrumbButtonLabel, self.toggleBreadcrumbMenu);
+      head.appendChild(breadcrumbButton);
+
+      // Create breadcrumb menu to use when the layout is too narrow for the regular breadcrumb
+      self.formBreadcrumbMenu = document.createElement('div');
+      self.formBreadcrumbMenu.classList.add('form-manager-breadcrumb-menulist');
+      head.appendChild(self.formBreadcrumbMenu);
 
       // Create breadcrumb wrapper
       self.formBreadcrumb = document.createElement('div');
@@ -52,9 +49,10 @@
       head.appendChild(self.formBreadcrumb);
 
       // Create the first part of the breadcrumb
-      const title = createTitle(parent);
-      title.classList.add('form-manager-comein');
-      self.formBreadcrumb.appendChild(title);
+      const titles = createTitles(parent);
+      titles.breadcrumb.classList.add('form-manager-comein');
+      self.formBreadcrumb.appendChild(titles.breadcrumb);
+      self.formBreadcrumbMenu.appendChild(titles.menu);
 
       // Check if we can has fullscreen
       if (H5PEditor.semiFullscreen !== undefined) {
@@ -148,16 +146,27 @@
     };
 
     /**
-     * Create title element for breadcrumb.
+     * Create two titles, one for the breadcrumb and for the expanded
+     * breadcrumb menu used for narrow layouts.
      *
      * @private
      * @param {H5PEditor.Library} libraryField
-     * @return {Element}
+     * @return {Element[]}
      */
-    const createTitle = function (libraryField, customTitle, customIconId) {
+    const createTitles = function (libraryField, customTitle, customIconId) {
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
+
+      // Create breadcrumb section.
+      const menuTitle = document.createElement('a');
+      menuTitle.classList.add('form-manager-menutitle');
+      menuTitle.href = '#';
+      menuTitle.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent jumping to top of page
+        handleBreadcrumbClick.call(title);
+        manager.toggleBreadcrumbMenu();
+      });
 
       // Create a text wrapper so we can limit max-width on the text
       const textWrapper = document.createElement('span');
@@ -166,38 +175,43 @@
 
       // Set correct starting title
       if (customTitle) {
-        textWrapper.innerText = customTitle;
+        textWrapper.innerText = menuTitle.innerText = customTitle;
       }
       else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
           libraryField.params.metadata.title.substr(0, 8) !== 'Untitled' ||
           libraryField.metadata && libraryField.metadata.title &&
           libraryField.metadata.title.substr(0, 8) !== 'Untitled') {
-        textWrapper.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
+        textWrapper.innerText = menuTitle.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
       }
       else {
         if (libraryField.$select !== undefined) {
-          textWrapper.innerText = libraryField.$select.children(':selected').text();
+          textWrapper.innerText = menuTitle.innerText = libraryField.$select.children(':selected').text();
         }
         else {
           // There is no way to get the title from the Hub, use the default one
-          textWrapper.innerText = l10n.defaultTitle;
+          textWrapper.innerText = menuTitle.innerText = l10n.defaultTitle;
         }
       }
 
       if (libraryField.metadataForm) {
         // Listen for title updates
         libraryField.metadataForm.on('titlechange', function (e) {
-          textWrapper.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
+          textWrapper.innerText = menuTitle.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
         });
       }
 
       const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
       title.classList.add('form-manager-icon-' + iconId);
+      menuTitle.classList.add('form-manager-icon-' + iconId);
       if (customIconClass) {
         title.classList.add('form-manager-' + customIconClass);
+        menuTitle.classList.add('form-manager-' + customIconClass);
       }
 
-      return title;
+      return {
+        breadcrumb: title,
+        menu: menuTitle
+      };
     };
 
     /**
@@ -297,11 +311,14 @@
       }
 
       // Find last part of breadcrumb and remove it from the manager
-      const title = activeManager.popTitle();
+      const titles = activeManager.popTitles();
+
+      // Remove menu title
+      manager.formBreadcrumbMenu.removeChild(titles.menu);
 
       // The previous breadcrumb must no longer be clickable
-      title.previousSibling.removeEventListener('click', handleBreadcrumbClick);
-      title.previousSibling.classList.remove('clickable');
+      titles.breadcrumb.previousSibling.removeEventListener('click', handleBreadcrumbClick);
+      titles.breadcrumb.previousSibling.classList.remove('clickable');
 
       const headHeight = manager.getFormHeadHeight();
 
@@ -341,14 +358,14 @@
         // Remove from DOM
         manager.formContainer.removeChild(subForm);
       });
-      onlyOnce(title, 'transitionend', function () {
+      onlyOnce(titles.breadcrumb, 'transitionend', function () {
         // Remove last breadcrumb section
-        manager.formBreadcrumb.removeChild(title);
+        manager.formBreadcrumb.removeChild(titles.breadcrumb);
       });
 
       // Start the animation
       subForm.classList.remove('form-manager-slidein');
-      title.classList.remove('form-manager-comein');
+      titles.breadcrumb.classList.remove('form-manager-comein');
 
       if (proceedButton && manager.exitSemiFullscreen) {
         // We are in fullscreen and closing sub-form, show proceed button
@@ -398,9 +415,9 @@
      *
      * @return {Element}
      */
-    self.popTitle = function () {
-      const t = title;
-      title = null;
+    self.popTitles = function () {
+      const t = titles;
+      titles = null;
       return t;
     };
 
@@ -456,8 +473,9 @@
       manager.formBreadcrumb.lastChild.classList.add('clickable');
 
       // Add breadcrumb section
-      title = createTitle(libraryField, customTitle, customIconId);
-      manager.formBreadcrumb.appendChild(title);
+      titles = createTitles(libraryField, customTitle, customIconId);
+      manager.formBreadcrumb.appendChild(titles.breadcrumb);
+      manager.formBreadcrumbMenu.insertBefore(titles.menu, manager.formBreadcrumbMenu.firstChild);
 
       // Show our buttons
       showElement(manager.formButtons);
@@ -487,7 +505,7 @@
         subForm.style.marginLeft = (parseFloat(window.getComputedStyle(manager.formContainer.children[1]).marginLeft) - 20) + 'px';
 
         subForm.classList.add('form-manager-slidein');
-        title.classList.add('form-manager-comein');
+        titles.breadcrumb.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
         manager.updateFormResponsiveness();
       }, 0);
@@ -517,6 +535,24 @@
     };
 
     /**
+     * Toggle the breadcrumb menu.
+     */
+    self.toggleBreadcrumbMenu = function () {
+      if (head.classList.contains('mobile-menu-open')) {
+        // Close breadcrumb menu
+        head.classList.remove('mobile-menu-open');
+        breadcrumbButton.innerText = l10n.expandBreadcrumbButtonLabel;
+        self.formBreadcrumbMenu.classList.remove('form-manager-comein');
+      }
+      else {
+        // Open breadcrumb menu
+        head.classList.add('mobile-menu-open');
+        breadcrumbButton.innerText = l10n.collapseBreadcrumbButtonLabel;
+        self.formBreadcrumbMenu.classList.add('form-manager-comein');
+      }
+    };
+
+    /**
      * Resize form header elements to fit better inside narrow forms.
      */
     self.updateFormResponsiveness = function () {
@@ -537,7 +573,7 @@
       // TODO: Prevent uncessary nesting of helpers.
 
       // First, we remove all classes to get the broadest non-mobile version
-      head.classList.remove('mobile-view-large', 'mobile-view-medium', 'mobile-view-small', 'mobile-menu-open');
+      head.classList.remove('mobile-view-large', 'mobile-view-medium', 'mobile-view-small');
 
       ['mobile-view-large', 'mobile-view-medium', 'mobile-view-small'].every(function (mode) {
         if (hasEnoughSpace()) {
