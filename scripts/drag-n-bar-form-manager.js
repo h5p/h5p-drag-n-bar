@@ -36,6 +36,7 @@
 
       // Create button to toggle preivous menu on narrow layouts
       breadcrumbButton = createButton('breadcrumb-menu', l10n.expandBreadcrumbButtonLabel, self.toggleBreadcrumbMenu);
+      breadcrumbButton.classList.add('form-manager-disabled');
       head.appendChild(breadcrumbButton);
 
       // Create breadcrumb menu to use when the layout is too narrow for the regular breadcrumb
@@ -53,6 +54,38 @@
       titles.breadcrumb.classList.add('form-manager-comein');
       self.formBreadcrumb.appendChild(titles.breadcrumb);
       self.formBreadcrumbMenu.appendChild(titles.menu);
+
+      // Create 'Proceed to save' button
+      proceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
+        if (manager.exitSemiFullscreen) {
+          // Trigger semi-fullscreen exit
+          manager.exitSemiFullscreen();
+          manager.exitSemiFullscreen = null;
+        }
+      });
+      hideElement(proceedButton);
+      head.appendChild(proceedButton);
+
+      // Create a container for the action buttons
+      self.formButtons = document.createElement('div');
+      self.formButtons.classList.add('form-manager-buttons');
+      hideElement(self.formButtons); // Buttons are hidden by default
+      head.appendChild(self.formButtons);
+
+      // Create 'Delete' button
+      self.formButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
+        const e = new H5P.Event('formremove');
+        formTargets[formTargets.length - 1].trigger(e);
+        if (!e.preventRemove) {
+          closeForm();
+        }
+      }));
+
+      // Create 'Done' button
+      self.formButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
+        formTargets[formTargets.length - 1].trigger('formdone');
+        closeForm();
+      }));
 
       // Check if we can has fullscreen
       if (H5PEditor.semiFullscreen !== undefined) {
@@ -84,38 +117,6 @@
         head.appendChild(fullscreenButton);
       }
 
-      // Create a container for the action buttons
-      self.formButtons = document.createElement('div');
-      self.formButtons.classList.add('form-manager-buttons');
-      hideElement(self.formButtons); // Buttons are hidden by default
-      head.appendChild(self.formButtons);
-
-      // Create 'Delete' button
-      self.formButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
-        const e = new H5P.Event('formremove');
-        formTargets[formTargets.length - 1].trigger(e);
-        if (!e.preventRemove) {
-          closeForm();
-        }
-      }));
-
-      // Create 'Done' button
-      self.formButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
-        formTargets[formTargets.length - 1].trigger('formdone');
-        closeForm();
-      }));
-
-      // Create 'Proceed to save' button
-      proceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
-        if (manager.exitSemiFullscreen) {
-          // Trigger semi-fullscreen exit
-          manager.exitSemiFullscreen();
-          manager.exitSemiFullscreen = null;
-        }
-      });
-      hideElement(proceedButton);
-      head.appendChild(proceedButton);
-
       window.addEventListener('resize', self.updateFormResponsiveness);
       // Always clean up on remove
       self.on('remove', function () {
@@ -124,6 +125,14 @@
 
       // Insert everything in the top of the form DOM
       self.formContainer.insertBefore(head, self.formContainer.firstChild);
+
+      // Always clean up on remove
+      self.on('validate', function () {
+        if (parent.metadata && (!parent.metadata.title || !H5P.trim(parent.metadata.title))) {
+          // We are trying to save the form without a title
+          self.closeFormUntil(0);
+        }
+      });
     };
 
     /**
@@ -141,6 +150,7 @@
       button.classList.add('form-manager-button');
       button.classList.add('form-manager-' + id);
       button.innerText = text;
+      button.setAttribute('aria-label', text);
       button.addEventListener('click', clickHandler);
       return button;
     };
@@ -157,6 +167,7 @@
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
+      title.tabIndex = '0';
 
       // Create breadcrumb section.
       const menuTitle = document.createElement('a');
@@ -168,36 +179,72 @@
         manager.toggleBreadcrumbMenu();
       });
 
+      // For limiting the length of the menu title
+      const menuTitleText = document.createElement('span');
+      menuTitleText.classList.add('form-manager-menutitle-text');
+      menuTitle.appendChild(menuTitleText);
+
+      // Create a tooltip that can be display the whole text on hover
+      const menuTitleTooltip = document.createElement('span');
+      menuTitleTooltip.classList.add('form-manager-tooltip');
+      menuTitle.appendChild(menuTitleTooltip);
+
       // Create a text wrapper so we can limit max-width on the text
       const textWrapper = document.createElement('span');
       textWrapper.classList.add('truncatable-text');
       title.appendChild(textWrapper);
 
+      // Create a tooltip that can display the whole text on hover
+      const tooltip = document.createElement('span');
+      tooltip.classList.add('form-manager-tooltip');
+      title.appendChild(tooltip);
+
+      /**
+       * @private
+       */
+      const setTitle = function (title) {
+        textWrapper.innerText = menuTitleText.innerText = tooltip.innerText = menuTitleTooltip.innerText = title;
+      };
+
       // Set correct starting title
       if (customTitle) {
-        textWrapper.innerText = menuTitle.innerText = customTitle;
+        setTitle(customTitle);
       }
       else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
           libraryField.params.metadata.title.substr(0, 8) !== 'Untitled' ||
           libraryField.metadata && libraryField.metadata.title &&
           libraryField.metadata.title.substr(0, 8) !== 'Untitled') {
-        textWrapper.innerText = menuTitle.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
+        setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
       }
       else {
         if (libraryField.$select !== undefined) {
-          textWrapper.innerText = menuTitle.innerText = libraryField.$select.children(':selected').text();
+          setTitle(libraryField.$select.children(':selected').text());
         }
         else {
           // There is no way to get the title from the Hub, use the default one
-          textWrapper.innerText = menuTitle.innerText = l10n.defaultTitle;
+          setTitle(l10n.defaultTitle);
         }
       }
 
-      if (libraryField.metadataForm) {
-        // Listen for title updates
-        libraryField.metadataForm.on('titlechange', function (e) {
-          textWrapper.innerText = menuTitle.innerText = getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
-        });
+      /**
+       * Help listen for title changes after library has been fully loaded
+       * @private
+       */
+      const listenForTitleChanges = function () {
+        if (libraryField.metadataForm) {
+          libraryField.metadataForm.on('titlechange', function (e) {
+            setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
+            manager.updateFormResponsiveness();
+          });
+        }
+      };
+
+      // Listen for title updates
+      if (libraryField.metadataForm === undefined) {
+        libraryField.change(listenForTitleChanges);
+      }
+      else {
+        listenForTitleChanges();
       }
 
       const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
@@ -302,11 +349,11 @@
       activeManager.trigger('formclose');
 
       // Locate open form and remove it from the manager
-      const subForm = activeManager.popForm();
+      const activeSubForm = activeManager.popForm();
 
       if (handleTransitionend) {
         // Cancel callback for form if not fully opened.
-        subForm.removeEventListener('transitionend', handleTransitionend);
+        activeSubForm.removeEventListener('transitionend', handleTransitionend);
         handleTransitionend = null;
       }
 
@@ -323,12 +370,12 @@
       const headHeight = manager.getFormHeadHeight();
 
       // Freeze container height to avoid jumping while showing elements
-      manager.formContainer.style.height = (subForm.getBoundingClientRect().height + headHeight) + 'px';
+      manager.formContainer.style.height = (activeSubForm.getBoundingClientRect().height + headHeight) + 'px';
 
       // Make underlay visible again
-      if (subForm.previousSibling.classList.contains('form-manager-form')) {
+      if (activeSubForm.previousSibling.classList.contains('form-manager-form')) {
         // This is not our last sub-form
-        showElement(subForm.previousSibling);
+        showElement(activeSubForm.previousSibling);
       }
       else {
         // Show bottom form
@@ -342,21 +389,21 @@
       }
 
       // Animation fix for fullscreen max-width limit.
-      subForm.style.marginLeft = window.getComputedStyle(subForm).marginLeft
+      activeSubForm.style.marginLeft = window.getComputedStyle(activeSubForm).marginLeft
 
       // Make the sub-form animatable
-      subForm.classList.add('form-manager-movable');
+      activeSubForm.classList.add('form-manager-movable');
 
       // Resume natural container height
       manager.formContainer.style.height = '';
 
       // Set sub-form height to cover container
-      subForm.style.height = (manager.formContainer.getBoundingClientRect().height - headHeight) + 'px';
+      activeSubForm.style.height = (manager.formContainer.getBoundingClientRect().height - headHeight) + 'px';
 
       // Clean up when the final transition animation is finished
-      onlyOnce(subForm, 'transitionend', function () {
+      onlyOnce(activeSubForm, 'transitionend', function () {
         // Remove from DOM
-        manager.formContainer.removeChild(subForm);
+        manager.formContainer.removeChild(activeSubForm);
       });
       onlyOnce(titles.breadcrumb, 'transitionend', function () {
         // Remove last breadcrumb section
@@ -364,12 +411,17 @@
       });
 
       // Start the animation
-      subForm.classList.remove('form-manager-slidein');
+      activeSubForm.classList.remove('form-manager-slidein');
       titles.breadcrumb.classList.remove('form-manager-comein');
 
-      if (proceedButton && manager.exitSemiFullscreen) {
-        // We are in fullscreen and closing sub-form, show proceed button
-        showElement(proceedButton);
+      if (!subForm) {
+        if (proceedButton && manager.exitSemiFullscreen) {
+          // We are in fullscreen and closing sub-form, show proceed button
+          showElement(proceedButton);
+        }
+        if (breadcrumbButton) {
+          breadcrumbButton.classList.add('form-manager-disabled');
+        }
       }
     };
 
@@ -514,6 +566,9 @@
         // We are in fullscreen and opening sub-form, hide Proceed button
         hideElement(proceedButton);
       }
+      if (breadcrumbButton) {
+        breadcrumbButton.classList.remove('form-manager-disabled');
+      }
     };
 
     /**
@@ -542,12 +597,14 @@
         // Close breadcrumb menu
         head.classList.remove('mobile-menu-open');
         breadcrumbButton.innerText = l10n.expandBreadcrumbButtonLabel;
+        breadcrumbButton.setAttribute('aria-label', l10n.expandBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.remove('form-manager-comein');
       }
       else {
         // Open breadcrumb menu
         head.classList.add('mobile-menu-open');
         breadcrumbButton.innerText = l10n.collapseBreadcrumbButtonLabel;
+        breadcrumbButton.setAttribute('aria-label', l10n.collapseBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.add('form-manager-comein');
       }
     };
@@ -556,33 +613,40 @@
      * Resize form header elements to fit better inside narrow forms.
      */
     self.updateFormResponsiveness = function () {
-      /**
-       * The mobile view has three modes
-       * #1 - remove text from buttons (mobile-view-large)
-       * #2 - minimize the breadcrumb title width (mobile-view-medium)
-       * #3 - create a dropdown menu of the breadcrumb titles (mobile-view-small)
-       */
+      if (head.classList.contains('mobile-view-large')) {
+        head.classList.remove('mobile-view-large');
+      }
+      if (head.classList.contains('mobile-view-small')) {
+        head.classList.remove('mobile-view-small');
+      }
+      if (head.offsetWidth < 481) {
+        head.classList.add('mobile-view-small');
+      }
 
       /**
-       * Helper to check if we have enough space
-       * @return {boolean}
+       * Enable tooltips where we have text-ellipsis.
+       *
+       * @private
+       * @param {Element} element
        */
-      const hasEnoughSpace = function () {
-        return self.formButtons.getBoundingClientRect().top - head.getBoundingClientRect().top < 10;
-      };
-      // TODO: Prevent uncessary nesting of helpers.
-
-      // First, we remove all classes to get the broadest non-mobile version
-      head.classList.remove('mobile-view-large', 'mobile-view-medium', 'mobile-view-small');
-
-      ['mobile-view-large', 'mobile-view-medium', 'mobile-view-small'].every(function (mode) {
-        if (hasEnoughSpace()) {
-          // If enough space, quit this "for-loop"
-          return false;
+      const updateActiveTooltips = function (element) {
+        let tooltipActive;
+        for (let i = 0; i < element.children.length; i++) {
+          const breadcrumbTitle = element.children[i];
+          if (breadcrumbTitle.firstChild.offsetWidth && breadcrumbTitle.firstChild.scrollWidth > breadcrumbTitle.firstChild.offsetWidth) {
+            breadcrumbTitle.classList.add('form-mananger-tooltip-active');
+            tooltipActive = true;
+          }
+          else {
+            breadcrumbTitle.classList.remove('form-mananger-tooltip-active');
+          }
         }
-        head.classList.add(mode);
-        return true;
-      })
+        return tooltipActive;
+      };
+      if (updateActiveTooltips(self.formBreadcrumb)) {
+        head.classList.add('mobile-view-large');
+      }
+      updateActiveTooltips(self.formBreadcrumbMenu);
     };
 
     // Figure out which manager to use.
