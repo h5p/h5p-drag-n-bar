@@ -647,7 +647,7 @@
         let tooltipActive;
         for (let i = 0; i < element.children.length; i++) {
           const breadcrumbTitle = element.children[i];
-          if (breadcrumbTitle.firstChild.offsetWidth && breadcrumbTitle.firstChild.scrollWidth > breadcrumbTitle.firstChild.offsetWidth) {
+          if (breadcrumbTitle.firstChild.offsetWidth && breadcrumbTitle.firstChild.scrollWidth > breadcrumbTitle.firstChild.offsetWidth + 1) {
             breadcrumbTitle.classList.add('form-mananger-tooltip-active');
             tooltipActive = true;
           }

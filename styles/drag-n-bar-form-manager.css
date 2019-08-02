@@ -65,6 +65,7 @@
 .form-manager-breadcrumb-menulist {
   background: #f5f5f5;
   width: 100%;
+  left: 0;
   position: absolute;
   z-index: 2;
   margin-top: 1px;
@@ -216,6 +217,7 @@
   color: #414141;
   position: relative;
   white-space: nowrap;
+  line-height: normal;
 }
 .form-manager-button[aria-label]:after,
 .truncatable-text[aria-label]:after,
@@ -402,6 +404,9 @@
   left: 150px;
   opacity: 0;
   transition: left 0.3s linear, opacity 0.3s linear;
+}
+.form-manager-buttons > .form-manager-button {
+  width: 100%;
 }
 .form-manager-buttons.form-manager-comein {
   left: 0;
