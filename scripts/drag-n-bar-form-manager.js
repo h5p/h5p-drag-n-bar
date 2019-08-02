@@ -153,9 +153,16 @@
       button.setAttribute('type', 'button');
       button.classList.add('form-manager-button');
       button.classList.add('form-manager-' + id);
-      button.innerText = text;
       button.setAttribute('aria-label', text);
       button.addEventListener('click', clickHandler);
+
+      // Create special inner filler to avoid focus from pointer devices.
+      const content = document.createElement('span');
+      content.classList.add('form-manager-button-inner');
+      content.innerText = text
+      content.tabIndex = -1;
+      button.appendChild(content);
+
       return button;
     };
 
@@ -603,14 +610,14 @@
       if (self.formContainer.classList.contains('mobile-menu-open')) {
         // Close breadcrumb menu
         self.formContainer.classList.remove('mobile-menu-open');
-        breadcrumbButton.innerText = l10n.expandBreadcrumbButtonLabel;
+        breadcrumbButton.children[0].innerText = l10n.expandBreadcrumbButtonLabel;
         breadcrumbButton.setAttribute('aria-label', l10n.expandBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.remove('form-manager-comein');
       }
       else {
         // Open breadcrumb menu
         self.formContainer.classList.add('mobile-menu-open');
-        breadcrumbButton.innerText = l10n.collapseBreadcrumbButtonLabel;
+        breadcrumbButton.children[0].innerText = l10n.collapseBreadcrumbButtonLabel;
         breadcrumbButton.setAttribute('aria-label', l10n.collapseBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.add('form-manager-comein');
       }

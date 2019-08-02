@@ -123,9 +123,9 @@
 .mobile-view-small .form-manager-head .form-manager-breadcrumb-menu.form-manager-disabled {
   display: none;
 }
-.form-manager-head.mobile-view-large .form-manager-delete:before,
-.form-manager-head.mobile-view-large .form-manager-done:before,
-.form-manager-breadcrumb-menu:before {
+.form-manager-head.mobile-view-large .form-manager-delete .form-manager-button-inner:before,
+.form-manager-head.mobile-view-large .form-manager-done .form-manager-button-inner:before,
+.form-manager-breadcrumb-menu .form-manager-button-inner:before {
   font-family: 'H5PFontIcons';
   font-weight: normal;
   position: absolute;
@@ -136,21 +136,21 @@
   font-size: 16px;
   text-indent: 0;
 }
-.form-manager-head.mobile-view-large .form-manager-delete:before,
-.form-manager-head.mobile-view-large .form-manager-done:before {
+.form-manager-head.mobile-view-large .form-manager-delete .form-manager-button-inner:before,
+.form-manager-head.mobile-view-large .form-manager-done .form-manager-button-inner:before {
   font-size: 1.5em;
   transform: translate(-50%, -52%);
 }
-.form-manager-head.mobile-view-large .form-manager-delete:before {
+.form-manager-head.mobile-view-large .form-manager-delete .form-manager-button-inner:before {
   content: '\e925';
 }
-.form-manager-head.mobile-view-large .form-manager-done:before {
+.form-manager-head.mobile-view-large .form-manager-done .form-manager-button-inner:before {
   content: '\e924';
 }
-.form-manager-breadcrumb-menu:before {
+.form-manager-breadcrumb-menu .form-manager-button-inner:before {
   content: "\e926";
 }
-.mobile-menu-open .form-manager-breadcrumb-menu:before {
+.mobile-menu-open .form-manager-breadcrumb-menu .form-manager-button-inner:before {
   content: "\e927";
 }
 /* Mobile-view: medium */
@@ -220,9 +220,14 @@
   white-space: nowrap;
   line-height: normal;
 }
-.form-manager-button[aria-label]:after,
-.truncatable-text[aria-label]:after,
 .form-manager-tooltip {
+  display: none;
+}
+.mobile-view-large .form-manager-delete[aria-label]:after,
+.mobile-view-large .form-manager-done[aria-label]:after,
+.form-manager-fullscreen[aria-label]:after,
+.form-manager-breadcrumb-menu[aria-label]:after,
+.form-mananger-tooltip-active .form-manager-tooltip {
   visibility: hidden;
   position: absolute;
   top: 120%;
@@ -239,19 +244,19 @@
   outline: none;
   line-height: normal;
 }
-.form-manager-button[aria-label]:after,
-.truncatable-text[aria-label]:after {
+.mobile-view-large .form-manager-delete[aria-label]:after,
+.mobile-view-large .form-manager-done[aria-label]:after,
+.form-manager-fullscreen[aria-label]:after,
+.form-manager-breadcrumb-menu[aria-label]:after {
   content: attr(aria-label);
 }
-.truncatable-text[aria-label]:after,
-.form-manager-tooltip {
-  left: 10%;
-}
 .form-manager-breadcrumb-menu[aria-label]:after {
-  left: 110%;
-  top: 45%;
+  left: 135%;
+  top: 90%;
 }
-.form-manager-tooltip {
+.form-mananger-tooltip-active .form-manager-tooltip {
+  display: block;
+  left: 10%;
   max-width: 100%;
   white-space: normal;
   overflow: hidden;
@@ -276,7 +281,8 @@
 .form-manager-button:hover {
   opacity: 1;
 }
-.form-manager-fullscreen {
+.form-manager-fullscreen,
+.form-manager-breadcrumb-menu {
   width: 24px;
   height: 24px;
   font-size: 20px;
@@ -285,31 +291,40 @@
 .h5peditor.h5p-branchingscenario-editor .form-manager-fullscreen {
   display: none; /* Prevent fullscreen inside fullscreen */
 }
-.form-manager-fullscreen:before {
+.form-manager-fullscreen .form-manager-button-inner:before {
   font-family: 'H5PFontAwesome4';
   content: "\f065";
 }
-.form-manager-exit.form-manager-fullscreen:before {
+.form-manager-exit.form-manager-fullscreen .form-manager-button-inner:before {
   content: "\f066";
 }
 .form-manager-done,
 .form-manager-proceed,
-.form-manager-delete,
-.form-manager-breadcrumb-menu {
+.form-manager-delete {
   display: block;
 
   font-size: 14px;
   font-weight: bold;
   font-family: Open Sans, sans-serif;
-
-  padding: 5px 10px;
   border-radius: 2px;
   margin-right: 5px;
 }
+.form-manager-done .form-manager-button-inner,
+.form-manager-proceed .form-manager-button-inner,
+.form-manager-delete .form-manager-button-inner {
+  padding: 5px 10px;
+  display: block;
+  outline: none;
+}
+.form-manager-fullscreen .form-manager-button-inner,
+.form-manager-breadcrumb-menu .form-manager-button-inner {
+  display: block;
+  outline: none;
+}
 .form-manager-breadcrumb-menu {
   display: none;
-  margin-top: 5px;
-  margin-left: 5px;
+  margin-top: 8px;
+  margin-left: 8px;
   margin-right: 0;
 }
 .form-manager-done,
