@@ -279,6 +279,9 @@
   font-size: 20px;
   margin-right: 0.5em;
 }
+.h5peditor.h5p-branchingscenario-editor .form-manager-fullscreen {
+  display: none; /* Prevent fullscreen inside fullscreen */
+}
 .form-manager-fullscreen:before {
   font-family: 'H5PFontAwesome4';
   content: "\f065";
