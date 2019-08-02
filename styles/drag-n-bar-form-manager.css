@@ -556,3 +556,12 @@
   font-family: 'H5PFontIcons';
   content: "\e922";
 }
+.form-manager-hidden {
+  visibility: hidden;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  height: 1px;
+  overflow: hidden;
+}

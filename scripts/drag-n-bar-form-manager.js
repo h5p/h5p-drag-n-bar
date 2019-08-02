@@ -292,14 +292,11 @@
      * @private
      */
     const hideElement = function (element) {
-      // Make sure element is hidden while still retaining its size without
-      // expanding its container. This is due to some editors resizing if
-      // their container changes size which leads to some funny transitions...
-      element.style.visibility = 'hidden';
-      element.style.width = '100%';
-      element.style.position = 'absolute';
-      element.style.zIndex = '-1';
-      element.style.opacity = '0';
+      // Make sure element is hidden while still retaining its width without
+      // expanding the container's height. This is due to some editors resizing
+      // if their container changes size which leads to some funny transitions.
+      // Also, having invisible height causes resize loops.
+      element.classList.add('form-manager-hidden');
       element.setAttribute('aria-hidden', true);
     };
 
@@ -310,11 +307,7 @@
      * @private
      */
     const showElement = function (element) {
-      element.style.visibility = '';
-      element.style.width = '';
-      element.style.position = '';
-      element.style.zIndex = '';
-      element.style.opacity = '';
+      element.classList.remove('form-manager-hidden');
       element.removeAttribute('aria-hidden');
     };
 
