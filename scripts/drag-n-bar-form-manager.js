@@ -295,6 +295,7 @@
       element.style.width = '100%';
       element.style.position = 'absolute';
       element.style.zIndex = '-1';
+      element.style.opacity = '0';
       element.setAttribute('aria-hidden', true);
     };
 
@@ -309,6 +310,7 @@
       element.style.width = '';
       element.style.position = '';
       element.style.zIndex = '';
+      element.style.opacity = '';
       element.removeAttribute('aria-hidden');
     };
 
@@ -538,7 +540,7 @@
 
         // Hide everything except first & last child
         for (let i = 1; i < manager.formContainer.children.length - 1; i++) {
-          if (manager.formContainer.children[i] !== subForm) {
+          if (manager.formContainer.children[i] !== subForm && !manager.formContainer.children[i].classList.contains('sp-container')) {
             hideElement(manager.formContainer.children[i]);
           }
         }
