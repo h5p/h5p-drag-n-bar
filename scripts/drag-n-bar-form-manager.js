@@ -123,6 +123,10 @@
         window.removeEventListener('resize', self.updateFormResponsiveness);
       });
 
+      const overlay = document.createElement('div');
+      overlay.classList.add('form-mananger-overlay');
+      self.formContainer.insertBefore(overlay, self.formContainer.firstChild);
+
       // Insert everything in the top of the form DOM
       self.formContainer.insertBefore(head, self.formContainer.firstChild);
 
@@ -538,9 +542,10 @@
       handleTransitionend = onlyOnce(subForm, 'transitionend', function () {
         handleTransitionend = null;
 
-        // Hide everything except first & last child
-        for (let i = 1; i < manager.formContainer.children.length - 1; i++) {
-          if (manager.formContainer.children[i] !== subForm && !manager.formContainer.children[i].classList.contains('sp-container')) {
+        // Hide everything except first, second & last child
+        for (let i = 2; i < manager.formContainer.children.length - 1; i++) {
+          const child = manager.formContainer.children[i];
+          if (child !== subForm && !child.classList.contains('sp-container')) {
             hideElement(manager.formContainer.children[i]);
           }
         }
@@ -595,16 +600,16 @@
      * Toggle the breadcrumb menu.
      */
     self.toggleBreadcrumbMenu = function () {
-      if (head.classList.contains('mobile-menu-open')) {
+      if (self.formContainer.classList.contains('mobile-menu-open')) {
         // Close breadcrumb menu
-        head.classList.remove('mobile-menu-open');
+        self.formContainer.classList.remove('mobile-menu-open');
         breadcrumbButton.innerText = l10n.expandBreadcrumbButtonLabel;
         breadcrumbButton.setAttribute('aria-label', l10n.expandBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.remove('form-manager-comein');
       }
       else {
         // Open breadcrumb menu
-        head.classList.add('mobile-menu-open');
+        self.formContainer.classList.add('mobile-menu-open');
         breadcrumbButton.innerText = l10n.collapseBreadcrumbButtonLabel;
         breadcrumbButton.setAttribute('aria-label', l10n.collapseBreadcrumbButtonLabel);
         self.formBreadcrumbMenu.classList.add('form-manager-comein');
