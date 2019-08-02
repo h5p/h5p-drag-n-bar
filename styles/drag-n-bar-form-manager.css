@@ -111,6 +111,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  max-width: 300px;
 }
 .form-manager-head.mobile-view-large .form-manager-delete,
 .form-manager-head.mobile-view-large .form-manager-done,
