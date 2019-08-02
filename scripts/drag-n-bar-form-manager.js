@@ -411,14 +411,21 @@
         // Remove from DOM
         manager.formContainer.removeChild(activeSubForm);
       });
-      onlyOnce(titles.breadcrumb, 'transitionend', function () {
-        // Remove last breadcrumb section
-        manager.formBreadcrumb.removeChild(titles.breadcrumb);
-      });
-
       // Start the animation
       activeSubForm.classList.remove('form-manager-slidein');
-      titles.breadcrumb.classList.remove('form-manager-comein');
+
+      if (titles.breadcrumb.offsetWidth === 0) {
+        // Remove last breadcrumb section in case it's hidden
+        manager.formBreadcrumb.removeChild(titles.breadcrumb);
+      }
+      else {
+        onlyOnce(titles.breadcrumb, 'transitionend', function () {
+          // Remove last breadcrumb section
+          manager.formBreadcrumb.removeChild(titles.breadcrumb);
+        });
+        // Start the animation
+        titles.breadcrumb.classList.remove('form-manager-comein');
+      }
 
       if (!subForm) {
         if (proceedButton && manager.exitSemiFullscreen) {
@@ -623,11 +630,11 @@
       if (head.classList.contains('mobile-view-large')) {
         head.classList.remove('mobile-view-large');
       }
-      if (head.classList.contains('mobile-view-small')) {
-        head.classList.remove('mobile-view-small');
+      if (self.formContainer.classList.contains('mobile-view-small')) {
+        self.formContainer.classList.remove('mobile-view-small');
       }
       if (head.offsetWidth < 481) {
-        head.classList.add('mobile-view-small');
+        self.formContainer.classList.add('mobile-view-small');
       }
 
       /**
@@ -652,6 +659,8 @@
       };
       if (updateActiveTooltips(self.formBreadcrumb)) {
         head.classList.add('mobile-view-large');
+        // Check again since we made buttons smaller
+        updateActiveTooltips(self.formBreadcrumb)
       }
       updateActiveTooltips(self.formBreadcrumbMenu);
     };

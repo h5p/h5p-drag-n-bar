@@ -11,6 +11,9 @@
 .form-manager.libwrap > .form-manager-form {
   padding: 20px 0 0 0;
 }
+.form-manager.libwrap.h5peditor-semi-fullscreen > .form-manager-form {
+  padding: 20px 20px 0;
+}
 .form-manager.h5peditor-semi-fullscreen {
   margin: 0;
   position: fixed;
@@ -37,6 +40,7 @@
   box-sizing: border-box;
   position: relative;
   display: flex;
+  z-index: 2;
   justify-content: space-between;
   align-items: flex-start;
   box-shadow: 0px 2px 2px rgba(128,128,128,0.15);
@@ -47,10 +51,15 @@
   opacity: 0.8;
   width: 100%;
   position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   z-index: 1;
 }
-.mobile-menu-open .form-mananger-overlay {
+.h5peditor-semi-fullscreen .form-mananger-overlay {
+  position: fixed;
+}
+.mobile-view-small.mobile-menu-open .form-mananger-overlay {
   visibility: visible;
 }
 .form-manager-breadcrumb-menulist {
@@ -109,7 +118,7 @@
   white-space: nowrap;
   width: 2em;
 }
-.form-manager-head.mobile-view-small .form-manager-breadcrumb-menu.form-manager-disabled {
+.mobile-view-small .form-manager-head .form-manager-breadcrumb-menu.form-manager-disabled {
   display: none;
 }
 .form-manager-head.mobile-view-large .form-manager-delete:before,
@@ -148,14 +157,14 @@
 }
 
 /* Mobile-view: small */
-.form-manager-head.mobile-view-small .form-manager-title   {
+.mobile-view-small .form-manager-head .form-manager-title   {
   display: none;
 }
-.form-manager-head.mobile-view-small .form-manager-breadcrumb-menu,
-.form-manager-head.mobile-view-small .form-manager-title:last-child {
+.mobile-view-small .form-manager-head .form-manager-breadcrumb-menu,
+.mobile-view-small .form-manager-head .form-manager-title:last-child {
   display: block;
 }
-.form-manager-head.mobile-view-small .truncatable-text {
+.mobile-view-small .form-manager-head .truncatable-text {
   max-width: none;
 }
 .h5peditor-semi-fullscreen .form-manager-head {
@@ -225,6 +234,7 @@
   font-weight: normal;
   pointer-events: none;
   outline: none;
+  line-height: normal;
 }
 .form-manager-button[aria-label]:after,
 .truncatable-text[aria-label]:after {
@@ -331,7 +341,7 @@
   font-size: 14px;
 }
 .form-manager-title:first-child,
-.form-manager-head.mobile-view-small .form-manager-title:last-child {
+.mobile-view-small .form-manager-head .form-manager-title:last-child {
   padding-left: 30px;
 }
 .form-manager-title.form-manager-comein {
@@ -361,7 +371,7 @@
 }
 .form-manager-menutitle:before,
 .form-manager-title:first-child:before,
-.form-manager-head.mobile-view-small .form-manager-title:last-child:before {
+.mobile-view-small .form-manager-head .form-manager-title:last-child:before {
   left: 6px;
 }
 .form-manager-title.clickable:before,
