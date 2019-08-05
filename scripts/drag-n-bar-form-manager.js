@@ -186,7 +186,6 @@
       menuTitle.addEventListener('click', function (e) {
         e.preventDefault(); // Prevent jumping to top of page
         handleBreadcrumbClick.call(title);
-        manager.toggleBreadcrumbMenu();
       });
 
       // For limiting the length of the menu title
@@ -437,6 +436,9 @@
         if (breadcrumbButton) {
           breadcrumbButton.classList.add('form-manager-disabled');
         }
+      }
+      if (self.formContainer.classList.contains('mobile-menu-open')) {
+        self.toggleBreadcrumbMenu();
       }
     };
 
