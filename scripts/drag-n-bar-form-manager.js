@@ -203,6 +203,7 @@
       // Create a text wrapper so we can limit max-width on the text
       const textWrapper = document.createElement('span');
       textWrapper.classList.add('truncatable-text');
+      textWrapper.tabIndex = -1;
       title.appendChild(textWrapper);
 
       // Create a tooltip that can display the whole text on hover

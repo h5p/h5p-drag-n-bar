@@ -83,10 +83,9 @@
   transition: visibility 0s 0s, opacity 0.2s, top 0.2s;
 }
 .form-manager-menutitle {
-  margin: 0 29px;
+  margin: 0 20px;
   display: block;
   position: relative;
-  padding-left: 30px;
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
@@ -97,6 +96,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  padding-left: 30px;
 }
 .form-manager-menutitle:hover .form-manager-menutitle-text {
   text-decoration: underline;
@@ -112,6 +112,11 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 300px;
+  padding-left: 40px;
+  padding-right: 10px;
+}
+.truncatable-text:focus {
+  outline: none;
 }
 .form-manager-head.mobile-view-large .form-manager-delete,
 .form-manager-head.mobile-view-large .form-manager-done,
@@ -353,16 +358,14 @@
 .form-manager-title {
   position: relative;
   margin-left: 120px;
-  padding-left: 40px;
-  padding-right: 10px;
   min-width: 20px;
   opacity: 0;
   transition: margin-left 0.3s linear, opacity 0.3s linear;
   font-weight: bold;
   font-size: 14px;
 }
-.form-manager-title:first-child,
-.mobile-view-small .form-manager-head .form-manager-title:last-child {
+.form-manager-title:first-child .truncatable-text,
+.mobile-view-small .form-manager-head .form-manager-title:last-child .truncatable-text {
   padding-left: 30px;
 }
 .form-manager-title.form-manager-comein {
