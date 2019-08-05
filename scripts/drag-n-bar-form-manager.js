@@ -178,7 +178,6 @@
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
-      title.tabIndex = '0';
 
       // Create breadcrumb section.
       const menuTitle = document.createElement('a');
@@ -371,8 +370,10 @@
       manager.formBreadcrumbMenu.removeChild(titles.menu);
 
       // The previous breadcrumb must no longer be clickable
-      titles.breadcrumb.previousSibling.removeEventListener('click', handleBreadcrumbClick);
-      titles.breadcrumb.previousSibling.classList.remove('clickable');
+      const previousBreadcrumb = titles.breadcrumb.previousSibling;
+      previousBreadcrumb.removeEventListener('click', handleBreadcrumbClick);
+      previousBreadcrumb.classList.remove('clickable');
+      previousBreadcrumb.removeAttribute('tabindex');
 
       const headHeight = manager.getFormHeadHeight();
 
@@ -535,8 +536,10 @@
       manager.formContainer.appendChild(subForm);
 
       // Make last part of breadcrumb clickable
-      manager.formBreadcrumb.lastChild.addEventListener('click', handleBreadcrumbClick);
-      manager.formBreadcrumb.lastChild.classList.add('clickable');
+      const lastBreadcrumb = manager.formBreadcrumb.lastChild;
+      lastBreadcrumb.addEventListener('click', handleBreadcrumbClick);
+      lastBreadcrumb.classList.add('clickable');
+      lastBreadcrumb.tabIndex = '0';
 
       // Add breadcrumb section
       titles = createTitles(libraryField, customTitle, customIconId);
