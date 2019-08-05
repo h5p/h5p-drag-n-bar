@@ -180,11 +180,10 @@
       title.classList.add('form-manager-title');
 
       // Create breadcrumb section.
-      const menuTitle = document.createElement('a');
+      const menuTitle = document.createElement('div');
       menuTitle.classList.add('form-manager-menutitle');
-      menuTitle.href = '#';
+      menuTitle.tabIndex = '0';
       menuTitle.addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent jumping to top of page
         handleBreadcrumbClick.call(title);
       });
 
