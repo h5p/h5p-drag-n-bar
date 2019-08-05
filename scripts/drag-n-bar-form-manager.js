@@ -569,7 +569,7 @@
       // Start animation on the next tick
       setTimeout(function () {
         // Animation fix for fullscreen max-width limit.
-        subForm.style.marginLeft = (parseFloat(window.getComputedStyle(manager.formContainer.children[2]).marginLeft) - 20) + 'px';
+        subForm.style.marginLeft = (parseFloat(window.getComputedStyle(manager.formContainer.children[manager.formContainer.children.length - 2]).marginLeft) - 20) + 'px';
 
         subForm.classList.add('form-manager-slidein');
         titles.breadcrumb.classList.add('form-manager-comein');
