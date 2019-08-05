@@ -252,7 +252,7 @@
       };
 
       // Listen for title updates
-      if (libraryField.metadataForm === undefined) {
+      if (libraryField.metadataForm === undefined && libraryField.change) {
         libraryField.change(listenForTitleChanges);
       }
       else {
