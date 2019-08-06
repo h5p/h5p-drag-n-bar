@@ -245,6 +245,10 @@
             setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
             manager.updateFormResponsiveness();
           });
+
+          // Call immediately
+          setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
+          manager.updateFormResponsiveness();
         }
       };
 
