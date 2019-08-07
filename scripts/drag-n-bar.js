@@ -126,10 +126,10 @@ H5P.DragNBar.prototype.initEditor = function () {
    * Show transform panel listeners
    */
   this.dnr.on('showTransformPanel', function () {
-    transformPanel(true);
+    TransformPanel(true);
   });
   this.dnd.on('showTransformPanel', function () {
-    transformPanel(true);
+    TransformPanel(true);
   });
 
   /**
@@ -137,12 +137,12 @@ H5P.DragNBar.prototype.initEditor = function () {
    */
   this.dnr.on('hideTransformPanel', function () {
     if (!that.transformButtonActive) {
-      transformPanel(false);
+      TransformPanel(false);
     }
   });
   this.dnd.on('hideTransformPanel', function () {
     if (!that.transformButtonActive) {
-      transformPanel(false);
+      TransformPanel(false);
     }
   });
 
@@ -152,7 +152,7 @@ H5P.DragNBar.prototype.initEditor = function () {
    *
    * @param {boolean} show
    */
-  function transformPanel(show) {
+  function TransformPanel(show) {
     if (that.focusedElement) {
       that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: show});
     }

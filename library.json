@@ -24,6 +24,9 @@
     },
     {
       "path": "scripts/drag-n-bar-element.js"
+    },
+    {
+      "path": "scripts/drag-n-bar-form-manager.js"
     }
   ],
   "preloadedCss": [
@@ -35,6 +38,9 @@
     },
     {
       "path": "styles/context-menu.css"
+    },
+    {
+      "path": "styles/drag-n-bar-form-manager.css"
     }
   ],
   "preloadedDependencies": [
