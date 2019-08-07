@@ -213,30 +213,39 @@
 
       /**
        * @private
+       * @param {string} title WARNING: This is Text do not use as HTML.
        */
       const setTitle = function (title) {
         textWrapper.innerText = menuTitleText.innerText = tooltip.innerText = menuTitleTooltip.innerText = title;
       };
 
-      // Set correct starting title
-      if (customTitle) {
-        setTitle(customTitle);
-      }
-      else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
-          libraryField.params.metadata.title.substr(0, 8) !== 'Untitled' ||
-          libraryField.metadata && libraryField.metadata.title &&
-          libraryField.metadata.title.substr(0, 8) !== 'Untitled') {
-        setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
-      }
-      else {
-        if (libraryField.$select !== undefined) {
-          setTitle(libraryField.$select.children(':selected').text());
+      /**
+       * @private
+       * @return {string} WARNING: This is Text do not use as HTML.
+       */
+      const getTitle = function () {
+        if (customTitle) {
+          return customTitle;
+        }
+        else if (libraryField.params && libraryField.params.metadata && libraryField.params.metadata.title &&
+            libraryField.params.metadata.title.substr(0, 8) !== 'Untitled' ||
+            libraryField.metadata && libraryField.metadata.title &&
+            libraryField.metadata.title.substr(0, 8) !== 'Untitled') {
+          return getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
         }
         else {
-          // There is no way to get the title from the Hub, use the default one
-          setTitle(l10n.defaultTitle);
+          if (libraryField.$select !== undefined) {
+            return libraryField.$select.children(':selected').text();
+          }
+          else {
+            // There is no way to get the title from the Hub, use the default one
+            return l10n.defaultTitle;
+          }
         }
-      }
+      };
+
+      // Set correct starting title
+      setTitle(getTitle());
 
       /**
        * Help listen for title changes after library has been fully loaded
@@ -245,12 +254,15 @@
       const listenForTitleChanges = function () {
         if (libraryField.metadataForm) {
           libraryField.metadataForm.on('titlechange', function (e) {
-            setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
+            // Handle changes to the metadata title
+            setTitle(getTitle());
             manager.updateFormResponsiveness();
           });
+        }
 
-          // Call immediately
-          setTitle(getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title));
+        if (textWrapper.innerText === 'Loading...') {
+          // Correct title was not set initally, try again after library load
+          setTitle(getTitle());
           manager.updateFormResponsiveness();
         }
       };
