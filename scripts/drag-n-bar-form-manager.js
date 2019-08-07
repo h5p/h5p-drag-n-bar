@@ -183,8 +183,11 @@
       const menuTitle = document.createElement('div');
       menuTitle.classList.add('form-manager-menutitle');
       menuTitle.tabIndex = '0';
-      menuTitle.addEventListener('click', function (e) {
+      menuTitle.addEventListener('click', function () {
         handleBreadcrumbClick.call(title);
+      });
+      menuTitle.addEventListener('keypress', function (e) {
+        handleBreadcrumbKeypress.call(title, e);
       });
 
       // For limiting the length of the menu title
@@ -374,6 +377,7 @@
       // The previous breadcrumb must no longer be clickable
       const previousBreadcrumb = titles.breadcrumb.previousSibling;
       previousBreadcrumb.removeEventListener('click', handleBreadcrumbClick);
+      previousBreadcrumb.removeEventListener('keypress', handleBreadcrumbKeypress);
       previousBreadcrumb.classList.remove('clickable');
       previousBreadcrumb.removeAttribute('tabindex');
 
@@ -456,6 +460,17 @@
           manager.closeFormUntil(i);
           break;
         }
+      }
+    };
+
+    /**
+     * The breadcrumb click handler figures out how many forms to close.
+     *
+     * @private
+     */
+    const handleBreadcrumbKeypress = function (e) {
+      if (e.which === 13 || e.which === 32) {
+        handleBreadcrumbClick.call(this);
       }
     };
 
@@ -543,6 +558,7 @@
       // Make last part of breadcrumb clickable
       const lastBreadcrumb = manager.formBreadcrumb.lastChild;
       lastBreadcrumb.addEventListener('click', handleBreadcrumbClick);
+      lastBreadcrumb.addEventListener('keypress', handleBreadcrumbKeypress);
       lastBreadcrumb.classList.add('clickable');
       lastBreadcrumb.tabIndex = '0';
 
