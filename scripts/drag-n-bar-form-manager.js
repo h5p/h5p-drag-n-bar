@@ -17,7 +17,7 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let head, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton;
+    let head, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton, alwaysShowButtons;
 
     /**
      * Initialize the FormManager.
@@ -75,16 +75,19 @@
       // Create 'Delete' button
       self.formButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
         const e = new H5P.Event('formremove');
+        e.data = formTargets.length;
         formTargets[formTargets.length - 1].trigger(e);
-        if (!e.preventRemove) {
+        if (!e.preventRemove && formTargets.length > 1) {
           closeForm();
         }
       }));
 
       // Create 'Done' button
       self.formButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
-        formTargets[formTargets.length - 1].trigger('formdone');
-        closeForm();
+        formTargets[formTargets.length - 1].trigger('formdone', formTargets.length);
+        if (formTargets.length > 1) {
+          closeForm();
+        }
       }));
 
       // Check if we can has fullscreen
@@ -409,9 +412,11 @@
           showElement(manager.formContainer.children[i]);
         }
 
-        // No need for the buttons any more
-        hideElement(manager.formButtons);
-        manager.formButtons.classList.remove('form-manager-comein');
+        if (!alwaysShowButtons) {
+          // No need for the buttons any more
+          hideElement(manager.formButtons);
+          manager.formButtons.classList.remove('form-manager-comein');
+        }
       }
 
       // Animation fix for fullscreen max-width limit.
@@ -579,8 +584,10 @@
       manager.formBreadcrumb.appendChild(titles.breadcrumb);
       manager.formBreadcrumbMenu.insertBefore(titles.menu, manager.formBreadcrumbMenu.firstChild);
 
-      // Show our buttons
-      showElement(manager.formButtons);
+      if (!alwaysShowButtons) {
+        // Show our buttons
+        showElement(manager.formButtons);
+      }
 
       // When transition animation is done and the form is fully open...
       handleTransitionend = onlyOnce(subForm, 'transitionend', function () {
@@ -609,7 +616,9 @@
 
         subForm.classList.add('form-manager-slidein');
         titles.breadcrumb.classList.add('form-manager-comein');
-        manager.formButtons.classList.add('form-manager-comein');
+        if (!alwaysShowButtons) {
+          manager.formButtons.classList.add('form-manager-comein');
+        }
         manager.updateFormResponsiveness();
       }, 0);
 
@@ -637,7 +646,7 @@
      * @return {number}
      */
     self.getFormHeadHeight = function () {
-      return head.getBoundingClientRect().height;
+      return (alwaysShowButtons ? 0 : head.getBoundingClientRect().height);
     };
 
     /**
@@ -700,6 +709,21 @@
         updateActiveTooltips(self.formBreadcrumb)
       }
       updateActiveTooltips(self.formBreadcrumbMenu);
+    };
+
+    /**
+     * Keep the buttons visible even though the last sub-form is closed.
+     *
+     * @param {Boolean} state
+     */
+    self.setAlwaysShowButtons = function (state) {
+      alwaysShowButtons = state;
+
+      if (alwaysShowButtons) {
+        // Show our buttons
+        showElement(manager.formButtons);
+        manager.formButtons.classList.add('form-manager-comein');
+      }
     };
 
     // Figure out which manager to use.
