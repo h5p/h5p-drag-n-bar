@@ -187,20 +187,6 @@
   z-index: 2;
 }
 
-.h5peditor-semi-fullscreen .form-manager-head.form-manager-footer {
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  width: 918px;
-  margin: auto;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  padding: 0 20px 20px;
-  box-sizing: content-box;
-}
-
 .form-manager-footer {
   padding-left: 6px;
   box-shadow: 0px -2px 2px rgba(128,128,128,0.15);
