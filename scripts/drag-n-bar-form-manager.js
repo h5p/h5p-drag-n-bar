@@ -31,9 +31,7 @@
       // Locate target container
       self.formContainer = (self.isMainLibrary ? parent.$form : parent.$libraryWrapper)[0];
       self.formContainer.classList.add('form-manager');
-      if (self.isMainLibrary) {
-        self.formContainer.classList.add('root-form');
-      }
+      self.formContainer.classList.add('root-form');
 
       head = document.createElement('div');
       head.classList.add('form-manager-head');

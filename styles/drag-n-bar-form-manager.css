@@ -235,7 +235,7 @@
 .form-manager-breadcrumb {
   display: flex;
   min-width: 0;
-  width: 100%;
+  flex-grow: 1;
 }
 .form-manager-button {
   background: transparent;
