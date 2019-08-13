@@ -110,14 +110,17 @@
 
       // Footer form buttons
       self.footerFormButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
-        formTargets[formTargets.length - 1].trigger('formdone');
-        closeForm();
+        formTargets[formTargets.length - 1].trigger('formdone', formTargets.length);
+        if (formTargets.length > 1) {
+          closeForm();
+        }
       }));
 
       self.footerFormButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
         const e = new H5P.Event('formremove');
+        e.data = formTargets.length;
         formTargets[formTargets.length - 1].trigger(e);
-        if (!e.preventRemove) {
+        if (!e.preventRemove && formTargets.length > 1) {
           closeForm();
         }
       }));
@@ -450,6 +453,13 @@
         // No need for the buttons any more
         hideElement(manager.formButtons);
         manager.formButtons.classList.remove('form-manager-comein');
+
+        // Hide footer
+        manager.footerFormButtons.classList.remove('form-manager-comein');
+        hideElement(manager.footerFormButtons);
+        hideElement(manager.footer);
+
+        manager.formContainer.classList.add('root-form');
       }
 
       // Animation fix for fullscreen max-width limit.
@@ -623,6 +633,11 @@
 
       // Show our buttons
       showElement(manager.formButtons);
+      showElement(manager.footerFormButtons);
+      showElement(manager.footer);
+
+      // Ensure footer is at the bottom of the form
+      manager.formContainer.appendChild(manager.footer);
 
       // When transition animation is done and the form is fully open...
       handleTransitionend = onlyOnce(subForm, 'transitionend', function () {
@@ -655,6 +670,7 @@
         subForm.classList.add('form-manager-slidein');
         titles.breadcrumb.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
+        manager.footerFormButtons.classList.add('form-manager-comein');
         manager.updateFormResponsiveness();
       }, 0);
 
