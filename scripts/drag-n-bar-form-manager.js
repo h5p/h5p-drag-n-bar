@@ -17,7 +17,7 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let head, footer, footerProceedButton, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton, alwaysShowButtons;
+    let head, footer, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton, alwaysShowButtons;
 
     /**
      * Initialize the FormManager.
@@ -72,15 +72,6 @@
         }
       });
       hideElement(proceedButton);
-      footerProceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
-        if (manager.exitSemiFullscreen) {
-          // Trigger semi-fullscreen exit
-          manager.exitSemiFullscreen();
-          manager.exitSemiFullscreen = null;
-        }
-      });
-      hideElement(footerProceedButton);
-      footer.appendChild(footerProceedButton);
       head.appendChild(proceedButton);
 
       // Create a container for the action buttons
