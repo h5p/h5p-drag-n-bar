@@ -174,16 +174,12 @@
 .mobile-view-small .form-manager-head .truncatable-text {
   max-width: none;
 }
-.h5peditor-semi-fullscreen .form-manager-head {
+.h5peditor-semi-fullscreen > .form-manager-head {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 2;
-}
-/* Makes metadata popup look good in fullscreen */
-.h5peditor-semi-fullscreen + .h5p-metadata-popup-overlay {
-  position: fixed;
 }
 .form-manager-form {
   background: #fff;

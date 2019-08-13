@@ -26,9 +26,10 @@
      * @private
      */
     const initialize = function () {
+      self.isMainLibrary = !(parent instanceof H5PEditor.Library)
 
       // Locate target container
-      self.formContainer = (parent instanceof H5PEditor.Library ? parent.$libraryWrapper : parent.$form)[0];
+      self.formContainer = (self.isMainLibrary ? parent.$form : parent.$libraryWrapper)[0];
       self.formContainer.classList.add('form-manager');
 
       head = document.createElement('div');
@@ -56,7 +57,7 @@
       self.formBreadcrumbMenu.appendChild(titles.menu);
 
       // Create 'Proceed to save' button
-      proceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
+      proceedButton = createButton('proceed', H5PEditor.t('core', 'proceedButtonLabel'), function () {
         if (manager.exitSemiFullscreen) {
           // Trigger semi-fullscreen exit
           manager.exitSemiFullscreen();
@@ -90,8 +91,8 @@
         }
       }));
 
-      // Check if we can has fullscreen
-      if (H5PEditor.semiFullscreen !== undefined) {
+      // Check if we should add the fullscreen button
+      if (self.isMainLibrary && H5PEditor.semiFullscreen !== undefined) {
         // Create and insert fullscreen button into header
         const fullscreenButton = createButton('fullscreen', '', function () {
           if (manager.exitSemiFullscreen) {
@@ -348,12 +349,12 @@
     const toggleFullscreenButtonState = function (element, isInFullscreen) {
       if (isInFullscreen) {
         // We are entering fullscreen mode
-        element.setAttribute('aria-label', l10n.exitFullscreenButtonLabel);
+        element.setAttribute('aria-label', H5PEditor.t('core', 'exitFullscreenButtonLabel'));
         element.classList.add('form-manager-exit');
       }
       else {
         // We are exiting fullscreen mode
-        element.setAttribute('aria-label', l10n.enterFullscreenButtonLabel);
+        element.setAttribute('aria-label', H5PEditor.t('core', 'enterFullscreenButtonLabel'));
         element.classList.remove('form-manager-exit');
       }
     };
