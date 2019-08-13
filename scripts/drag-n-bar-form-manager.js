@@ -17,7 +17,7 @@
     EventDispatcher.call(self);
 
     const formTargets = [self];
-    let head, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton, alwaysShowButtons;
+    let head, footer, footerProceedButton, subForm, titles, handleTransitionend, proceedButton, breadcrumbButton, alwaysShowButtons;
 
     /**
      * Initialize the FormManager.
@@ -31,9 +31,16 @@
       // Locate target container
       self.formContainer = (self.isMainLibrary ? parent.$form : parent.$libraryWrapper)[0];
       self.formContainer.classList.add('form-manager');
+      if (self.isMainLibrary) {
+        self.formContainer.classList.add('root-form');
+      }
 
       head = document.createElement('div');
       head.classList.add('form-manager-head');
+      footer = document.createElement('div');
+      footer.classList.add('form-manager-head');
+      footer.classList.add('form-manager-footer');
+      self.footer = footer;
 
       // Create button to toggle preivous menu on narrow layouts
       breadcrumbButton = createButton('breadcrumb-menu', l10n.expandBreadcrumbButtonLabel, self.toggleBreadcrumbMenu);
@@ -65,12 +72,25 @@
         }
       });
       hideElement(proceedButton);
+      footerProceedButton = createButton('proceed', l10n.proceedButtonLabel, function () {
+        if (manager.exitSemiFullscreen) {
+          // Trigger semi-fullscreen exit
+          manager.exitSemiFullscreen();
+          manager.exitSemiFullscreen = null;
+        }
+      });
+      hideElement(footerProceedButton);
+      footer.appendChild(footerProceedButton);
       head.appendChild(proceedButton);
 
       // Create a container for the action buttons
       self.formButtons = document.createElement('div');
       self.formButtons.classList.add('form-manager-buttons');
+      self.footerFormButtons = document.createElement('div');
+      self.footerFormButtons.classList.add('form-manager-buttons');
+      hideElement(self.footerFormButtons);
       hideElement(self.formButtons); // Buttons are hidden by default
+      footer.appendChild(self.footerFormButtons);
       head.appendChild(self.formButtons);
 
       // Create 'Delete' button
@@ -87,6 +107,23 @@
       self.formButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
         formTargets[formTargets.length - 1].trigger('formdone', formTargets.length);
         if (formTargets.length > 1) {
+          closeForm();
+        }
+      }));
+
+      // Footer form buttons
+      self.footerFormButtons.appendChild(createButton('done', l10n.doneButtonLabel, function () {
+        formTargets[formTargets.length - 1].trigger('formdone', formTargets.length);
+        if (formTargets.length > 1) {
+          closeForm();
+        }
+      }));
+
+      self.footerFormButtons.appendChild(createButton('delete', l10n.deleteButtonLabel, function () {
+        const e = new H5P.Event('formremove');
+        e.data = formTargets.length;
+        formTargets[formTargets.length - 1].trigger(e);
+        if (!e.preventRemove && formTargets.length > 1) {
           closeForm();
         }
       }));
@@ -133,6 +170,9 @@
 
       // Insert everything in the top of the form DOM
       self.formContainer.insertBefore(head, self.formContainer.firstChild);
+      hideElement(footer);
+      self.formContainer.appendChild(manager.footer);
+
 
       // Always clean up on remove
       self.on('validate', function () {
@@ -413,11 +453,16 @@
           showElement(manager.formContainer.children[i]);
         }
 
-        if (!alwaysShowButtons) {
-          // No need for the buttons any more
-          hideElement(manager.formButtons);
-          manager.formButtons.classList.remove('form-manager-comein');
-        }
+        // No need for the buttons any more
+        hideElement(manager.formButtons);
+        manager.formButtons.classList.remove('form-manager-comein');
+
+        // Hide footer
+        manager.footerFormButtons.classList.remove('form-manager-comein');
+        hideElement(manager.footerFormButtons);
+        hideElement(manager.footer);
+
+        manager.formContainer.classList.add('root-form');
       }
 
       // Animation fix for fullscreen max-width limit.
@@ -465,6 +510,9 @@
       if (self.formContainer.classList.contains('mobile-menu-open')) {
         self.toggleBreadcrumbMenu();
       }
+
+      // Scroll parent manager header into view
+      manager.formButtons.scrollIntoView();
     };
 
     /**
@@ -556,6 +604,7 @@
       }
 
       // Tell manager that we should be receiving the next buttons events
+      manager.formContainer.classList.remove('root-form');
       manager.addFormTarget(self);
 
       // Create the new sub-form
@@ -585,19 +634,25 @@
       manager.formBreadcrumb.appendChild(titles.breadcrumb);
       manager.formBreadcrumbMenu.insertBefore(titles.menu, manager.formBreadcrumbMenu.firstChild);
 
-      if (!alwaysShowButtons) {
-        // Show our buttons
-        showElement(manager.formButtons);
-      }
+      // Show our buttons
+      showElement(manager.formButtons);
+      showElement(manager.footerFormButtons);
+      showElement(manager.footer);
+
+      // Ensure footer is at the bottom of the form
+      manager.formContainer.appendChild(manager.footer);
 
       // When transition animation is done and the form is fully open...
       handleTransitionend = onlyOnce(subForm, 'transitionend', function () {
         handleTransitionend = null;
 
-        // Hide everything except first, second & last child
+        // Hide everything except first, second, last child and footer
         for (let i = 2; i < manager.formContainer.children.length - 1; i++) {
           const child = manager.formContainer.children[i];
-          if (child !== subForm && !child.classList.contains('sp-container')) {
+          const skipHiding = child === subForm
+            || child.classList.contains('sp-container')
+            || child.classList.contains('form-manager-footer');
+          if (!skipHiding) {
             hideElement(manager.formContainer.children[i]);
           }
         }
@@ -617,9 +672,8 @@
 
         subForm.classList.add('form-manager-slidein');
         titles.breadcrumb.classList.add('form-manager-comein');
-        if (!alwaysShowButtons) {
-          manager.formButtons.classList.add('form-manager-comein');
-        }
+        manager.formButtons.classList.add('form-manager-comein');
+        manager.footerFormButtons.classList.add('form-manager-comein');
         manager.updateFormResponsiveness();
       }, 0);
 
