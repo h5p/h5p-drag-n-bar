@@ -359,6 +359,8 @@
 }
 .form-manager-fullscreen {
   margin-top: 9px;
+  margin-right: 0.65em;
+  margin-left: 0.25em;
 }
 .form-manager-buttons,
 .form-manager-proceed {
