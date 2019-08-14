@@ -443,13 +443,15 @@
         }
 
         // No need for the buttons any more
-        hideElement(manager.formButtons);
-        manager.formButtons.classList.remove('form-manager-comein');
+        if (!alwaysShowButtons) {
+          hideElement(manager.formButtons);
+          manager.formButtons.classList.remove('form-manager-comein');
 
-        // Hide footer
-        manager.footerFormButtons.classList.remove('form-manager-comein');
-        hideElement(manager.footerFormButtons);
-        hideElement(manager.footer);
+          // Hide footer
+          manager.footerFormButtons.classList.remove('form-manager-comein');
+          hideElement(manager.footerFormButtons);
+          hideElement(manager.footer);
+        }
 
         manager.formContainer.classList.add('root-form');
       }
