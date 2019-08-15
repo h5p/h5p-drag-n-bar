@@ -10,7 +10,7 @@
   "author": "Joubel",
   "coreApi": {
     "majorVersion": 1,
-    "minorVersion": 14
+    "minorVersion": 22
   },
   "preloadedJs": [
     {
