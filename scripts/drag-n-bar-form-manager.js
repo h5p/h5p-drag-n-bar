@@ -209,7 +209,7 @@
      */
     const createTitles = function (libraryField, customTitle, customIconId) {
 
-      const library = libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary;
+      const library = (libraryField.params && libraryField.params.library) ? libraryField.params.library : (libraryField.currentLibrary ? libraryField.currentLibrary : undefined);
 
       // Create breadcrumb section.
       const title = document.createElement('div');
