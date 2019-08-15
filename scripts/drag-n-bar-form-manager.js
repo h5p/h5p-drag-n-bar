@@ -208,6 +208,9 @@
      * @return {Element[]}
      */
     const createTitles = function (libraryField, customTitle, customIconId) {
+
+      const library = libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary;
+
       // Create breadcrumb section.
       const title = document.createElement('div');
       title.classList.add('form-manager-title');
@@ -271,8 +274,7 @@
             return libraryField.$select.children(':selected').text();
           }
           else {
-            // There is no way to get the title from the Hub, use the default one
-            return l10n.defaultTitle;
+            return H5PEditor.libraryCache[library].title;
           }
         }
       };
@@ -308,7 +310,7 @@
         listenForTitleChanges();
       }
 
-      const iconId = customIconId ? customIconId : (libraryField.params.library ? libraryField.params.library : libraryField.currentLibrary).split(' ')[0].split('.')[1].toLowerCase();
+      const iconId = customIconId ? customIconId : library.split(' ')[0].split('.')[1].toLowerCase();
       title.classList.add('form-manager-icon-' + iconId);
       menuTitle.classList.add('form-manager-icon-' + iconId);
       if (customIconClass) {
