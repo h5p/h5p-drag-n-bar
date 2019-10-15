@@ -57,8 +57,7 @@
   cursor: pointer;
 }
 .h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li.paste-button.disabled {
-  opacity: 0.3;
-  cursor: auto;
+  opacity: 1;
 }
 .h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li .h5p-dragnbar-paste-button {
   background: #e6f1fa;
@@ -74,9 +73,19 @@
   background: linear-gradient(0deg, #cde2f7 3%, #9cbbe6 100%);
   border-color: #69a3f8;
 }
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li.paste-button.disabled .h5p-dragnbar-paste-button {
+  background: #fff;
+  border: 0.0625em solid #1a73b4;
+  color: #1a73b4;
+  padding: 0.2375em 0.2375em 0.175em;
+  cursor: not-allowed;
+}
 .h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li .h5p-dragnbar-paste-button:before {
   font-family: 'H5P';
-  content: "\e90a";
+  content: "\e910";
+}
+.h5peditor-dragnbar .h5p-dragnbar-ul .h5p-dragnbar-li.paste-button.disabled .h5p-dragnbar-paste-button:before {
+  content: "\e911";
 }
 .h5peditor-dragnbar .h5p-dragnbar-button-group {
   z-index: 2;
