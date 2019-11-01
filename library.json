@@ -4,13 +4,13 @@
   "description": "Creates a menu bar with items that can be dropped into the specified container.",
   "majorVersion": 1,
   "minorVersion": 5,
-  "patchVersion": 8,
+  "patchVersion": 9,
   "runnable": 0,
   "machineName": "H5P.DragNBar",
   "author": "Joubel",
   "coreApi": {
     "majorVersion": 1,
-    "minorVersion": 23
+    "minorVersion": 24
   },
   "preloadedJs": [
     {
