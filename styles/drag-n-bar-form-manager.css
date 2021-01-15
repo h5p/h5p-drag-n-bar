@@ -9,10 +9,10 @@
   position: relative;
 }
 .form-manager.libwrap > .form-manager-form {
-  padding: 20px;
+  padding: 20px 0;
 }
 .form-manager.libwrap.h5peditor-semi-fullscreen > .form-manager-form {
-  padding: 20px;
+  padding: 20px 0;
 }
 .form-manager.h5peditor-semi-fullscreen {
   display: block;
@@ -24,9 +24,6 @@
   box-sizing: border-box;
   height: 100%;
   background: #fff;
-}
-.form-manager:not(.root-form) {
-  border: 1px solid #dfdfdf;
 }
 
 .form-manager > .tree,
