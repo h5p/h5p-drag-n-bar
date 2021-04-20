@@ -1,4 +1,3 @@
-
 H5P.DragNBar = (function (EventDispatcher) {
   var nextInstanceIndex = 0;
 
@@ -28,14 +27,18 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.newElement = false;
     var defaultOptions = {
       disableEditor: false,
-      enableCopyPaste: true
+      enableCopyPaste: true,
     };
     options = H5P.jQuery.extend(defaultOptions, options);
     this.enableCopyPaste = options.enableCopyPaste;
     this.isEditor = !options.disableEditor;
-    this.$blurHandlers = options.$blurHandlers ? options.$blurHandlers : undefined;
+    this.$blurHandlers = options.$blurHandlers
+      ? options.$blurHandlers
+      : undefined;
     this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
+
+    const shiftKeyPressed = new checkIfShiftKeyPressed(self);
 
     /**
      * Keeps track of created DragNBar elements
@@ -47,7 +50,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.dialog = new H5P.DragNBarDialog($dialogContainer, $container);
 
     // Fix for forcing redraw on $container, to avoid "artifcats" on safari
-    this.$container.addClass('hardware-accelerated');
+    this.$container.addClass("hardware-accelerated");
 
     if (this.isEditor) {
       this.transformButtonActive = false;
@@ -69,16 +72,20 @@ H5P.DragNBar = (function (EventDispatcher) {
      * @param {string} [options.title] Title for the group.
      */
     this.addButtonGroup = function (buttons, $button, options) {
-      const $buttonGroup = H5P.jQuery('<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>');
+      const $buttonGroup = H5P.jQuery(
+        '<li class="h5p-dragnbar-li h5p-dragnbar-button-group" data-label="Image"></li>'
+      );
       // Add optional title to the group
-      if (options && options.title && options.title !=='') {
-        H5P.jQuery('<div class="h5p-dragnbar-button-title">' + options.title + '</div>')
-          .appendTo($buttonGroup);
+      if (options && options.title && options.title !== "") {
+        H5P.jQuery(
+          '<div class="h5p-dragnbar-button-title">' + options.title + "</div>"
+        ).appendTo($buttonGroup);
       }
 
       // Container for buttons
-      const $buttonGroupButtons = H5P.jQuery('<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>')
-        .appendTo($buttonGroup);
+      const $buttonGroupButtons = H5P.jQuery(
+        '<ul class="h5p-dragnbar-button-buttons h5p-dragnbar-ul"></ul>'
+      ).appendTo($buttonGroup);
 
       // Add buttons
       buttons.forEach(function (button) {
@@ -97,6 +104,27 @@ H5P.DragNBar = (function (EventDispatcher) {
   return DragNBar;
 })(H5P.EventDispatcher);
 
+// Creates eventlisteners which sets a boolean true or false if the shift key is pressed. Is used to turn off inkrements on rotation
+class checkIfShiftKeyPressed {
+  constructor(instance) {
+    instance.shiftKeyIsPressed = false;
+
+    window.addEventListener("keydown", (event) => {
+      const isShiftKey = event.key === "Shift";
+      if (isShiftKey) {
+        instance.shiftKeyIsPressed = true;
+      }
+    });
+
+    window.addEventListener("keyup", (event) => {
+      const isShiftKey = event.key === "Shift";
+      if (isShiftKey) {
+        instance.shiftKeyIsPressed = false;
+      }
+    });
+  }
+}
+
 /**
  * Initializes editor functionality of DragNBar
  */
@@ -106,41 +134,41 @@ H5P.DragNBar.prototype.initEditor = function () {
   this.dnr.snap = 10;
 
   // Update coordinates when element is resized
-  this.dnr.on('moveResizing', function () {
-    var offset = that.$element.offset();
-    var position = that.$element.position();
-    that.updateCoordinates(offset.left, offset.top, position.left, position.top);
-  });
+  // this.dnr.on('moveResizing', function () {
+  //   var offset = that.$element.offset();
+  //   var position = that.$element.position();
+  //   that.updateCoordinates(offset.left, offset.top, position.left, position.top);
+  // });
 
   // Set pressed to not lose focus at the end of resize
-  this.dnr.on('stoppedResizing', function () {
-    that.pressed = true;
+  // this.dnr.on('stoppedResizing', function () {
+  //   that.pressed = true;
 
-    // Delete pressed after dnbelement has been refocused so it will lose focus on single click.
-    setTimeout(function () {
-      delete that.pressed;
-    }, 10);
-  });
+  //   // Delete pressed after dnbelement has been refocused so it will lose focus on single click.
+  //   setTimeout(function () {
+  //     delete that.pressed;
+  //   }, 10);
+  // });
 
   /**
    * Show transform panel listeners
    */
-  this.dnr.on('showTransformPanel', function () {
-    TransformPanel(true);
-  });
-  this.dnd.on('showTransformPanel', function () {
+  // this.dnr.on('showTransformPanel', function () {
+  //   TransformPanel(true);
+  // });
+  this.dnd.on("showTransformPanel", function () {
     TransformPanel(true);
   });
 
   /**
    * Hide transform panel listeners
    */
-  this.dnr.on('hideTransformPanel', function () {
-    if (!that.transformButtonActive) {
-      TransformPanel(false);
-    }
-  });
-  this.dnd.on('hideTransformPanel', function () {
+  // this.dnr.on('hideTransformPanel', function () {
+  //   if (!that.transformButtonActive) {
+  //     TransformPanel(false);
+  //   }
+  // });
+  this.dnd.on("hideTransformPanel", function () {
     if (!that.transformButtonActive) {
       TransformPanel(false);
     }
@@ -154,15 +182,17 @@ H5P.DragNBar.prototype.initEditor = function () {
    */
   function TransformPanel(show) {
     if (that.focusedElement) {
-      that.focusedElement.contextMenu.trigger('contextMenuTransform', {showTransformPanel: show});
+      that.focusedElement.contextMenu.trigger("contextMenuTransform", {
+        showTransformPanel: show,
+      });
     }
   }
 
   this.dnd.startMovingCallback = function () {
-    that.dnd.min = {x: 0, y: 0};
+    that.dnd.min = { x: 0, y: 0 };
     that.dnd.max = {
       x: that.$container.width() - that.$element.outerWidth(),
-      y: that.$container.height() - that.$element.outerHeight()
+      y: that.$container.height() - that.$element.outerHeight(),
     };
 
     if (that.newElement) {
@@ -176,20 +206,19 @@ H5P.DragNBar.prototype.initEditor = function () {
 
   this.dnd.stopMovingCallback = function () {
     var pos = {};
-
     if (that.newElement) {
-      that.$container.css('overflow', '');
-      if (Math.round(parseFloat(that.$element.css('top'))) < 0) {
+      that.$container.css("overflow", "");
+      if (Math.round(parseFloat(that.$element.css("top"))) < 0) {
         // Try to center element, but avoid overlapping
-        pos.x = (that.dnd.max.x / 2);
-        pos.y = (that.dnd.max.y / 2);
+        pos.x = that.dnd.max.x / 2;
+        pos.y = that.dnd.max.y / 2;
         that.avoidOverlapping(pos, that.$element);
       }
     }
 
-    if (pos.x === undefined || pos.y === undefined ) {
-      pos.x = Math.round(parseFloat(that.$element.css('left')));
-      pos.y = Math.round(parseFloat(that.$element.css('top')));
+    if (pos.x === undefined || pos.y === undefined) {
+      pos.x = Math.round(parseFloat(that.$element.css("left")));
+      pos.y = Math.round(parseFloat(that.$element.css("top")));
     }
 
     that.stopMoving(pos.x, pos.y);
@@ -216,10 +245,9 @@ H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
     size = window.getComputedStyle(size[0]);
     size = {
       width: parseFloat(size.width),
-      height: parseFloat(size.height)
+      height: parseFloat(size.height),
     };
-  }
-  else {
+  } else {
     $element = undefined;
   }
 
@@ -266,8 +294,10 @@ H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
       continue;
     }
 
-    if (x === Math.round(parseFloat(element.$element.css('left')) / 10) &&
-        y === Math.round(parseFloat(element.$element.css('top')) / 10)) {
+    if (
+      x === Math.round(parseFloat(element.$element.css("left")) / 10) &&
+      y === Math.round(parseFloat(element.$element.css("top")) / 10)
+    ) {
       return true; // Stop loop
     }
   }
@@ -303,7 +333,10 @@ H5P.DragNBar.keydownHandler = function (event) {
   // Don't care about keys if parent editor is not in focus
   // This means all editors using drag-n-bar need to set a tabindex
   // (it's not done inside this library)
-  if (self.$dialogContainer.find(activeElement).length === 0 && self.$dialogContainer.get(0) !== activeElement) {
+  if (
+    self.$dialogContainer.find(activeElement).length === 0 &&
+    self.$dialogContainer.get(0) !== activeElement
+  ) {
     return;
   }
 
@@ -321,42 +354,63 @@ H5P.DragNBar.keydownHandler = function (event) {
   }
 
   if (event.which === LEFT && self.focusedElement) {
-    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+    if (
+      activeElement.contentEditable === "true" ||
+      activeElement.value !== undefined
+    ) {
       return;
     }
     event.preventDefault();
     self.moveWithKeys(-snapAmount, 0);
-  }
-  else if (event.which === UP && self.focusedElement) {
-    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+  } else if (event.which === UP && self.focusedElement) {
+    if (
+      activeElement.contentEditable === "true" ||
+      activeElement.value !== undefined
+    ) {
       return;
     }
     event.preventDefault();
     self.moveWithKeys(0, -snapAmount);
-  }
-  else if (event.which === RIGHT && self.focusedElement) {
-    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+  } else if (event.which === RIGHT && self.focusedElement) {
+    if (
+      activeElement.contentEditable === "true" ||
+      activeElement.value !== undefined
+    ) {
       return;
     }
     event.preventDefault();
     self.moveWithKeys(snapAmount, 0);
-  }
-  else if (event.which === DOWN && self.focusedElement) {
-    if (activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+  } else if (event.which === DOWN && self.focusedElement) {
+    if (
+      activeElement.contentEditable === "true" ||
+      activeElement.value !== undefined
+    ) {
       return;
     }
     event.preventDefault();
     self.moveWithKeys(0, snapAmount);
-  }
-  else if (event.which === C && ctrlDown && self.focusedElement && self.$container.is(':visible')) {
+  } else if (
+    event.which === C &&
+    ctrlDown &&
+    self.focusedElement &&
+    self.$container.is(":visible")
+  ) {
     self.copyHandler(event);
-  }
-  else if (event.which === V && ctrlDown && window.localStorage && self.$container.is(':visible')) {
+  } else if (
+    event.which === V &&
+    ctrlDown &&
+    window.localStorage &&
+    self.$container.is(":visible")
+  ) {
     self.pasteHandler(event);
-  }
-  else if ((event.which === DELETE || event.which === BACKSPACE) && self.focusedElement && self.$container.is(':visible') && activeElement.tagName.toLowerCase() !== 'input') {
+  } else if (
+    (event.which === DELETE || event.which === BACKSPACE) &&
+    self.focusedElement &&
+    self.$container.is(":visible") &&
+    activeElement.tagName.toLowerCase() !== "input"
+  ) {
     if (self.pressed === undefined) {
-      self.focusedElement.contextMenu.trigger('contextMenuRemove');
+      self.focusedElement.contextMenu.trigger("contextMenuRemove");
       event.preventDefault(); // Prevent browser navigating back
     }
   }
@@ -367,7 +421,6 @@ H5P.DragNBar.keydownHandler = function (event) {
  * @param {Event} event - Event to check for copyable content.
  */
 H5P.DragNBar.prototype.copyHandler = function (event) {
-
   if (!this.enableCopyPaste) {
     return;
   }
@@ -377,11 +430,13 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
   var elementSize = window.getComputedStyle(self.focusedElement.$element[0]);
   var width = parseFloat(elementSize.width);
   var height = parseFloat(elementSize.height) / width;
-  width = width / (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
+  width =
+    width /
+    (parseFloat(window.getComputedStyle(self.$container[0]).width) / 100);
   height *= width;
 
   self.focusedElement.toClipboard(width, height);
-  H5P.externalDispatcher.trigger('datainclipboard', {reset: false});
+  H5P.externalDispatcher.trigger("datainclipboard", { reset: false });
 };
 
 /**
@@ -393,53 +448,74 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
   var activeElement = document.activeElement;
 
   // Don't paste if parent editor is not in focus
-  if (!this.enableCopyPaste || self.preventPaste || self.dialog.isOpen() ||
-      activeElement.contentEditable === 'true' || activeElement.value !== undefined) {
+  if (
+    !this.enableCopyPaste ||
+    self.preventPaste ||
+    self.dialog.isOpen() ||
+    activeElement.contentEditable === "true" ||
+    activeElement.value !== undefined
+  ) {
     return;
   }
 
-  if (self.$pasteButton.hasClass('disabled')) {
+  if (self.$pasteButton.hasClass("disabled")) {
     // Inform user why pasting is not possible
-    const pasteCheck = H5PEditor.canPastePlus(H5P.getClipboard(), this.libraries);
+    const pasteCheck = H5PEditor.canPastePlus(
+      H5P.getClipboard(),
+      this.libraries
+    );
     if (pasteCheck.canPaste !== true) {
-      if (pasteCheck.reason === 'pasteTooOld' || pasteCheck.reason === 'pasteTooNew') {
+      if (
+        pasteCheck.reason === "pasteTooOld" ||
+        pasteCheck.reason === "pasteTooNew"
+      ) {
         self.confirmPasteError(pasteCheck.description, 0, function () {});
-      }
-      else {
+      } else {
         H5PEditor.attachToastTo(
           self.$pasteButton.get(0),
           pasteCheck.description,
-          {position: {horizontal: 'center', vertical: 'above', noOverflowX: true}}
+          {
+            position: {
+              horizontal: "center",
+              vertical: "above",
+              noOverflowX: true,
+            },
+          }
         );
       }
       return;
     }
   }
 
-  var clipboardData = localStorage.getItem('h5pClipboard');
+  var clipboardData = localStorage.getItem("h5pClipboard");
   if (clipboardData) {
     // Parse
     try {
       clipboardData = JSON.parse(clipboardData);
-    }
-    catch (err) {
-      console.error('Unable to parse JSON from clipboard.', err);
+    } catch (err) {
+      console.error("Unable to parse JSON from clipboard.", err);
       return;
     }
 
     // Update file URLs
     H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
-      var isTmpFile = (path.substr(-4,4) === '#tmp');
+      var isTmpFile = path.substr(-4, 4) === "#tmp";
       if (!isTmpFile && clipboardData.contentId) {
         // Comes from existing content
 
         if (H5PEditor.contentId) {
           // .. to existing content
-          return '../' + clipboardData.contentId + '/' + path;
-        }
-        else {
+          return "../" + clipboardData.contentId + "/" + path;
+        } else {
           // .. to new content
-          return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
+          return (
+            (H5PEditor.contentRelUrl
+              ? H5PEditor.contentRelUrl
+              : "../content/") +
+            clipboardData.contentId +
+            "/" +
+            path
+          );
         }
       }
       return path; // Will automatically be looked for in tmp folder
@@ -453,7 +529,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
       delete clipboardData.generic.subContentId;
     }
 
-    self.trigger('paste', clipboardData);
+    self.trigger("paste", clipboardData);
   }
 };
 
@@ -464,7 +540,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
 H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
   canPaste = canPaste || false;
   if (this.$pasteButton) {
-    this.$pasteButton.toggleClass('disabled', !canPaste);
+    this.$pasteButton.toggleClass("disabled", !canPaste);
   }
 };
 
@@ -477,12 +553,12 @@ H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
 H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
   // Confirm changing library
   var confirmReplace = new H5P.ConfirmationDialog({
-    headerText: H5PEditor.t('core', 'pasteError'),
+    headerText: H5PEditor.t("core", "pasteError"),
     dialogText: message,
-    cancelText: ' ',
-    confirmText: H5PEditor.t('core', 'ok')
+    cancelText: " ",
+    confirmText: H5PEditor.t("core", "ok"),
   }).appendTo(document.body);
-  confirmReplace.on('confirmed', next);
+  confirmReplace.on("confirmed", next);
   confirmReplace.show(top);
 };
 
@@ -491,7 +567,12 @@ H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
  */
 H5P.DragNBar.keypressHandler = function (event) {
   var self = event.data.instance;
-  if (event.which === BACKSPACE && self.focusedElement && self.$container.is(':visible') && document.activeElement.tagName.toLowerCase() !== 'input') {
+  if (
+    event.which === BACKSPACE &&
+    self.focusedElement &&
+    self.$container.is(":visible") &&
+    document.activeElement.tagName.toLowerCase() !== "input"
+  ) {
     event.preventDefault(); // Prevent browser navigating back
   }
 };
@@ -513,7 +594,13 @@ H5P.DragNBar.keyupHandler = function (event) {
     snapAmount = 1;
   }
 
-  if (self.focusedElement && (event.which === LEFT || event.which === UP || event.which === RIGHT || event.which === DOWN)) {
+  if (
+    self.focusedElement &&
+    (event.which === LEFT ||
+      event.which === UP ||
+      event.which === RIGHT ||
+      event.which === DOWN)
+  ) {
     // Store position of element after moving
     var position = self.getElementSizeNPosition();
     self.stopMoving(Math.round(position.left), Math.round(position.top));
@@ -539,12 +626,13 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
   // Register event listeners
   var eventData = {
-    instance: self
+    instance: self,
   };
-  H5P.$body.on('keydown.dnb' + index, eventData, H5P.DragNBar.keydownHandler)
-    .on('keypress.dnb' + index, eventData, H5P.DragNBar.keypressHandler)
-    .on('keyup.dnb' + index, eventData, H5P.DragNBar.keyupHandler)
-    .on('click.dnb' + index, eventData, H5P.DragNBar.clickHandler);
+  H5P.$body
+    .on("keydown.dnb" + index, eventData, H5P.DragNBar.keydownHandler)
+    .on("keypress.dnb" + index, eventData, H5P.DragNBar.keypressHandler)
+    .on("keyup.dnb" + index, eventData, H5P.DragNBar.keyupHandler)
+    .on("click.dnb" + index, eventData, H5P.DragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -556,8 +644,7 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     // Remove coordinates picker if we didn't press an element.
     if (self.pressed !== undefined) {
       delete self.pressed;
-    }
-    else {
+    } else {
       self.blurAll();
       if (self.focusedElement !== undefined) {
         delete self.focusedElement;
@@ -567,7 +654,8 @@ H5P.DragNBar.prototype.initClickListeners = function () {
 
   $blurHandlers
     .keydown(function (e) {
-      if (e.which === 9) { // pressed tab
+      if (e.which === 9) {
+        // pressed tab
         handleBlur();
       }
     })
@@ -586,8 +674,7 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
         obj.path = handler(obj.path);
-      }
-      else {
+      } else {
         H5P.DragNBar.updateFileUrls(obj, handler);
       }
     }
@@ -602,29 +689,40 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  */
 H5P.DragNBar.prototype.attach = function ($wrapper) {
   var self = this;
-  $wrapper.html('');
-  $wrapper.addClass('h5peditor-dragnbar');
+  $wrapper.html("");
+  $wrapper.addClass("h5peditor-dragnbar");
 
-  var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo($wrapper);
+  var $list = H5P.jQuery('<ul class="h5p-dragnbar-ul"></ul>').appendTo(
+    $wrapper
+  );
   this.$list = $list;
 
   for (var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 
     if (i === this.overflowThreshold) {
-      const $buttonMore = H5P.jQuery('<li class="h5p-dragnbar-li"><a href="#" title="' + H5PEditor.t('H5P.DragNBar', 'moreElements') + '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>');
+      const $buttonMore = H5P.jQuery(
+        '<li class="h5p-dragnbar-li"><a href="#" title="' +
+          H5PEditor.t("H5P.DragNBar", "moreElements") +
+          '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>'
+      );
       $list = $buttonMore
         .appendTo($list)
         .click(function (e) {
           $list.stop().slideToggle(300);
           e.preventDefault();
         })
-        .children(':first')
+        .children(":first")
         .next();
 
       // Close "more" on click somewhere else
       H5P.jQuery(document).click(function (event) {
-        if (!H5P.jQuery(event.target).is($buttonMore.find('.h5p-dragnbar-more-button')) && $list.css('display') !== 'none') {
+        if (
+          !H5P.jQuery(event.target).is(
+            $buttonMore.find(".h5p-dragnbar-more-button")
+          ) &&
+          $list.css("display") !== "none"
+        ) {
           $list.stop().slideToggle(300);
         }
       });
@@ -638,22 +736,23 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     this.$pasteButton = H5P.jQuery(
       '<li class="h5p-dragnbar-li paste-button disabled">' +
         '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-paste-button" />' +
-      '</li>'
+        "</li>"
     );
 
-    H5P.jQuery('<span>', {
-      'class': 'h5p-dragnbar-tooltip',
-      'text': H5PEditor.t('H5P.DragNBar', 'paste')
+    H5P.jQuery("<span>", {
+      class: "h5p-dragnbar-tooltip",
+      text: H5PEditor.t("H5P.DragNBar", "paste"),
     }).appendTo(this.$pasteButton);
 
-    this.$pasteButton.find('.h5p-dragnbar-paste-button').click(function (event) {
-      event.preventDefault(); // Avoid anchor click making window scroll
-      self.pasteHandler();
-    });
+    this.$pasteButton
+      .find(".h5p-dragnbar-paste-button")
+      .click(function (event) {
+        event.preventDefault(); // Avoid anchor click making window scroll
+        self.pasteHandler();
+      });
     if (this.buttons.length > this.overflowThreshold) {
       this.$pasteButton.insertAfter($list.parent());
-    }
-    else {
+    } else {
       this.$pasteButton.appendTo($list);
     }
   }
@@ -672,35 +771,45 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 H5P.DragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
-  const hasTitle = (button.title && button.title !== '');
-  const ariaLabel = hasTitle ? ' aria-label="' + button.title + '"' : '';
+  const hasTitle = button.title && button.title !== "";
+  const ariaLabel = hasTitle ? ' aria-label="' + button.title + '"' : "";
   var $button = H5P.jQuery(
     '<li class="h5p-dragnbar-li" data-label="Image">' +
-      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' + button.id + '-button"' + ariaLabel + '></a>' +
-    '</li>'
+      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' +
+      button.id +
+      '-button"' +
+      ariaLabel +
+      "></a>" +
+      "</li>"
   ).appendTo($list);
 
   // Prevent empty tooltips (would show on Firefox)
   if (hasTitle) {
-    H5P.jQuery('<span/>', {
-      'class': 'h5p-dragnbar-tooltip',
-      'text': button.title
+    H5P.jQuery("<span/>", {
+      class: "h5p-dragnbar-tooltip",
+      text: button.title,
     }).appendTo($button);
   }
 
   let $buttonGroup;
-  if (button.type === 'group') {
+  if (button.type === "group") {
     // Create dropdown button group
-    $buttonGroup = this.addButtonGroup(button.buttons, $button, {title: button.titleGroup});
-    $buttonGroup.addClass('h5peditor-dragnbar-gone');
+    $buttonGroup = this.addButtonGroup(button.buttons, $button, {
+      title: button.titleGroup,
+    });
+    $buttonGroup.addClass("h5peditor-dragnbar-gone");
 
     // Close group on click somewhere else
     H5P.jQuery(document).click(function (event) {
       const hitButton = H5P.jQuery(event.target).is($button); // Closing handled by button itself
-      const hitButtonGroup = H5P.jQuery(event.target).closest('.h5p-dragnbar-button-group').length === 1;
+      const hitButtonGroup =
+        H5P.jQuery(event.target).closest(".h5p-dragnbar-button-group")
+          .length === 1;
       if (!hitButton && !hitButtonGroup) {
-        $buttonGroup.toggleClass('h5peditor-dragnbar-gone', true);
-        $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone', false);
+        $buttonGroup.toggleClass("h5peditor-dragnbar-gone", true);
+        $button
+          .find(".h5p-dragnbar-tooltip")
+          .toggleClass("h5peditor-dragnbar-gone", false);
       }
     });
   }
@@ -712,32 +821,37 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     .children()
     .click(function () {
       return false;
-    }).mousedown(function (event) {
+    })
+    .mousedown(function (event) {
       if (event.which !== 1) {
         return;
       }
 
       // Switch between normal button and dropdown button group
-      if (button.type === 'group') {
+      if (button.type === "group") {
         if ($buttonGroup !== undefined) {
           // Set position here, because content types might add buttons out of order
-          const offset = parseFloat($button.closest('.h5p-dragnbar').css('padding-left'));
-          const position = $button.position().left - $buttonGroup.position().left - offset;
+          const offset = parseFloat(
+            $button.closest(".h5p-dragnbar").css("padding-left")
+          );
+          const position =
+            $button.position().left - $buttonGroup.position().left - offset;
           if (position > 0) {
-            $buttonGroup.css('left', position);
+            $buttonGroup.css("left", position);
           }
 
           // Show dropdown and hide buttons tooltip
-          $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
-          $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+          $buttonGroup.toggleClass("h5peditor-dragnbar-gone");
+          $button
+            .find(".h5p-dragnbar-tooltip")
+            .toggleClass("h5peditor-dragnbar-gone");
         }
-      }
-      else {
+      } else {
         that.newElement = true;
         that.pressed = true;
         var createdElement = button.createElement();
         that.$element = createdElement;
-        that.$container.css('overflow', 'visible');
+        that.$container.css("overflow", "visible");
         // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
         that.dnd.press(that.$element, event.pageX, 0);
         that.focus(that.$element);
@@ -755,24 +869,30 @@ H5P.DragNBar.prototype.containTooltips = function () {
 
   var containerWidth = that.$container.outerWidth();
 
-  this.$list.find('.h5p-dragnbar-tooltip').each(function () {
+  this.$list.find(".h5p-dragnbar-tooltip").each(function () {
     // Get correct offset even if element is a child
     var width = H5P.jQuery(this).outerWidth();
-    var parentWidth = H5P.jQuery(this).parents('.h5p-dragnbar-li').last().outerWidth();
+    var parentWidth = H5P.jQuery(this)
+      .parents(".h5p-dragnbar-li")
+      .last()
+      .outerWidth();
 
     // Center the tooltip
-    H5P.jQuery(this).css('left', -(width / 2) + (parentWidth / 2) + 'px');
+    H5P.jQuery(this).css("left", -(width / 2) + parentWidth / 2 + "px");
 
-    var offsetLeft = H5P.jQuery(this).position().left += H5P.jQuery(this).parents('.h5p-dragnbar-li').last().position().left;
+    var offsetLeft = (H5P.jQuery(this).position().left += H5P.jQuery(this)
+      .parents(".h5p-dragnbar-li")
+      .last()
+      .position().left);
 
     // If outside left edge
     if (offsetLeft <= 0) {
-      H5P.jQuery(this).css('left', 0);
+      H5P.jQuery(this).css("left", 0);
     }
 
     // If outside right edge
     if (offsetLeft + width > containerWidth) {
-      H5P.jQuery(this).css('left', -(width - parentWidth));
+      H5P.jQuery(this).css("left", -(width - parentWidth));
     }
   });
 };
@@ -804,7 +924,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
-  this.$element.css({top: top + '%', left: left + '%'});
+  this.$element.css({ top: top + "%", left: left + "%" });
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
@@ -835,7 +955,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
 H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
   $element = $element || this.focusedElement.$element;
   if (!$element || !$element.length) {
-    throw 'No element given';
+    throw "No element given";
   }
 
   // Always use outer size for element
@@ -854,14 +974,17 @@ H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
     left: parseFloat(position.left),
     top: parseFloat(position.top),
     containerWidth: parseFloat(containerSize.width),
-    containerHeight: parseFloat(containerSize.height)
+    containerHeight: parseFloat(containerSize.height),
   };
 
-  if (position.left.substr(-1, 1) === '%' || position.top.substr(-1, 1) === '%') {
+  if (
+    position.left.substr(-1, 1) === "%" ||
+    position.top.substr(-1, 1) === "%"
+  ) {
     // Some browsers(Safari) gets percentage value instead of pixel value.
     // Container inner size must be used to calculate such values.
-    sizeNPosition.left *= (sizeNPosition.containerWidth / 100);
-    sizeNPosition.top *= (sizeNPosition.containerHeight / 100);
+    sizeNPosition.left *= sizeNPosition.containerWidth / 100;
+    sizeNPosition.top *= sizeNPosition.containerHeight / 100;
   }
 
   return sizeNPosition;
@@ -874,7 +997,6 @@ H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
  * @param {number} y Amount to move on y-axis.
  */
 H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
-
   /**
    * Ensure that the given value is within the given boundaries.
    *
@@ -903,19 +1025,32 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
   sizeNPosition.top += y;
 
   // Check that values are within boundaries
-  sizeNPosition.left = withinBoundaries(sizeNPosition.left, 0, sizeNPosition.containerWidth - sizeNPosition.width);
-  sizeNPosition.top = withinBoundaries(sizeNPosition.top, 0, sizeNPosition.containerHeight - sizeNPosition.height);
+  sizeNPosition.left = withinBoundaries(
+    sizeNPosition.left,
+    0,
+    sizeNPosition.containerWidth - sizeNPosition.width
+  );
+  sizeNPosition.top = withinBoundaries(
+    sizeNPosition.top,
+    0,
+    sizeNPosition.containerHeight - sizeNPosition.height
+  );
 
   // Determine new position style
   this.$element.css({
-    left: sizeNPosition.left + 'px',
-    top: sizeNPosition.top + 'px',
+    left: sizeNPosition.left + "px",
+    top: sizeNPosition.top + "px",
   });
 
-  this.dnd.trigger('showTransformPanel');
+  this.dnd.trigger("showTransformPanel");
 
   // Update position of context menu
-  this.updateCoordinates(sizeNPosition.left, sizeNPosition.top, sizeNPosition.left, sizeNPosition.top);
+  this.updateCoordinates(
+    sizeNPosition.left,
+    sizeNPosition.top,
+    sizeNPosition.left,
+    sizeNPosition.top
+  );
 };
 
 /**
@@ -930,11 +1065,11 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
  * @param {string} [clipboardData]
  * @returns {H5P.DragNBarElement} Reference to added dnbelement
  */
-H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
+H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {  
   var self = this;
   options = options || {};
   if (this.isEditor && !options.disableResize) {
-    this.dnr.add($element, options);
+    //this.dnr.add($element, options);
   }
   var newElement = null;
 
@@ -943,47 +1078,116 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
     // Set element as added element
     options.dnbElement.setElement($element);
     newElement = options.dnbElement;
-  }
-  else {
+  } else {
     options.element = $element;
     options.disableCopy = !this.enableCopyPaste;
     newElement = new H5P.DragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
 
-  $element.addClass('h5p-dragnbar-element');
+  $element.addClass("h5p-dragnbar-element");
+
+  self.addControlBoxOnElement(newElement);
+  self.removeControlBoxesNotInUse();
 
   if (this.isEditor) {
     if (newElement.contextMenu) {
-      newElement.contextMenu.on('contextMenuCopy', function () {
+      newElement.contextMenu.on("contextMenuCopy", function () {
         self.copyHandler();
       });
     }
 
-    if ($element.attr('tabindex') === undefined) {
+    if ($element.attr("tabindex") === undefined) {
       // Make it possible to tab between elements.
-      $element.attr('tabindex', '0');
+      $element.attr("tabindex", "0");
     }
 
     $element.mousedown(function (event) {
-      if (event.which !== 1) {
+      const isLeftMouseButton = event.which === 1;
+      if (!isLeftMouseButton) {
         return;
       }
-
+      
       self.pressed = true;
       self.focus($element);
-      if (self.dnr.active !== true) { // Moving can be stopped if the mousedown is doing something else
-        self.dnd.press($element, event.pageX, event.pageY);
-      }
+      
+      $element.addClass("h5p-element--active");
+      self.dnd.press($element, event.pageX, event.pageY);
     });
   }
-
+  
   $element.focus(function () {
     self.focus($element);
   });
-
+  
   return newElement;
 };
+
+
+// Cleaning up all control-boxes which are not in use
+H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
+
+  //Getting unique ID's from elements on all slides in the CP, which are the same ID's to the corresponding control-boxes
+  let uniqueClassStringList = [];
+  const wrapper = document.getElementsByClassName('h5p-slides-wrapper');
+  for (let i = 0; i < wrapper[0].childNodes.length; i++) {
+    for (let y = 0; y < wrapper[0].childNodes[i].childNodes.length; y++) {
+      if(typeof wrapper[0].childNodes[i].childNodes[y].classList.value.split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) != 'undefined') {
+        uniqueClassStringList.push(wrapper[0].childNodes[i].childNodes[y].classList.value.split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")).split("-").pop());
+      }
+    }
+  }
+  
+  // Removing all control-boxes which are not active anymore
+  const x = document.getElementsByClassName('moveable-control-box');
+  for (let i = x.length - 1; i >= 0; i--) {
+    let found = false;
+    for (let y = 0; y < uniqueClassStringList.length; y++) {
+      if (uniqueClassStringList[y] == (x[i].classList.value.split(" ").find(cName => cName.startsWith("h5p-control-box-unique-")).split("-").pop())) {
+        found = true;
+        break;
+      }
+    }
+    if(!found) {
+      x[i].remove();
+    }
+  }
+}
+
+H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
+  var self = this;
+    if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
+      //console.log(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")));
+      if(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
+      
+      const uniqueClassFloat = Math.random();
+      
+      // Adding class to element
+      const startStringElement = 'h5p-dnb-unique-';
+      const uniqueClassString = startStringElement + uniqueClassFloat.toString(32);
+      element.$element.addClass(uniqueClassString);
+      
+      // Adding control-box
+      const startStringControlBox = 'h5p-control-box-unique-';
+      const uniqueControlBox = startStringControlBox + uniqueClassFloat.toString(32);
+      self.createMoveableControlBoxOnElement(element.$element, uniqueControlBox);
+
+
+      //moving the control-box to fit with the element initially
+      const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
+      const rectElement = element.$element[0].getBoundingClientRect();
+      theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${rectElement.top + 39}px, 0px)`;
+
+      // const theClickableElement = document.getElementsByClassName('h5p-element-overlay')[0];
+      
+      // const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
+      // const newXValue = parseInt(theControlBoxElement.style.transform.split("(")[1]);
+      // const newYValue = parseInt(theControlBoxElement.style.transform.split(",")[1]) + 39;
+      // theControlBoxElement.style.transform = `translate3d(${newXValue}px, ${newYValue}px, 0px)`;
+      
+    }
+  }
+}
 
 /**
  * Remove given element in the UI.
@@ -1009,7 +1213,7 @@ H5P.DragNBar.prototype.focus = function ($element) {
     this.focusedElement.hideContextMenu();
   }
 
-  if (!$element.is(':visible')) {
+  if (!$element.is(":visible")) {
     return; // Do not focus invisible items (fixes FF refocus issue)
   }
 
@@ -1029,7 +1233,11 @@ H5P.DragNBar.prototype.focus = function ($element) {
   // Wait for potential recreation of element
   setTimeout(function () {
     self.updateCoordinates();
-    if (self.focusedElement && self.focusedElement.contextMenu && self.focusedElement.contextMenu.canResize) {
+    if (
+      self.focusedElement &&
+      self.focusedElement.contextMenu &&
+      self.focusedElement.contextMenu.canResize
+    ) {
       self.focusedElement.contextMenu.updateDimensions();
     }
   }, 0);
@@ -1071,7 +1279,9 @@ H5P.DragNBar.prototype.resize = function () {
   this.updateCoordinates();
 
   if (self.focusedElement) {
-    self.focusedElement.resizeContextMenu(self.$element.offset().left - self.$element.parent().offset().left);
+    self.focusedElement.resizeContextMenu(
+      self.$element.offset().left - self.$element.parent().offset().left
+    );
   }
 };
 
@@ -1095,10 +1305,14 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
     left = x + containerPosition.left;
     top = y + containerPosition.top;
     this.focusedElement.updateCoordinates(left, top, x, y);
-  }
-  else {
+  } else {
     var position = this.$element.position();
-    this.focusedElement.updateCoordinates(position.left + containerPosition.left, position.top + containerPosition.top, position.left, position.top);
+    this.focusedElement.updateCoordinates(
+      position.left + containerPosition.left,
+      position.top + containerPosition.top,
+      position.left,
+      position.top
+    );
   }
 };
 
@@ -1113,7 +1327,7 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
 H5P.DragNBar.clipboardify = function (from, params, generic) {
   var clipboardData = {
     from: from,
-    specific: params
+    specific: params,
   };
 
   if (H5PEditor.contentId) {
@@ -1157,7 +1371,10 @@ H5P.DragNBar.fitElementInside = function (sizeNPosition) {
     style.top = sizeNPosition.top = 0;
   }
 
-  if (sizeNPosition.height + sizeNPosition.top > sizeNPosition.containerHeight) {
+  if (
+    sizeNPosition.height + sizeNPosition.top >
+    sizeNPosition.containerHeight
+  ) {
     // Element sticks out of the bottom side
     style.top = sizeNPosition.containerHeight - sizeNPosition.height;
     if (style.top < 0) {
@@ -1176,8 +1393,247 @@ H5P.DragNBar.fitElementInside = function (sizeNPosition) {
 H5P.DragNBar.prototype.remove = function () {
   var index = this.instanceIndex;
 
-  H5P.$body.off('keydown.dnb' + index, H5P.DragNBar.keydownHandler)
-    .off('keypress.dnb' + index, H5P.DragNBar.keypressHandler)
-    .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
-    .off('click.dnb' + index, H5P.DragNBar.clickHandler);
+  H5P.$body
+    .off("keydown.dnb" + index, H5P.DragNBar.keydownHandler)
+    .off("keypress.dnb" + index, H5P.DragNBar.keypressHandler)
+    .off("keyup.dnb" + index, H5P.DragNBar.keyupHandler)
+    .off("click.dnb" + index, H5P.DragNBar.clickHandler);
+};
+
+H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distance) {
+  let result = [];
+
+  result.push(Math.cos(angle * Math.PI / 180) * distance + originX);
+  result.push(-Math.sin(angle * Math.PI / 180) * distance + originY);
+
+  return result;
+}
+
+/**
+ * Create a 'moveable' which is a control-box, on an element which controls the resizing and rotation of the element.
+ * https://github.com/daybrush/moveable
+ */
+ H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassString) {
+  
+  if (typeof $element !== "undefined") {
+    const moveable = new Moveable(document.body, {
+      target: $element[0],
+      draggable: true,
+      resizable: true,
+      throttleDrag: 0,
+      throttleDragRotate: 0,
+      pinchable: true,
+      scalable: true,
+      throttleScale: 0,
+      keepRatio: false,
+      rotatable: true,
+      throttleRotate: 0,
+      rotationPosition: "bottom",
+      className: uniqueClassString
+    });
+
+    const frame = {
+      translate: [0, 0],
+      rotate: 0,
+    };
+
+    // set start angle
+    let angle;
+    const styleElement = window.getComputedStyle($element[0]);
+    const matrix = styleElement.getPropertyValue("transform");
+    if (matrix !== "none") {
+      const values = matrix.split("(")[1].split(")")[0].split(",");
+      const a = values[0];
+      const b = values[1];
+      angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    }
+    frame.rotate = angle;
+
+    let containerWidth;
+    let containerHeight;
+
+    let storedPos = false;
+    let tempPos;
+
+    const containerOffset = $element.offsetParent().offset();
+
+    // Resize/scale
+    moveable
+      .on("resizeStart", ({ target, set, setOrigin, dragStart }) => {
+        // Set origin if transform-orgin use %.
+        setOrigin(["%", "%"]);
+
+        // If cssSize and offsetSize are different, set cssSize. (no box-sizing)
+        const style = window.getComputedStyle(target);
+        const cssWidth = parseFloat(style.width);
+        const cssHeight = parseFloat(style.height);
+        set([cssWidth, cssHeight]);
+
+        // If a drag event has already occurred, there is no dragStart.
+        dragStart && dragStart.set(frame.translate);
+
+        containerWidth = this.$container[0].getBoundingClientRect().width;
+        containerHeight = this.$container[0].getBoundingClientRect().height;
+
+        storedPos = false;
+      })
+      .on("resize", ({ target, width, height, drag, inputEvent}) => {
+        
+        // Finding corner positions
+        // *************************************************************************
+        const theElement = target;
+
+        let leftPos;
+        let topPos;
+        let widthPixels;
+        let heightPixels;
+
+        // When scaling the element by dragging on the 'dots', the transform-value is changing, not left and top, as it is when 'moving'/'dragging' the element.
+        // So we find the values 'translate x and y' and add them to left and top.
+        const transformCSSTranslateXYArray = theElement.style.transform.split("px");
+        const transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
+        const transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
+
+        if(theElement.style.left.includes("%")) {
+          leftPos = containerWidth * parseInt(theElement.style.left) / 100 + transformCSSTranslateX;
+        } else {
+          leftPos = parseInt(theElement.style.left) + transformCSSTranslateX;
+        }
+        if(theElement.style.top.includes("%")) {
+          topPos = containerHeight * parseInt(theElement.style.top) / 100 + transformCSSTranslateY;
+        } else {
+          topPos = parseInt(theElement.style.top) + transformCSSTranslateY;
+        }
+        if(theElement.style.width.includes("%")) {
+          widthPixels = containerWidth * parseInt(theElement.style.width) / 100;
+        } else {
+          widthPixels = parseInt(theElement.style.width)
+        }
+        if(theElement.style.height.includes("%")) {
+          heightPixels = containerHeight * parseInt(theElement.style.height) / 100;
+        } else {
+          heightPixels = parseInt(theElement.style.height)
+        }
+
+        let origin = [leftPos + 0.5 * widthPixels, topPos + 0.5 * heightPixels];
+
+        const topRightCorner0DegreesPos = [origin[0] + 0.5 * widthPixels, origin[1] - 0.5 * heightPixels];
+        const topLeftCorner0DegreesPos = [origin[0] - 0.5 * widthPixels, origin[1] - 0.5 * heightPixels];
+        
+        const angleTopRight0Degrees = Math.atan2(origin[1] - topRightCorner0DegreesPos[1], topRightCorner0DegreesPos[0] - origin[0]) * 180 / Math.PI;
+        const angleTopLeft0Degrees = Math.atan2(origin[1] - topLeftCorner0DegreesPos[1], topLeftCorner0DegreesPos[0] - origin[0]) * 180 / Math.PI;
+        const angleBottomRight0Degrees = -angleTopRight0Degrees;
+        const angleBottomLeft0Degrees = -angleTopLeft0Degrees;
+
+        const hypToCorners = Math.sqrt(Math.pow((widthPixels/2),2) + Math.pow((heightPixels/2),2));
+
+        const newPosTopRightCorner = this.findNewPoint(origin[0], origin[1], (angleTopRight0Degrees - frame.rotate), hypToCorners);
+        const newPosTopleftCorner = this.findNewPoint(origin[0], origin[1], (angleTopLeft0Degrees - frame.rotate), hypToCorners);
+        const newPosBottomRightCorner = this.findNewPoint(origin[0], origin[1], (angleBottomRight0Degrees - frame.rotate), hypToCorners);
+        const newPosBottomLeftCorner = this.findNewPoint(origin[0], origin[1], (angleBottomLeft0Degrees - frame.rotate), hypToCorners);
+
+        const rightmostPoint = Math.max(newPosTopRightCorner[0], newPosTopleftCorner[0], newPosBottomLeftCorner[0], newPosBottomRightCorner[0]);
+        const leftmostPoint = Math.min(newPosTopRightCorner[0], newPosTopleftCorner[0], newPosBottomLeftCorner[0], newPosBottomRightCorner[0]);
+        const topmostPoint = Math.min(newPosTopRightCorner[1], newPosTopleftCorner[1], newPosBottomLeftCorner[1], newPosBottomRightCorner[1]);
+        const bottommostPoint = Math.max(newPosTopRightCorner[1], newPosTopleftCorner[1], newPosBottomLeftCorner[1], newPosBottomRightCorner[1]);
+        // *************************************************************************
+
+        // Stop resizing if we are outside the container
+        // Left
+        if(leftmostPoint < 0) {
+          // store x-pos when a corner hits the left wall
+          if(!storedPos) {
+            tempPos = inputEvent.x - containerOffset.left;
+            storedPos = true;
+          }
+          // if the mouse x-pos is less than the stored x-pos we return
+          if((inputEvent.x - containerOffset.left) < tempPos) {
+            return;
+          }
+        }
+        // Right
+        if(rightmostPoint > containerWidth) {
+          // store x-pos when a corner hits the right wall
+          if(!storedPos) {
+            tempPos = inputEvent.x - containerOffset.left;
+            storedPos = true;
+          }
+          // if the mouse x-pos is greater than the stored x-pos we return
+          if((inputEvent.x - containerOffset.left) > tempPos) {
+            return;
+          }
+        }
+        // Top
+        if(topmostPoint < 0) {
+          // store y-pos when a corner hits the top wall
+          if(!storedPos) {
+            tempPos = inputEvent.y - containerOffset.top;
+            storedPos = true;
+          }
+          // if the mouse x-pos is less than the stored y-pos we return
+          if((inputEvent.y - containerOffset.top) < tempPos) {
+            return;
+          }
+        }
+        // Bottom
+        if(bottommostPoint > containerHeight) {
+          // store y-pos when a corner hits the bottom wall
+          if(!storedPos) {
+            tempPos = inputEvent.y - containerOffset.top;
+            storedPos = true;
+          }
+          // if the mouse x-pos is greater than the stored y-pos we return
+          if((inputEvent.y - containerOffset.top) > tempPos) {
+            return;
+          }
+        }
+
+        target.style.width = `${width}px`;
+        target.style.height = `${height}px`;
+
+        // get drag event
+        frame.translate = drag.beforeTranslate;
+        target.style.transform = `translate(${drag.beforeTranslate[0]}px, ${drag.beforeTranslate[1]}px) rotate(${frame.rotate}deg)`;
+      })
+      .on("resizeEnd", ({ target, isDrag, clientX, clientY }) => {
+        // This method can be found in cp-editor. Stores values in params.
+        this.stopResizeCallback(
+          target.style.width,
+          target.style.height,
+          target.style.transform,
+          $element
+        ); 
+      });
+
+    // Rotate
+    moveable
+      .on("rotateStart", ({ set, target }) => {
+        // Set origin angle
+        let angle;
+        const styleElement = window.getComputedStyle(target);
+        const matrix = styleElement.getPropertyValue("transform");
+        if (matrix !== "none") {
+          const values = matrix.split("(")[1].split(")")[0].split(",");
+          const a = values[0];
+          const b = values[1];
+          angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+        }
+        frame.rotate = angle;
+
+        set(frame.rotate);
+      })
+      .on("rotate", ({ target, beforeRotate }) => {
+        let angle;
+        if (this.shiftKeyIsPressed) {
+          angle = beforeRotate;
+        } else {
+          angle = Math.ceil(beforeRotate / 15) * 15; // Rotating by increments by 15 degrees
+        }
+        frame.rotate = angle;
+        target.style.transform = `translate(${frame.translate[0]}px, ${frame.translate[1]}px) rotate(${frame.rotate}deg)`;
+      })
+      .on("rotateEnd", ({ target, isDrag, clientX, clientY }) => {
+        this.stopRotationCallback(target.style.transform, $element); // This method can be found in cp-editor. Stores values in params.
+      });
+  }
 };

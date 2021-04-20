@@ -27,6 +27,9 @@
     },
     {
       "path": "scripts/drag-n-bar-form-manager.js"
+    },
+    {
+      "path": "scripts/moveable.min.js"
     }
   ],
   "preloadedCss": [

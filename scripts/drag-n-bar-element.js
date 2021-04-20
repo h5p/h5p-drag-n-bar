@@ -181,6 +181,12 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       this.$element.removeClass('focused');
       this.focused = false;
 
+      // Hiding moveable-control-box
+      var x = document.getElementsByClassName('moveable-control-box');
+      for (var i = x.length - 1; i >= 0; i--) {
+        x[i].style.visibility = 'hidden';
+      }
+
       if (!this.options.disableContextMenu) {
         // Hide transform panel
         this.contextMenu.trigger('contextMenuTransform', {showTransformPanel: false});
@@ -195,6 +201,15 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
   DragNBarElement.prototype.focus = function () {
     this.$element.addClass('focused');
     this.focused = true;
+    
+    // Showing moveable-control-box on the clicked element
+    let uniqueClass;
+    uniqueClass = this.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")).split("-").pop();
+    if(typeof uniqueClass === 'string') {
+      document.getElementsByClassName('h5p-control-box-unique-' + uniqueClass)[0].style.visibility = 'visible';
+    }
+      
+
     if (this.contextMenu) {
       this.resizeContextMenu(this.$element.position().left);
     }
