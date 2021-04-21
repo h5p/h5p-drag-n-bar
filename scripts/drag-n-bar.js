@@ -104,7 +104,7 @@ H5P.DragNBar = (function (EventDispatcher) {
   return DragNBar;
 })(H5P.EventDispatcher);
 
-// Creates eventlisteners which sets a boolean true or false if the shift key is pressed. Is used to turn off inkrements on rotation
+// Creates eventlisteners which sets a boolean true or false if the shift key is pressed. Is used to turn off increments on rotation
 class checkIfShiftKeyPressed {
   constructor(instance) {
     instance.shiftKeyIsPressed = false;
@@ -1176,8 +1176,16 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
       //moving the control-box to fit with the element initially
       const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
       const rectElement = element.$element[0].getBoundingClientRect();
-      theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${rectElement.top + 39}px, 0px)`;
+      
+      console.log('left', rectElement.left);
+      console.log('top', rectElement.top);
 
+      const containerOffset = element.$element.offsetParent().offset();
+      const fitTopOfControlBox = containerOffset.top + (parseInt(element.$element[0].style.top) * this.$container[0].getBoundingClientRect().height / 100);
+
+      // console.log('shifting to ', fitTopOfControlBox);
+      // theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${fitTopOfControlBox}px, 0px)`;
+      // theControlBoxElement.style.transform = `translate3d(${40}px, ${fitTopOfControlBox}px, 0px)`;
       // const theClickableElement = document.getElementsByClassName('h5p-element-overlay')[0];
       
       // const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
@@ -1428,7 +1436,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       keepRatio: false,
       rotatable: true,
       throttleRotate: 0,
-      rotationPosition: "bottom",
+      rotationPosition: "right",
       className: uniqueClassString
     });
 
@@ -1452,8 +1460,14 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     let containerWidth;
     let containerHeight;
 
-    let storedPos = false;
-    let tempPos;
+    let storedPosLeft = false;
+    let tempPosLeft;
+    let storedPosRight = false;
+    let tempPosRight;
+    let storedPosTop = false;
+    let tempPosTop;
+    let storedPosBottom = false;
+    let tempPosBottom;
 
     const containerOffset = $element.offsetParent().offset();
 
@@ -1475,7 +1489,10 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         containerWidth = this.$container[0].getBoundingClientRect().width;
         containerHeight = this.$container[0].getBoundingClientRect().height;
 
-        storedPos = false;
+        storedPosLeft = false;
+        storedPosRight = false;
+        storedPosTop = false;
+        storedPosBottom = false;
       })
       .on("resize", ({ target, width, height, drag, inputEvent}) => {
         
@@ -1542,48 +1559,48 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         // Left
         if(leftmostPoint < 0) {
           // store x-pos when a corner hits the left wall
-          if(!storedPos) {
-            tempPos = inputEvent.x - containerOffset.left;
-            storedPos = true;
+          if(!storedPosLeft) {
+            tempPosLeft = inputEvent.x - containerOffset.left;
+            storedPosLeft = true;
           }
           // if the mouse x-pos is less than the stored x-pos we return
-          if((inputEvent.x - containerOffset.left) < tempPos) {
+          if((inputEvent.x - containerOffset.left) < tempPosLeft) {
             return;
           }
         }
         // Right
         if(rightmostPoint > containerWidth) {
           // store x-pos when a corner hits the right wall
-          if(!storedPos) {
-            tempPos = inputEvent.x - containerOffset.left;
-            storedPos = true;
+          if(!storedPosRight) {
+            tempPosRight = inputEvent.x - containerOffset.left;
+            storedPosRight = true;
           }
           // if the mouse x-pos is greater than the stored x-pos we return
-          if((inputEvent.x - containerOffset.left) > tempPos) {
+          if((inputEvent.x - containerOffset.left) > tempPosRight) {
             return;
           }
         }
         // Top
         if(topmostPoint < 0) {
           // store y-pos when a corner hits the top wall
-          if(!storedPos) {
-            tempPos = inputEvent.y - containerOffset.top;
-            storedPos = true;
+          if(!storedPosTop) {
+            tempPosTop = inputEvent.y - containerOffset.top;
+            storedPosTop = true;
           }
           // if the mouse x-pos is less than the stored y-pos we return
-          if((inputEvent.y - containerOffset.top) < tempPos) {
+          if((inputEvent.y - containerOffset.top) < tempPosTop) {
             return;
           }
         }
         // Bottom
         if(bottommostPoint > containerHeight) {
           // store y-pos when a corner hits the bottom wall
-          if(!storedPos) {
-            tempPos = inputEvent.y - containerOffset.top;
-            storedPos = true;
+          if(!storedPosBottom) {
+            tempPosBottom = inputEvent.y - containerOffset.top;
+            storedPosBottom = true;
           }
           // if the mouse x-pos is greater than the stored y-pos we return
-          if((inputEvent.y - containerOffset.top) > tempPos) {
+          if((inputEvent.y - containerOffset.top) > tempPosBottom) {
             return;
           }
         }
