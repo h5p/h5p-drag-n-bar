@@ -1086,7 +1086,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   }
 
   $element.addClass("h5p-dragnbar-element");
-
+  
   self.addControlBoxOnElement(newElement);
   self.removeControlBoxesNotInUse();
 
@@ -1123,7 +1123,6 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   return newElement;
 };
 
-
 // Cleaning up all control-boxes which are not in use
 H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
 
@@ -1156,43 +1155,50 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
 
 H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
   var self = this;
-    if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
-      //console.log(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")));
-      if(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
-      
-      const uniqueClassFloat = Math.random();
-      
-      // Adding class to element
-      const startStringElement = 'h5p-dnb-unique-';
-      const uniqueClassString = startStringElement + uniqueClassFloat.toString(32);
-      element.$element.addClass(uniqueClassString);
-      
-      // Adding control-box
-      const startStringControlBox = 'h5p-control-box-unique-';
-      const uniqueControlBox = startStringControlBox + uniqueClassFloat.toString(32);
-      self.createMoveableControlBoxOnElement(element.$element, uniqueControlBox);
+  if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
+    //console.log(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")));
+    if(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
+    
+    const uniqueClassFloat = Math.random();
+    
+    // Adding class to element
+    const startStringElement = 'h5p-dnb-unique-';
+    const uniqueClassString = startStringElement + uniqueClassFloat.toString(32);
+    element.$element.addClass(uniqueClassString);
+    
+    // Adding control-box
+    const startStringControlBox = 'h5p-control-box-unique-';
+    const uniqueControlBox = startStringControlBox + uniqueClassFloat.toString(32);
+    self.createMoveableControlBoxOnElement(element.$element, uniqueControlBox);
+
+    // Hiding moveable-control-boxes. This is because if when we edit a whole CP (from the menu), we dont want all the boxes to show.
+    // If we are just adding an element, it will get 'focused' after this code is run, so it's ok.
+    var x = document.getElementsByClassName('moveable-control-box');
+    for (var i = x.length - 1; i >= 0; i--) {
+      x[i].style.visibility = 'hidden';
+    }
 
 
-      //moving the control-box to fit with the element initially
-      const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
-      const rectElement = element.$element[0].getBoundingClientRect();
-      
-      console.log('left', rectElement.left);
-      console.log('top', rectElement.top);
+    //moving the control-box to fit with the element initially
+    const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
+    const rectElement = element.$element[0].getBoundingClientRect();
+    
+    // console.log('left', rectElement.left);
+    // console.log('top', rectElement.top);
 
-      const containerOffset = element.$element.offsetParent().offset();
-      const fitTopOfControlBox = containerOffset.top + (parseInt(element.$element[0].style.top) * this.$container[0].getBoundingClientRect().height / 100);
+    const containerOffset = element.$element.offsetParent().offset();
+    const fitTopOfControlBox = containerOffset.top + (parseInt(element.$element[0].style.top) * this.$container[0].getBoundingClientRect().height / 100);
 
-      // console.log('shifting to ', fitTopOfControlBox);
-      // theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${fitTopOfControlBox}px, 0px)`;
-      // theControlBoxElement.style.transform = `translate3d(${40}px, ${fitTopOfControlBox}px, 0px)`;
-      // const theClickableElement = document.getElementsByClassName('h5p-element-overlay')[0];
-      
-      // const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
-      // const newXValue = parseInt(theControlBoxElement.style.transform.split("(")[1]);
-      // const newYValue = parseInt(theControlBoxElement.style.transform.split(",")[1]) + 39;
-      // theControlBoxElement.style.transform = `translate3d(${newXValue}px, ${newYValue}px, 0px)`;
-      
+    // console.log('shifting to ', fitTopOfControlBox);
+    // theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${fitTopOfControlBox}px, 0px)`;
+    // theControlBoxElement.style.transform = `translate3d(${40}px, ${fitTopOfControlBox}px, 0px)`;
+    // const theClickableElement = document.getElementsByClassName('h5p-element-overlay')[0];
+    
+    // const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
+    // const newXValue = parseInt(theControlBoxElement.style.transform.split("(")[1]);
+    // const newYValue = parseInt(theControlBoxElement.style.transform.split(",")[1]) + 39;
+    // theControlBoxElement.style.transform = `translate3d(${newXValue}px, ${newYValue}px, 0px)`;
+    
     }
   }
 }
@@ -1436,7 +1442,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       keepRatio: false,
       rotatable: true,
       throttleRotate: 0,
-      rotationPosition: "right",
+      rotationPosition: "bottom",
       className: uniqueClassString
     });
 
