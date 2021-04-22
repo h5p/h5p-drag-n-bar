@@ -1171,34 +1171,18 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
     const uniqueControlBox = startStringControlBox + uniqueClassFloat.toString(32);
     self.createMoveableControlBoxOnElement(element.$element, uniqueControlBox);
 
-    // Hiding moveable-control-boxes. This is because if when we edit a whole CP (from the menu), we dont want all the boxes to show.
+    // Hiding moveable-control-boxes. This is because if we edit a whole CP (from the menu), we dont want all the boxes to show.
     // If we are just adding an element, it will get 'focused' after this code is run, so it's ok.
     var x = document.getElementsByClassName('moveable-control-box');
     for (var i = x.length - 1; i >= 0; i--) {
       x[i].style.visibility = 'hidden';
     }
 
-
-    //moving the control-box to fit with the element initially
+    const rectElementBCR = element.$element[0].getBoundingClientRect();
     const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
-    const rectElement = element.$element[0].getBoundingClientRect();
-    
-    // console.log('left', rectElement.left);
-    // console.log('top', rectElement.top);
 
-    const containerOffset = element.$element.offsetParent().offset();
-    const fitTopOfControlBox = containerOffset.top + (parseInt(element.$element[0].style.top) * this.$container[0].getBoundingClientRect().height / 100);
-
-    // console.log('shifting to ', fitTopOfControlBox);
-    // theControlBoxElement.style.transform = `translate3d(${rectElement.left}px, ${fitTopOfControlBox}px, 0px)`;
-    // theControlBoxElement.style.transform = `translate3d(${40}px, ${fitTopOfControlBox}px, 0px)`;
-    // const theClickableElement = document.getElementsByClassName('h5p-element-overlay')[0];
-    
-    // const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
-    // const newXValue = parseInt(theControlBoxElement.style.transform.split("(")[1]);
-    // const newYValue = parseInt(theControlBoxElement.style.transform.split(",")[1]) + 39;
-    // theControlBoxElement.style.transform = `translate3d(${newXValue}px, ${newYValue}px, 0px)`;
-    
+    const dndToolbarHeight = 38;
+    theControlBoxElement.style.transform = `translate3d(${rectElementBCR.left + window.scrollX}px, ${rectElementBCR.top + window.scrollY + dndToolbarHeight}px, 0px)`;
     }
   }
 }
