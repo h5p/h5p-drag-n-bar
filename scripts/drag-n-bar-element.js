@@ -182,10 +182,7 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
       this.focused = false;
 
       // Hiding moveable-control-box
-      var x = document.getElementsByClassName('moveable-control-box');
-      for (var i = x.length - 1; i >= 0; i--) {
-        x[i].style.visibility = 'hidden';
-      }
+      this.dnb.hideControlBoxes();
 
       if (!this.options.disableContextMenu) {
         // Hide transform panel
