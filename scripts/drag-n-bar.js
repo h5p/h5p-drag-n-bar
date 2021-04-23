@@ -104,7 +104,13 @@ H5P.DragNBar = (function (EventDispatcher) {
   return DragNBar;
 })(H5P.EventDispatcher);
 
-// Creates eventlisteners which sets a boolean true or false if the shift key is pressed. Is used to turn off increments on rotation
+/**
+ * Creates eventlisteners which sets a boolean true or false if the shift key is pressed. 
+ * Is used to turn off increments on rotation
+ * 
+ * @param {*} instance 
+ */
+
 H5P.DragNBar.prototype.initShiftKeyPressedListener = function (instance) {
   instance.shiftKeyIsPressed = false;
 
@@ -131,41 +137,10 @@ H5P.DragNBar.prototype.initEditor = function () {
   this.dnr = new H5P.DragNResize(this.$container);
   this.dnr.snap = 10;
 
-  // Update coordinates when element is resized
-  // this.dnr.on('moveResizing', function () {
-  //   var offset = that.$element.offset();
-  //   var position = that.$element.position();
-  //   that.updateCoordinates(offset.left, offset.top, position.left, position.top);
-  // });
-
-  // Set pressed to not lose focus at the end of resize
-  // this.dnr.on('stoppedResizing', function () {
-  //   that.pressed = true;
-
-  //   // Delete pressed after dnbelement has been refocused so it will lose focus on single click.
-  //   setTimeout(function () {
-  //     delete that.pressed;
-  //   }, 10);
-  // });
-
-  /**
-   * Show transform panel listeners
-   */
-  // this.dnr.on('showTransformPanel', function () {
-  //   TransformPanel(true);
-  // });
   this.dnd.on("showTransformPanel", function () {
     TransformPanel(true);
   });
 
-  /**
-   * Hide transform panel listeners
-   */
-  // this.dnr.on('hideTransformPanel', function () {
-  //   if (!that.transformButtonActive) {
-  //     TransformPanel(false);
-  //   }
-  // });
   this.dnd.on("hideTransformPanel", function () {
     if (!that.transformButtonActive) {
       TransformPanel(false);
@@ -1123,7 +1098,11 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   return newElement;
 };
 
-// Adding control-box on element (moveable)
+/**
+ * Adding control-box on element (moveable)
+ * 
+ * @param {H5P.DragNBarElement} element 
+ */
 H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
   var self = this;
   if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
@@ -1154,7 +1133,9 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
   }
 }
 
-// Cleaning up all control-boxes which are not in use
+/**
+ * Cleaning up all control-boxes which are not in use
+ */
 H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
 
   //Getting unique ID's from elements on all slides in the CP, which are the same ID's to the corresponding control-boxes
@@ -1172,27 +1153,22 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
       }
     }
   }
+
+  // Removing all control-boxes which do not have a corresponding element in the scene
+  const controlBoxes = Array.from(document.getElementsByClassName('moveable-control-box'));
+  const disconnectedControlBoxes = controlBoxes.filter(controlBox => {
+    const uniqueId = controlBox.className.split(" ").find(cName => cName.startsWith("h5p-control-box-unique-")).split("-").pop();
+    return !uniqueClassStringList.includes(uniqueId);    
+  });
   
-  // Removing all control-boxes which are not active anymore
-  const x = document.getElementsByClassName('moveable-control-box');
-  // Iterate through alle the control-box-elements
-  for (let i = x.length - 1; i >= 0; i--) {
-    let found = false;
-    // Looking for a match from the list
-    for (let y = 0; y < uniqueClassStringList.length; y++) {
-      if (uniqueClassStringList[y] == (x[i].classList.value.split(" ").find(cName => cName.startsWith("h5p-control-box-unique-")).split("-").pop())) {
-        found = true;
-        break;
-      }
-    }
-    // If not found, the control-box does not have a corresponding element. Therefore we remove.
-    if(!found) {
-      x[i].remove();
-    }
+  for (const controlBox of disconnectedControlBoxes) {
+    controlBox.remove();
   }
 }
 
-  // Hiding moveable-control-boxes.
+  /**
+   *  Hiding moveable-control-boxes.
+   */
   H5P.DragNBar.prototype.hideControlBoxes = function () {
     var x = document.getElementsByClassName('moveable-control-box');
     for (var i = x.length - 1; i >= 0; i--) {
@@ -1419,10 +1395,12 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
   return result;
 }
-
 /**
  * Create a 'moveable' which is a control-box, on an element which controls the resizing and rotation of the element.
  * https://github.com/daybrush/moveable
+ * 
+ * @param {H5P.jQuery} $element 
+ * @param {string} uniqueClassString 
  */
  H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassString) {
   
