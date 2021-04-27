@@ -1438,6 +1438,13 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     }
     frame.rotate = angle;
 
+    // set start transform
+    const transformCSSTranslateXYArray = $element[0].style.transform.split("px");
+    const transformCSSTranslateX = parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g));
+    const transformCSSTranslateY = parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g));
+    frame.translate[0] = transformCSSTranslateX;
+    frame.translate[1] = transformCSSTranslateY;
+
     let containerWidth;
     let containerHeight;
 
