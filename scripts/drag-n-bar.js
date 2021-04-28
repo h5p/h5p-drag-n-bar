@@ -59,6 +59,7 @@ H5P.DragNBar = (function (EventDispatcher) {
 
       H5P.$window.resize(function () {
         self.resize();
+        self.hideControlBoxes();
       });
     }
 
@@ -1607,8 +1608,11 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
           }
         }
 
-        target.style.width = `${width}px`;
-        target.style.height = `${height}px`;
+        const widthPercent = (width / containerWidth) * 100;
+        const heightPercent = (height / containerHeight) * 100;
+
+        target.style.width = `${widthPercent}%`;
+        target.style.height = `${heightPercent}%`;
 
         // get drag event
         frame.translate = drag.beforeTranslate;
