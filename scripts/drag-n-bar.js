@@ -1062,6 +1062,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   
   // Adding control-box on element (moveable)
   self.addControlBoxOnElement(newElement);
+
   // Removing extra controlboxes. When an element is created, it is added twice, resulting in duplicate control-boxes
   self.removeControlBoxesNotInUse();
 
@@ -1094,7 +1095,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   $element.focus(function () {
     self.focus($element);
   });
-  
+
   return newElement;
 };
 
@@ -1104,7 +1105,6 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
  * @param {H5P.DragNBarElement} element 
  */
 H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
-  var self = this;
   if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
     if(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
     
@@ -1117,18 +1117,17 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
     
     // Adding control-box
     const startStringControlBox = 'h5p-control-box-unique-';
-    const uniqueControlBox = startStringControlBox + uniqueClassFloat.toString(32);
-    self.createMoveableControlBoxOnElement(element.$element, uniqueControlBox);
+    const uniqueControlBoxId = startStringControlBox + uniqueClassFloat.toString(32);
+    this.createMoveableControlBoxOnElement(element.$element, uniqueControlBoxId);
 
     // Hiding moveable-control-boxes. This is because if we edit a whole CP (from the menu), we dont want all the boxes to show.
     // If we are just adding an element, it will get 'focused' after this code is run, so it's ok.
-    self.hideControlBoxes();
+    this.hideControlBoxes();
 
-    // Moving the control-box to overlap the element.
-    const rectElementBCR = element.$element[0].getBoundingClientRect();
-    const theControlBoxElement = document.getElementsByClassName(uniqueControlBox)[0];
-    const dndToolbarHeight = 38;
-    theControlBoxElement.style.transform = `translate3d(${rectElementBCR.left + window.scrollX}px, ${rectElementBCR.top + window.scrollY + dndToolbarHeight}px, 0px)`;
+    // Since the context-menu-box will be added after the control-box, it will push the element down, but not the control-box-element.
+    // Therefore, we are adjusting the control-box's position on the element 'after' the context-menu has pushed the element down by using requestAnimationFrame(),
+    // so that the control-box is exactly overlapping the element.
+    requestAnimationFrame(() => this.adjustControlBoxPositionOnElement(element, uniqueControlBoxId));
     }
   }
 }
@@ -1166,15 +1165,27 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
   }
 }
 
-  /**
-   *  Hiding moveable-control-boxes.
-   */
-  H5P.DragNBar.prototype.hideControlBoxes = function () {
-    var x = document.getElementsByClassName('moveable-control-box');
-    for (var i = x.length - 1; i >= 0; i--) {
-      x[i].style.visibility = 'hidden';
-    }
+/**
+ *  Hiding moveable-control-boxes.
+ */
+H5P.DragNBar.prototype.hideControlBoxes = function () {
+  const controlBoxes = document.getElementsByClassName('moveable-control-box');
+  for (const controlBox of controlBoxes) {
+    controlBox.style.visibility = 'hidden';
   }
+}
+
+/**
+ * Adjusting the position of the control-box to overlap the element.
+ * 
+ * @param {H5P.DragNBarElement} element 
+ * @param {String} uniqueControlBoxId The control-box and element both share this unique id in their classList in order to have a connection since they are placed in different locations in the document.
+ */
+ H5P.DragNBar.prototype.adjustControlBoxPositionOnElement = function (element, uniqueControlBoxId) {
+  const elementBCR = element.$element[0].getBoundingClientRect();
+  const theControlBoxElement = document.getElementsByClassName(uniqueControlBoxId)[0];
+  theControlBoxElement.style.transform = `translate3d(${elementBCR.left + window.scrollX}px, ${elementBCR.top + window.scrollY}px, 0px)`;
+}
 
 /**
  * Remove given element in the UI.
@@ -1437,6 +1448,13 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
     }
     frame.rotate = angle;
+
+    // set start transform
+    const transformCSSTranslateXYArray = $element[0].style.transform.split("px");
+    const transformCSSTranslateX = parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)[0]);
+    const transformCSSTranslateY = parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)[0]);
+    frame.translate[0] = transformCSSTranslateX;
+    frame.translate[1] = transformCSSTranslateY;
 
     let containerWidth;
     let containerHeight;
