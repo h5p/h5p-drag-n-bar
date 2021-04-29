@@ -730,8 +730,6 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
       this.$pasteButton.appendTo($list);
     }
   }
-
-  this.containTooltips();
 };
 
 /**
@@ -748,13 +746,14 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   const hasTitle = button.title && button.title !== "";
   const ariaLabel = hasTitle ? ' aria-label="' + button.title + '"' : "";
   var $button = H5P.jQuery(
-    '<li class="h5p-dragnbar-li" data-label="Image">' +
-      '<a href="#" class="h5p-dragnbar-a h5p-dragnbar-' +
-      button.id +
-      '-button"' +
-      ariaLabel +
-      "></a>" +
-      "</li>"
+    `<li class="h5p-dragnbar-li" data-label="Image">
+      <a
+        href="#"
+        class="h5p-dragnbar-a h5p-dragnbar-${button.id}-button"
+        ${ariaLabel}
+      ></a>
+    </li>`
+  
   ).appendTo($list);
 
   // Prevent empty tooltips (would show on Firefox)
@@ -789,9 +788,6 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
   }
 
   $button
-    .hover(function () {
-      that.containTooltips();
-    })
     .children()
     .click(function () {
       return false;
@@ -805,13 +801,22 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       if (button.type === "group") {
         if ($buttonGroup !== undefined) {
           // Set position here, because content types might add buttons out of order
-          const offset = parseFloat(
-            $button.closest(".h5p-dragnbar").css("padding-left")
-          );
-          const position =
-            $button.position().left - $buttonGroup.position().left - offset;
-          if (position > 0) {
-            $buttonGroup.css("left", position);
+          const $dragNBar = $button.closest(".h5p-dragnbar");
+          const verticalOffset = $dragNBar.height();
+
+          const buttonPos = $button.position();
+          const buttonGroupPos = $buttonGroup.position();
+
+          const xPosition =
+            buttonPos.left - buttonGroupPos.left;
+          const yPosition = verticalOffset;
+
+          if (xPosition > 0) {
+            $buttonGroup.css("left", xPosition);
+          }
+
+          if (yPosition > 0) {
+            $buttonGroup.css("top", yPosition);
           }
 
           // Show dropdown and hide buttons tooltip
@@ -834,48 +839,9 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
 };
 
 /**
- * Contain tooltips.
- *
- * @returns {undefined}
- */
-H5P.DragNBar.prototype.containTooltips = function () {
-  var that = this;
-
-  var containerWidth = that.$container.outerWidth();
-
-  this.$list.find(".h5p-dragnbar-tooltip").each(function () {
-    // Get correct offset even if element is a child
-    var width = H5P.jQuery(this).outerWidth();
-    var parentWidth = H5P.jQuery(this)
-      .parents(".h5p-dragnbar-li")
-      .last()
-      .outerWidth();
-
-    // Center the tooltip
-    H5P.jQuery(this).css("left", -(width / 2) + parentWidth / 2 + "px");
-
-    var offsetLeft = (H5P.jQuery(this).position().left += H5P.jQuery(this)
-      .parents(".h5p-dragnbar-li")
-      .last()
-      .position().left);
-
-    // If outside left edge
-    if (offsetLeft <= 0) {
-      H5P.jQuery(this).css("left", 0);
-    }
-
-    // If outside right edge
-    if (offsetLeft + width > containerWidth) {
-      H5P.jQuery(this).css("left", -(width - parentWidth));
-    }
-  });
-};
-
-/**
  * Change container.
  *
  * @param {jQuery} $container
- * @returns {undefined}
  */
 H5P.DragNBar.prototype.setContainer = function ($container) {
   this.$container = $container;
@@ -892,13 +858,12 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  *
  * @param {Number} left
  * @param {Number} top
- * @returns {undefined}
  */
 H5P.DragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
-  this.$element.css({ top: top + "%", left: left + "%" });
+  this.$element.css({ top: `${top}%`, left: `${left}%` });
 
   // Give others the result
   if (this.stopMovingCallback !== undefined) {
