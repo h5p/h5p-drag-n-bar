@@ -59,6 +59,7 @@ H5P.DragNBar = (function (EventDispatcher) {
 
       H5P.$window.resize(function () {
         self.resize();
+        self.hideControlBoxes();
       });
     }
 
@@ -1607,8 +1608,11 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
           }
         }
 
-        target.style.width = `${width}px`;
-        target.style.height = `${height}px`;
+        const widthPercent = (width / containerWidth) * 100;
+        const heightPercent = (height / containerHeight) * 100;
+
+        target.style.width = `${widthPercent}%`;
+        target.style.height = `${heightPercent}%`;
 
         // get drag event
         frame.translate = drag.beforeTranslate;
@@ -1616,6 +1620,16 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         target.style.transform = `translate(${drag.beforeTranslate[0]}px, ${drag.beforeTranslate[1]}px) rotate(${frame.rotate}deg)`;
       })
       .on("resizeEnd", ({ target, isDrag, clientX, clientY }) => {
+        // Moving translateX and translateY into left and top in order to prevent resizing-isssues of window
+        const translateXInPercent = (frame.translate[0] / containerWidth) * 100;
+        const translateYInPercent = (frame.translate[1] / containerHeight) * 100;
+        target.style.left = parseFloat(target.style.left) + translateXInPercent + '%';
+        target.style.top = parseFloat(target.style.top) + translateYInPercent + '%';
+
+        // Resetting values
+        frame.translate = [0,0];
+        target.style.transform = `translate(0px, 0px) rotate(${frame.rotate}deg)`;
+
         // This method can be found in cp-editor. Stores values in params.
         this.stopResizeCallback(
           target.style.width,
