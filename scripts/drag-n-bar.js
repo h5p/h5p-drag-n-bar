@@ -1439,7 +1439,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     };
 
     // set start angle
-    let angle;
+    let angle = 0;
     const styleElement = window.getComputedStyle($element[0]);
     const matrix = styleElement.getPropertyValue("transform");
     if (matrix !== "none") {
@@ -1616,6 +1616,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
         // get drag event
         frame.translate = drag.beforeTranslate;
+
         // Set the CSS-transform based on the calculated values
         target.style.transform = `translate(${drag.beforeTranslate[0]}px, ${drag.beforeTranslate[1]}px) rotate(${frame.rotate}deg)`;
       })
