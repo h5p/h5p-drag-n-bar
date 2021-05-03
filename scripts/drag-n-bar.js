@@ -1439,14 +1439,11 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     };
 
     // set start angle
-    let angle = 0;
-    const styleElement = window.getComputedStyle($element[0]);
-    const matrix = styleElement.getPropertyValue("transform");
-    if (matrix !== "none") {
-      const values = matrix.split("(")[1].split(")")[0].split(",");
-      const a = values[0];
-      const b = values[1];
-      angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    const angleTransformList = $element[0].style.transform.split("rotate(");
+    const angleTransform = parseInt(angleTransformList[1]);
+    let angle = angleTransform;
+    if(angle == 0  || angle == null || angle == undefined) {
+      angle = 0;
     }
     frame.rotate = angle;
 
