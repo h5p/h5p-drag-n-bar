@@ -38,8 +38,6 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.libraries = options.libraries;
     this.instanceIndex = nextInstanceIndex++;
 
-    this.initShiftKeyPressedListener(self);
-
     /**
      * Keeps track of created DragNBar elements
      * @type {Array}
@@ -104,31 +102,6 @@ H5P.DragNBar = (function (EventDispatcher) {
 
   return DragNBar;
 })(H5P.EventDispatcher);
-
-/**
- * Creates eventlisteners which sets a boolean true or false if the shift key is pressed. 
- * Is used to turn off increments on rotation
- * 
- * @param {*} instance 
- */
-
-H5P.DragNBar.prototype.initShiftKeyPressedListener = function (instance) {
-  instance.shiftKeyIsPressed = false;
-
-    window.addEventListener("keydown", (event) => {
-      const isShiftKey = event.key === "Shift";
-      if (isShiftKey) {
-        instance.shiftKeyIsPressed = true;
-      }
-    });
-
-    window.addEventListener("keyup", (event) => {
-      const isShiftKey = event.key === "Shift";
-      if (isShiftKey) {
-        instance.shiftKeyIsPressed = false;
-      }
-    });
-}
 
 /**
  * Initializes editor functionality of DragNBar
@@ -1582,7 +1555,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         // Set the CSS-transform based on the calculated values
         target.style.transform = `translate(${drag.beforeTranslate[0]}px, ${drag.beforeTranslate[1]}px) rotate(${frame.rotate}deg)`;
       })
-      .on("resizeEnd", ({ target, isDrag, clientX, clientY }) => {
+      .on("resizeEnd", ({ target }) => {
         // Moving translateX and translateY into left and top in order to prevent resizing-isssues of window
         const translateXInPercent = (frame.translate[0] / containerWidth) * 100;
         const translateYInPercent = (frame.translate[1] / containerHeight) * 100;
@@ -1619,9 +1592,9 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
         set(frame.rotate);
       })
-      .on("rotate", ({ target, beforeRotate }) => {
+      .on("rotate", ({ target, beforeRotate, inputEvent }) => {
         let angle;
-        if (this.shiftKeyIsPressed) {
+        if (inputEvent.shiftKey) {
           angle = beforeRotate;
         } else {
           // Rotating by increments by 15 degrees
