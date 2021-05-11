@@ -1379,7 +1379,9 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     // set start angle
     let angle = 0;
     const angleTransformList = $element[0].style.transform.split("rotate(");
-    if(angleTransformList != "") {
+    console.log(angleTransformList[0] != "");
+    console.log(angleTransformList[0] !== "");
+    if(angleTransformList[0] != "") {
     angleTransform = parseInt(angleTransformList[1]);
     angle = angleTransform;
     if(angle == 0  || angle == null || angle == undefined) {
@@ -1392,7 +1394,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     const transformCSSTranslateXYArray = $element[0].style.transform.split("px");
     let transformCSSTranslateX = 0;
     let transformCSSTranslateY = 0;
-    if(transformCSSTranslateXYArray[0] != "") {
+    if(transformCSSTranslateXYArray[0] !== "") {
       transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
       transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
     }
@@ -1454,7 +1456,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         const transformCSSTranslateXYArray = theElement.style.transform.split("px");
         let transformCSSTranslateX = 0;
         let transformCSSTranslateY = 0;
-        if(transformCSSTranslateXYArray[0] != "") {
+        if(transformCSSTranslateXYArray[0] !== "") {
           transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
           transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
         }
@@ -1471,6 +1473,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         }
         if(theElement.style.width.includes("%")) {
           widthPixels = containerWidth * parseInt(theElement.style.width) / 100;
+          // This check is included because when creating a 'drag and drop' (drag-question.js), the element's width and height are stored as em
         } else if(theElement.style.width.includes("em")) {
           widthPixels = parseFloat(theElement.style.width) * 16;
         } 
@@ -1594,7 +1597,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
     // Rotate
     moveable
-      .on("rotateStart", ({ set, target }) => {
+      .on("rotateStart", ({ set }) => {
         set(frame.rotate);
       })
       .on("rotate", ({ target, beforeRotate, inputEvent }) => {
