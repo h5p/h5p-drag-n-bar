@@ -1379,8 +1379,6 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     // set start angle
     let angle = 0;
     const angleTransformList = $element[0].style.transform.split("rotate(");
-    console.log(angleTransformList[0] != "");
-    console.log(angleTransformList[0] !== "");
     if(angleTransformList[0] != "") {
     angleTransform = parseInt(angleTransformList[1]);
     angle = angleTransform;
