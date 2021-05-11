@@ -1003,6 +1003,9 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   self.addControlBoxOnElement(newElement);
 
   // Removing extra controlboxes. When an element is created, it is added twice, resulting in duplicate control-boxes
+  // TODO: Fix so that it removes unnecessary control-boxes, but keeps the ones in 'drag and drop'-editor.
+  // The method is not in use because it removes control-boxes when in editor mode in a cp. 
+  // When using 'drag and drop'-module we need the control-boxes in the edtior.
   // self.removeControlBoxesNotInUse();
 
   if (this.isEditor) {
