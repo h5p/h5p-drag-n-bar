@@ -1003,7 +1003,10 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   self.addControlBoxOnElement(newElement);
 
   // Removing extra controlboxes. When an element is created, it is added twice, resulting in duplicate control-boxes
-  self.removeControlBoxesNotInUse();
+  // TODO: Fix so that it removes unnecessary control-boxes, but keeps the ones in 'drag and drop'-editor.
+  // The method is not in use because it removes control-boxes when in editor mode in a cp. 
+  // When using 'drag and drop'-module we need the control-boxes in the edtior.
+  // self.removeControlBoxesNotInUse();
 
   if (this.isEditor) {
     if (newElement.contextMenu) {
@@ -1377,18 +1380,25 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     };
 
     // set start angle
+    let angle = 0;
     const angleTransformList = $element[0].style.transform.split("rotate(");
-    const angleTransform = parseInt(angleTransformList[1]);
-    let angle = angleTransform;
+    if(angleTransformList[0] != "") {
+    angleTransform = parseInt(angleTransformList[1]);
+    angle = angleTransform;
     if(angle == 0  || angle == null || angle == undefined) {
       angle = 0;
     }
     frame.rotate = angle;
+  }
 
     // set start transform
     const transformCSSTranslateXYArray = $element[0].style.transform.split("px");
-    const transformCSSTranslateX = parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)[0]);
-    const transformCSSTranslateY = parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)[0]);
+    let transformCSSTranslateX = 0;
+    let transformCSSTranslateY = 0;
+    if(transformCSSTranslateXYArray[0] !== "") {
+      transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
+      transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
+    }
     frame.translate[0] = transformCSSTranslateX;
     frame.translate[1] = transformCSSTranslateY;
 
@@ -1445,8 +1455,12 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         // When scaling the element by dragging on the 'dots', the transform-value is changing, not left and top, as it is when 'moving'/'dragging' the element.
         // So we find the values 'translate x and y' and add them to left and top.
         const transformCSSTranslateXYArray = theElement.style.transform.split("px");
-        const transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
-        const transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
+        let transformCSSTranslateX = 0;
+        let transformCSSTranslateY = 0;
+        if(transformCSSTranslateXYArray[0] !== "") {
+          transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
+          transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
+        }
 
         if(theElement.style.left.includes("%")) {
           leftPos = containerWidth * parseInt(theElement.style.left) / 100 + transformCSSTranslateX;
@@ -1460,12 +1474,19 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         }
         if(theElement.style.width.includes("%")) {
           widthPixels = containerWidth * parseInt(theElement.style.width) / 100;
-        } else {
+          // This check is included because when creating a 'drag and drop' (drag-question.js), the element's width and height are stored as em
+        } else if(theElement.style.width.includes("em")) {
+          widthPixels = parseFloat(theElement.style.width) * 16;
+        } 
+        else {
           widthPixels = parseInt(theElement.style.width)
         }
         if(theElement.style.height.includes("%")) {
           heightPixels = containerHeight * parseInt(theElement.style.height) / 100;
-        } else {
+        } else if(theElement.style.width.includes("em")) {
+          heightPixels = parseFloat(theElement.style.height) * 16;
+        }
+        else {
           heightPixels = parseInt(theElement.style.height)
         }
 
@@ -1577,19 +1598,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
     // Rotate
     moveable
-      .on("rotateStart", ({ set, target }) => {
-        // Set origin angle
-        let angle;
-        const styleElement = window.getComputedStyle(target);
-        const matrix = styleElement.getPropertyValue("transform");
-        if (matrix !== "none") {
-          const values = matrix.split("(")[1].split(")")[0].split(",");
-          const a = values[0];
-          const b = values[1];
-          angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-        }
-        frame.rotate = angle;
-
+      .on("rotateStart", ({ set }) => {
         set(frame.rotate);
       })
       .on("rotate", ({ target, beforeRotate, inputEvent }) => {
