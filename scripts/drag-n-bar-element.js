@@ -200,16 +200,14 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
     this.focused = true;
     
     // Showing moveable-control-box on the clicked element
-    const uniqueClass = this.$element[0].className
-      .split(" ")
+    const uniqueClass = Array.from(this.$element[0].classList)
       .find(cName => cName.startsWith("h5p-dnb-unique-"));
     const uniqueValue = uniqueClass && uniqueClass
       .split("-")
       .pop();
-    if(typeof uniqueValue === 'string') {
-      document.getElementsByClassName('h5p-control-box-unique-' + uniqueValue)[0].style.visibility = 'visible';
+    if (uniqueValue) {
+      document.getElementsByClassName(`h5p-control-box-unique-${uniqueValue}`)[0].style.display = 'block';
     }
-      
 
     if (this.contextMenu) {
       this.resizeContextMenu(this.$element.position().left);
