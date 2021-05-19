@@ -1076,19 +1076,31 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
  * Cleaning up all control-boxes which are not in use
  */
 H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
+  /**
+   * @param {string} uniqueClassPrefix
+   * @param {DOMTokenList} classList 
+   */
+  const getUniqueId = (uniqueClassPrefix, classList) => {    
+    const classNames = Array.from(classList);
+    const uniqueClass = classNames.find(cName => cName.startsWith(uniqueClassPrefix))
+    
+    if (!uniqueClass) {
+      return null;
+    }
+
+    return uniqueClass.split("-").pop()
+  };
 
   //Getting unique ID's from elements on all slides in the CP, which are the same ID's to the corresponding control-boxes
   let uniqueClassStringList = [];
-  const wrapper = document.getElementsByClassName('h5p-slides-wrapper');
-  for (let i = 0; i < wrapper[0].childNodes.length; i++) {
-    for (let y = 0; y < wrapper[0].childNodes[i].childNodes.length; y++) {
-      if(typeof wrapper[0].childNodes[i].childNodes[y].classList.value
-        .split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) != 'undefined') {
-        uniqueClassStringList
-          .push(wrapper[0].childNodes[i].childNodes[y].classList.value
-          .split(" ")
-          .find(cName => cName.startsWith("h5p-dnb-unique-"))
-          .split("-").pop());
+  const wrapper = document.getElementsByClassName('h5p-slides-wrapper')[0];
+  for (let i = 0; i < wrapper.childNodes.length; i++) {
+    for (let y = 0; y < wrapper.childNodes[i].childNodes.length; y++) {
+      const node = wrapper.childNodes[i].childNodes[y];
+
+      const uniqueId = getUniqueId("h5p-dnb-unique-", node.classList);
+      if (uniqueId) {
+        uniqueClassStringList.push(uniqueId);
       }
     }
   }
@@ -1096,7 +1108,7 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
   // Removing all control-boxes which do not have a corresponding element in the scene
   const controlBoxes = Array.from(document.getElementsByClassName('moveable-control-box'));
   const disconnectedControlBoxes = controlBoxes.filter(controlBox => {
-    const uniqueId = controlBox.className.split(" ").find(cName => cName.startsWith("h5p-control-box-unique-")).split("-").pop();
+    const uniqueId = getUniqueId("h5p-control-box-unique-", controlBox.classList);
     return !uniqueClassStringList.includes(uniqueId);    
   });
   
