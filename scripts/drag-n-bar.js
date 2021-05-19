@@ -1228,7 +1228,6 @@ H5P.DragNBar.prototype.blurAll = function () {
  */
 H5P.DragNBar.prototype.resize = function () {
   this.updateCoordinates();
-  console.log("resizing");
 
   if (this.focusedElement) {
     this.focusedElement.resizeContextMenu(
