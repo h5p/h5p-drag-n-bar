@@ -55,9 +55,9 @@ H5P.DragNBar = (function (EventDispatcher) {
       this.initEditor();
       this.initClickListeners();
 
-      H5P.$window.resize(function () {
-        self.resize();
-        self.hideControlBoxes();
+      H5P.$window.resize(() => {
+        this.resize();
+        this.hideControlBoxes();
       });
     }
 
@@ -978,12 +978,8 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
  * @returns {H5P.DragNBarElement} Reference to added dnbelement
  */
 H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {  
-  var self = this;
   options = options || {};
-  if (this.isEditor && !options.disableResize) {
-    //this.dnr.add($element, options);
-  }
-  var newElement = null;
+  let newElement = null;
 
   // Check if element already exist
   if (options.dnbElement) {
@@ -1000,18 +996,19 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   $element.addClass("h5p-dragnbar-element");
   
   // Adding control-box on element (moveable)
-  self.addControlBoxOnElement(newElement);
+  this.addControlBoxOnElement(newElement);
 
-  // Removing extra controlboxes. When an element is created, it is added twice, resulting in duplicate control-boxes
-  // TODO: Fix so that it removes unnecessary control-boxes, but keeps the ones in 'drag and drop'-editor.
-  // The method is not in use because it removes control-boxes when in editor mode in a cp. 
-  // When using 'drag and drop'-module we need the control-boxes in the edtior.
-  // self.removeControlBoxesNotInUse();
+  const isInDragAndDrop = Boolean($element[0].closest(".h5peditor-dragquestion"));
+  if (!isInDragAndDrop) {
+    // Removing extra controlboxes. When an element is created,
+    // it is added twice, resulting in duplicate control-boxes
+    this.removeControlBoxesNotInUse();
+  }
 
   if (this.isEditor) {
     if (newElement.contextMenu) {
-      newElement.contextMenu.on("contextMenuCopy", function () {
-        self.copyHandler();
+      newElement.contextMenu.on("contextMenuCopy", () => {
+        this.copyHandler();
       });
     }
 
@@ -1020,22 +1017,22 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
       $element.attr("tabindex", "0");
     }
 
-    $element.mousedown(function (event) {
+    $element.mousedown((event) => {
       const isLeftMouseButton = event.which === 1;
       if (!isLeftMouseButton) {
         return;
       }
-      
-      self.pressed = true;
-      self.focus($element);
-      
+
+      this.pressed = true;
+      this.focus($element);
+
       $element.addClass("h5p-element--active");
-      self.dnd.press($element, event.pageX, event.pageY);
+      this.dnd.press($element, event.pageX, event.pageY);
     });
   }
   
-  $element.focus(function () {
-    self.focus($element);
+  $element.focus(() => {
+    this.focus($element);
   });
 
   return newElement;
@@ -1047,29 +1044,28 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
  * @param {H5P.DragNBarElement} element 
  */
 H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
-  if(window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
-    if(typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
-    
-    const uniqueClassFloat = Math.random();
-    
-    // Adding class to element
-    const startStringElement = 'h5p-dnb-unique-';
-    const uniqueClassString = startStringElement + uniqueClassFloat.toString(32);
-    element.$element.addClass(uniqueClassString);
-    
-    // Adding control-box
-    const startStringControlBox = 'h5p-control-box-unique-';
-    const uniqueControlBoxId = startStringControlBox + uniqueClassFloat.toString(32);
-    this.createMoveableControlBoxOnElement(element.$element, uniqueControlBoxId);
+  if (window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
+    if (typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
+      const uniqueClassFloat = Math.random();
 
-    // Hiding moveable-control-boxes. This is because if we edit a whole CP (from the menu), we dont want all the boxes to show.
-    // If we are just adding an element, it will get 'focused' after this code is run, so it's ok.
-    this.hideControlBoxes();
+      // Adding class to element
+      const startStringElement = 'h5p-dnb-unique-';
+      const uniqueClassString = startStringElement + uniqueClassFloat.toString(32);
+      element.$element.addClass(uniqueClassString);
 
-    // Since the context-menu-box will be added after the control-box, it will push the element down, but not the control-box-element.
-    // Therefore, we are adjusting the control-box's position on the element 'after' the context-menu has pushed the element down by using requestAnimationFrame(),
-    // so that the control-box is exactly overlapping the element.
-    requestAnimationFrame(() => this.adjustControlBoxPositionOnElement(element, uniqueControlBoxId));
+      // Adding control-box
+      const startStringControlBox = 'h5p-control-box-unique-';
+      const uniqueControlBoxId = startStringControlBox + uniqueClassFloat.toString(32);
+      this.createMoveableControlBoxOnElement(element.$element, uniqueControlBoxId);
+
+      // Hiding moveable-control-boxes. This is because if we edit a whole CP (from the menu), we dont want all the boxes to show.
+      // If we are just adding an element, it will get 'focused' after this code is run, so it's ok.
+      this.hideControlBoxes();
+
+      // Since the context-menu-box will be added after the control-box, it will push the element down, but not the control-box-element.
+      // Therefore, we are adjusting the control-box's position on the element 'after' the context-menu has pushed the element down by using requestAnimationFrame(),
+      // so that the control-box is exactly overlapping the element.
+      requestAnimationFrame(() => this.adjustControlBoxPositionOnElement(element, uniqueControlBoxId));
     }
   }
 }
@@ -1078,28 +1074,33 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
  * Cleaning up all control-boxes which are not in use
  */
 H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
+  /**
+   * @param {string} uniqueClassPrefix
+   * @param {DOMTokenList} classList 
+   */
+  const getUniqueId = (uniqueClassPrefix, classList) => {    
+    const classNames = Array.from(classList);
+    const uniqueClass = classNames.find(cName => cName.startsWith(uniqueClassPrefix));
+    
+    if (!uniqueClass) {
+      return null;
+    }
+
+    return uniqueClass.split("-").pop();
+  };
 
   //Getting unique ID's from elements on all slides in the CP, which are the same ID's to the corresponding control-boxes
-  let uniqueClassStringList = [];
-  const wrapper = document.getElementsByClassName('h5p-slides-wrapper');
-  for (let i = 0; i < wrapper[0].childNodes.length; i++) {
-    for (let y = 0; y < wrapper[0].childNodes[i].childNodes.length; y++) {
-      if(typeof wrapper[0].childNodes[i].childNodes[y].classList.value
-        .split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) != 'undefined') {
-        uniqueClassStringList
-          .push(wrapper[0].childNodes[i].childNodes[y].classList.value
-          .split(" ")
-          .find(cName => cName.startsWith("h5p-dnb-unique-"))
-          .split("-").pop());
-      }
-    }
-  }
+  const uniqueClassStringList = Array.from(document.querySelectorAll("[class*=h5p-dnb-unique-]")).map(
+    (el) => getUniqueId("h5p-dnb-unique-", el.classList)
+  );
 
   // Removing all control-boxes which do not have a corresponding element in the scene
   const controlBoxes = Array.from(document.getElementsByClassName('moveable-control-box'));
   const disconnectedControlBoxes = controlBoxes.filter(controlBox => {
-    const uniqueId = controlBox.className.split(" ").find(cName => cName.startsWith("h5p-control-box-unique-")).split("-").pop();
-    return !uniqueClassStringList.includes(uniqueId);    
+    const uniqueId = getUniqueId("h5p-control-box-unique-", controlBox.classList);
+    const connectedElement = document.getElementsByClassName('h5p-dnb-unique-'+uniqueId)[0];
+    const isInDragQuestion = Boolean(connectedElement&&connectedElement.closest('.h5peditor-dragquestion'));
+    return !isInDragQuestion && !uniqueClassStringList.includes(uniqueId);
   });
   
   for (const controlBox of disconnectedControlBoxes) {
@@ -1113,7 +1114,7 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
 H5P.DragNBar.prototype.hideControlBoxes = function () {
   const controlBoxes = document.getElementsByClassName('moveable-control-box');
   for (const controlBox of controlBoxes) {
-    controlBox.style.visibility = 'hidden';
+    controlBox.style.display = 'none';
   }
 }
 
@@ -1121,12 +1122,16 @@ H5P.DragNBar.prototype.hideControlBoxes = function () {
  * Adjusting the position of the control-box to overlap the element.
  * 
  * @param {H5P.DragNBarElement} element 
- * @param {String} uniqueControlBoxId The control-box and element both share this unique id in their classList in order to have a connection since they are placed in different locations in the document.
+ * @param {String} uniqueControlBoxClass The control-box and element both share this unique id in their classList in order to have a connection since they are placed in different locations in the document.
  */
- H5P.DragNBar.prototype.adjustControlBoxPositionOnElement = function (element, uniqueControlBoxId) {
+ H5P.DragNBar.prototype.adjustControlBoxPositionOnElement = function (element, uniqueControlBoxClass) {
   const elementBCR = element.$element[0].getBoundingClientRect();
-  const theControlBoxElement = document.getElementsByClassName(uniqueControlBoxId)[0];
-  theControlBoxElement.style.transform = `translate3d(${elementBCR.left + window.scrollX}px, ${elementBCR.top + window.scrollY}px, 0px)`;
+  const theControlBoxElement = document.getElementsByClassName(uniqueControlBoxClass)[0];
+
+  const horizontalTransform = elementBCR.left + window.scrollX;
+  const verticalTransform = elementBCR.top + window.scrollY;
+
+  theControlBoxElement.style.transform = `translate3d(${horizontalTransform}px, ${verticalTransform}px, 0px)`;
 }
 
 /**
@@ -1215,12 +1220,11 @@ H5P.DragNBar.prototype.blurAll = function () {
  * Resize DnB, make sure context menu is positioned correctly.
  */
 H5P.DragNBar.prototype.resize = function () {
-  var self = this;
   this.updateCoordinates();
 
-  if (self.focusedElement) {
-    self.focusedElement.resizeContextMenu(
-      self.$element.offset().left - self.$element.parent().offset().left
+  if (this.focusedElement) {
+    this.focusedElement.resizeContextMenu(
+      this.$element.offset().left - this.$element.parent().offset().left
     );
   }
 };
@@ -1349,13 +1353,14 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
   return result;
 }
 /**
- * Create a 'moveable' which is a control-box, on an element which controls the resizing and rotation of the element.
+ * Create a `Moveable` which adds a control-box to an element,
+ * which controls the resizing and rotation of the element.
  * https://github.com/daybrush/moveable
  * 
  * @param {H5P.jQuery} $element 
- * @param {string} uniqueClassString 
+ * @param {string} uniqueClassName 
  */
- H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassString) {
+ H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
   
   if (typeof $element !== "undefined") {
     const moveable = new Moveable(document.body, {
@@ -1371,7 +1376,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       rotatable: true,
       throttleRotate: 0,
       rotationPosition: "bottom",
-      className: uniqueClassString
+      className: uniqueClassName
     });
 
     const frame = {
@@ -1381,21 +1386,24 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
 
     // set start angle
     let angle = 0;
-    const angleTransformList = $element[0].style.transform.split("rotate(");
-    if(angleTransformList[0] != "") {
-    angleTransform = parseInt(angleTransformList[1]);
-    angle = angleTransform;
-    if(angle == 0  || angle == null || angle == undefined) {
-      angle = 0;
+    const transformList = $element[0].style.transform.split("rotate(");
+    const [translation, rotation] = transformList;
+    
+    if (translation) {
+      angle = parseInt(rotation);
+
+      if (angle == null || Number.isNaN(angle)) {
+        angle = 0;
+      }
+
+      frame.rotate = angle;
     }
-    frame.rotate = angle;
-  }
 
     // set start transform
     const transformCSSTranslateXYArray = $element[0].style.transform.split("px");
     let transformCSSTranslateX = 0;
     let transformCSSTranslateY = 0;
-    if(transformCSSTranslateXYArray[0] !== "") {
+    if (transformCSSTranslateXYArray[0] !== "") {
       transformCSSTranslateX = (parseInt(transformCSSTranslateXYArray[0].match(/-?\d+/g)));
       transformCSSTranslateY = (parseInt(transformCSSTranslateXYArray[1].match(/-?\d+/g)));
     }
@@ -1405,7 +1413,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
     let containerWidth;
     let containerHeight;
 
-    // Values which are in controll of the position of corners when hitting a wall.
+    // Values which are in control of the position of corners when hitting a wall.
     let storedPosLeft = false;
     let tempPosLeft;
     let storedPosRight = false;
@@ -1441,7 +1449,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
         storedPosBottom = false;
       })
       // This code runs every frame when dragging an element (resizing)
-      .on("resize", ({ target, width, height, drag, inputEvent}) => {
+      .on("resize", ({ target, width, height, drag, inputEvent }) => {
         
         // Finding corner positions to ensure the element is never outside the container borders
         // *************************************************************************************
