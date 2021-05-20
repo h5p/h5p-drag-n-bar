@@ -1080,34 +1080,27 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
    */
   const getUniqueId = (uniqueClassPrefix, classList) => {    
     const classNames = Array.from(classList);
-    const uniqueClass = classNames.find(cName => cName.startsWith(uniqueClassPrefix))
+    const uniqueClass = classNames.find(cName => cName.startsWith(uniqueClassPrefix));
     
     if (!uniqueClass) {
       return null;
     }
 
-    return uniqueClass.split("-").pop()
+    return uniqueClass.split("-").pop();
   };
 
   //Getting unique ID's from elements on all slides in the CP, which are the same ID's to the corresponding control-boxes
-  let uniqueClassStringList = [];
-  const wrapper = document.getElementsByClassName('h5p-slides-wrapper')[0];
-  for (let i = 0; i < wrapper.childNodes.length; i++) {
-    for (let y = 0; y < wrapper.childNodes[i].childNodes.length; y++) {
-      const node = wrapper.childNodes[i].childNodes[y];
-
-      const uniqueId = getUniqueId("h5p-dnb-unique-", node.classList);
-      if (uniqueId) {
-        uniqueClassStringList.push(uniqueId);
-      }
-    }
-  }
+  const uniqueClassStringList = Array.from(document.querySelectorAll("[class*=h5p-dnb-unique-]")).map(
+    (el) => getUniqueId("h5p-dnb-unique-", el.classList)
+  );
 
   // Removing all control-boxes which do not have a corresponding element in the scene
   const controlBoxes = Array.from(document.getElementsByClassName('moveable-control-box'));
   const disconnectedControlBoxes = controlBoxes.filter(controlBox => {
     const uniqueId = getUniqueId("h5p-control-box-unique-", controlBox.classList);
-    return !uniqueClassStringList.includes(uniqueId);    
+    const connectedElement = document.getElementsByClassName('h5p-dnb-unique-'+uniqueId)[0];
+    const isInDragQuestion = Boolean(connectedElement&&connectedElement.closest('.h5peditor-dragquestion'));
+    return !isInDragQuestion && !uniqueClassStringList.includes(uniqueId);
   });
   
   for (const controlBox of disconnectedControlBoxes) {
