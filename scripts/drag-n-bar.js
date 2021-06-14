@@ -1362,20 +1362,10 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
  */
  H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
   
-  const checkifIsImage = () => {
-    const arrayOfChildren = Array.from($element[0].children);
-    for (childElement of arrayOfChildren) {
-      const childClassList = childElement.classList;
-      for (childClass of childClassList) {
-        if(childClass == "h5p-image-outer-element") {
-          return true;
-        }
-      }
-    }
-  }
+  const checkIfIsImage = () => {return $element.find("img").length > 0}
 
   let isImage = false;
-  isImage = checkifIsImage();
+  isImage = checkIfIsImage();
 
   if (typeof $element !== "undefined") {
     const moveable = new Moveable(document.body, {
