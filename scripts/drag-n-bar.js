@@ -1362,7 +1362,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
  */
  H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
   
-  const checkIfIsImage = () => {return $element.find("img").length > 0}
+  const checkIfIsImage = () => $element.find("img").length > 0;
 
   let isImage = false;
   isImage = checkIfIsImage();
