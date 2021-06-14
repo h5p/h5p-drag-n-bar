@@ -1362,6 +1362,11 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
  */
  H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
   
+  const checkIfIsImage = () => $element.find("img").length > 0;
+
+  let isImage = false;
+  isImage = checkIfIsImage();
+
   if (typeof $element !== "undefined") {
     const moveable = new Moveable(document.body, {
       target: $element[0],
@@ -1372,7 +1377,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       pinchable: true,
       scalable: true,
       throttleScale: 0,
-      keepRatio: false,
+      keepRatio: isImage,
       rotatable: true,
       throttleRotate: 0,
       rotationPosition: "bottom",
@@ -1450,6 +1455,13 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
       })
       // This code runs every frame when dragging an element (resizing)
       .on("resize", ({ target, width, height, drag, inputEvent }) => {
+
+        // Make it possible to hold shiftkey for images to NOT keep ratio when resizing
+        if (inputEvent.shiftKey) {
+          moveable.keepRatio = false;
+        } else if(isImage) {
+          moveable.keepRatio = true;
+        }
         
         // Finding corner positions to ensure the element is never outside the container borders
         // *************************************************************************************
