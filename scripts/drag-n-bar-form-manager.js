@@ -25,7 +25,7 @@
      *
      * @private
      */
-    const initialize = function () {
+    const initialize = () => {
       self.isMainLibrary = !(parent instanceof H5PEditor.Library)
 
       // Locate target container
@@ -147,10 +147,20 @@
         head.appendChild(fullscreenButton);
       }
 
-      window.addEventListener('resize', self.updateFormResponsiveness);
+      const onResize = () => {
+        const screenWasResized = this.lastWindowWidth !== window.innerWidth || this.lastWindowHeight !== window.innerHeight;
+        if (screenWasResized) {
+          this.updateFormResponsiveness();
+
+          this.lastWindowWidth = window.innerWidth;
+          this.lastWindowHeight = window.innerHeight;
+        }
+      };
+
+      window.addEventListener('resize', onResize);
       // Always clean up on remove
-      self.on('remove', function () {
-        window.removeEventListener('resize', self.updateFormResponsiveness);
+      self.on('remove', () => {
+        window.removeEventListener('resize', onResize);
       });
 
       const overlay = document.createElement('div');
@@ -667,6 +677,7 @@
         titles.breadcrumb.classList.add('form-manager-comein');
         manager.formButtons.classList.add('form-manager-comein');
         manager.footerFormButtons.classList.add('form-manager-comein');
+
         manager.updateFormResponsiveness();
       }, 0);
 

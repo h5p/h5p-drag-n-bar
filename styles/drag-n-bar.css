@@ -20,18 +20,17 @@
 }
 
 .h5peditor .hardware-accelerated {
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
   transform: translateZ(0);
 }
 
+/**
+ * {1} The z-index needs to be greater than the one of .dragnbar-button-group.
+ */
 .h5peditor .h5peditor-dragnbar .h5p-dragnbar-li .h5p-dragnbar-tooltip {
   visibility: hidden;
   position: absolute;
   padding: 0 0.5em;
-  top: 100%;
-  left: 0;
-  z-index: 2;
+  z-index: 3; /* {1} */
   border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.9);
   color: #fff;
@@ -40,6 +39,7 @@
   line-height: 2em;
   content: attr(data-label);
   white-space: pre;
+  transform: translateX(-50%);
 }
 
 .h5peditor .h5peditor-dragnbar .h5p-dragnbar-li:hover > .h5p-dragnbar-tooltip {
@@ -97,6 +97,7 @@
   padding: 0.5em;
   box-shadow: 0 0 0.5em 0 rgba(105, 105, 105, 0.4);
   height: auto;
+  position: absolute;
 }
 .h5peditor-dragnbar .h5p-dragnbar-button-group:hover {
   background: #fff;
