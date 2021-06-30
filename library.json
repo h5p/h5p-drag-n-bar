@@ -3,8 +3,8 @@
   "contentType": "API",
   "description": "Creates a menu bar with items that can be dropped into the specified container.",
   "majorVersion": 1,
-  "minorVersion": 5,
-  "patchVersion": 12,
+  "minorVersion": 6,
+  "patchVersion": 3,
   "runnable": 0,
   "machineName": "H5P.DragNBar",
   "author": "Joubel",
@@ -27,6 +27,9 @@
     },
     {
       "path": "scripts/drag-n-bar-form-manager.js"
+    },
+    {
+      "path": "scripts/moveable.min.js"
     }
   ],
   "preloadedCss": [
