@@ -1,5 +1,5 @@
 /*global H5P*/
-H5P.DragNBarDialog = (function ($, EventDispatcher) {
+H5P.NDLADragNBarDialog = (function ($, EventDispatcher) {
 
   /**
    * Controls the dialog in the interactive video.

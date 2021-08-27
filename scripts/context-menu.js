@@ -3,13 +3,13 @@
 /**
  * Create context menu
  */
-H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
+H5P.NDLADragNBarContextMenu = (function ($, EventDispatcher) {
 
   /**
    * Constructor for context menu
    * @class
    * @param {jQuery} $container Parent container
-   * @param {H5P.DragNBarElement} DragNBarElement
+   * @param {H5P.NDLADragNBarElement} DragNBarElement
    * @param {boolean} [hasCoordinates] Decides if coordinates will be displayed
    * @param {boolean} [disableResize] No input for dimensions
    * @param {boolean} [disableCopy] Disable copy button
@@ -22,7 +22,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     /**
      * Keeps track of DragNBar object
      *
-     * @type {H5P.DragNBar}
+     * @type {H5P.NDLADragNBar}
      */
     this.dnb = DragNBarElement.dnb;
 
@@ -31,7 +31,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     /**
      * Keeps track of DnBElement object
      *
-     * @type {H5P.DragNBarElement}
+     * @type {H5P.NDLADragNBarElement}
      */
     this.dnbElement = DragNBarElement;
 
@@ -99,14 +99,14 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
      * @type {ContextMenuButton[]}
      */
     this.buttons = [
-      {name: 'Edit', label: H5PEditor.t('H5P.DragNBar', 'editLabel')},
-      {name: 'BringToFront', label: H5PEditor.t('H5P.DragNBar', 'bringToFrontLabel')},
-      {name: 'SendToBack', label: H5PEditor.t('H5P.DragNBar', 'sendToBackLabel')},
-      {name: 'Remove', label: H5PEditor.t('H5P.DragNBar', 'removeLabel')}
+      {name: 'Edit', label: H5PEditor.t('H5P.NDLADragNBar', 'editLabel')},
+      {name: 'BringToFront', label: H5PEditor.t('H5P.NDLADragNBar', 'bringToFrontLabel')},
+      {name: 'SendToBack', label: H5PEditor.t('H5P.NDLADragNBar', 'sendToBackLabel')},
+      {name: 'Remove', label: H5PEditor.t('H5P.NDLADragNBar', 'removeLabel')}
     ];
 
     if (!disableCopy) {
-      this.buttons.splice(1, 0, {name: 'Copy', label: H5PEditor.t('H5P.DragNBar', 'copyLabel')});
+      this.buttons.splice(1, 0, {name: 'Copy', label: H5PEditor.t('H5P.NDLADragNBar', 'copyLabel')});
     }
 
     /**
@@ -171,7 +171,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     // Add coordinates picker
     this.$coordinates = $(
       '<div class="h5p-dragnbar-coordinates">' +
-        '<div class="h5p-dragnbar-label">' + H5PEditor.t('H5P.DragNBar', 'positionLabel') + '</div>' +
+        '<div class="h5p-dragnbar-label">' + H5PEditor.t('H5P.NDLADragNBar', 'positionLabel') + '</div>' +
         '<div class="h5p-dragnbar-x-container" aria-label="X position">' +
           '<input class="h5p-dragnbar-x" type="text" value="0">' +
         '</div>' +
@@ -277,7 +277,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     $('<div/>', {
       'class': 'h5p-dragnbar-label',
       appendTo: self.$dimensions,
-      text: H5PEditor.t('H5P.DragNBar', 'sizeLabel')
+      text: H5PEditor.t('H5P.NDLADragNBar', 'sizeLabel')
     });
 
     var updateDimensions = function (type) {
@@ -318,7 +318,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
     };
 
     // Add input for width
-    self.$width = self.getNewInput('width', H5PEditor.t('H5P.DragNBar', 'widthLabel'), self.$dimensions, updateDimensions, self.directionLock === 'vertical');
+    self.$width = self.getNewInput('width', H5PEditor.t('H5P.NDLADragNBar', 'widthLabel'), self.$dimensions, updateDimensions, self.directionLock === 'vertical');
 
     $('<span/>', {
       'class': 'h5p-dragnbar-dimensions-separator',
@@ -326,7 +326,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
       appendTo: self.$dimensions
     });
 
-    self.$height = self.getNewInput('height', H5PEditor.t('H5P.DragNBar', 'heightLabel'), self.$dimensions, updateDimensions, self.directionLock === 'horizontal');
+    self.$height = self.getNewInput('height', H5PEditor.t('H5P.NDLADragNBar', 'heightLabel'), self.$dimensions, updateDimensions, self.directionLock === 'horizontal');
 
     self.dnb.dnr.on('moveResizing', function () {
       self.updateDimensions();
@@ -342,7 +342,7 @@ H5P.DragNBarContextMenu = (function ($, EventDispatcher) {
    */
   ContextMenu.prototype.addTransform = function (enableTransform) {
     var self = this;
-    var transformButtonObject = {name: 'Transform', label: H5PEditor.t('H5P.DragNBar', 'transformLabel')};
+    var transformButtonObject = {name: 'Transform', label: H5PEditor.t('H5P.NDLADragNBar', 'transformLabel')};
     var $transformButtonWrapper = $('<div>', {
       'class': 'h5p-transform-button-wrapper'
     });
