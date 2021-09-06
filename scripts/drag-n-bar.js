@@ -1,4 +1,4 @@
-H5P.DragNBar = (function (EventDispatcher) {
+H5P.NDLADragNBar = (function (EventDispatcher) {
   var nextInstanceIndex = 0;
 
   /**
@@ -22,7 +22,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.buttons = buttons;
     this.$container = $container;
     this.$dialogContainer = $dialogContainer;
-    this.dnd = new H5P.DragNDrop(this, $container);
+    this.dnd = new H5P.NDLADragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
     var defaultOptions = {
@@ -45,7 +45,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.elements = [];
 
     // Create a popup dialog
-    this.dialog = new H5P.DragNBarDialog($dialogContainer, $container);
+    this.dialog = new H5P.NDLADragNBarDialog($dialogContainer, $container);
 
     // Fix for forcing redraw on $container, to avoid "artifcats" on safari
     this.$container.addClass("hardware-accelerated");
@@ -106,7 +106,7 @@ H5P.DragNBar = (function (EventDispatcher) {
 /**
  * Initializes editor functionality of DragNBar
  */
-H5P.DragNBar.prototype.initEditor = function () {
+H5P.NDLADragNBar.prototype.initEditor = function () {
   var that = this;
   this.dnr = new H5P.DragNResize(this.$container);
   this.dnr.snap = 10;
@@ -185,7 +185,7 @@ H5P.DragNBar.prototype.initEditor = function () {
  * @param {number} pos.y
  * @param {(H5P.jQuery|Object)} element object with width&height if ran before insertion.
  */
-H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
+H5P.NDLADragNBar.prototype.avoidOverlapping = function (pos, $element) {
   // Determine size of element
   var size = $element;
   if (size instanceof H5P.jQuery) {
@@ -228,7 +228,7 @@ H5P.DragNBar.prototype.avoidOverlapping = function (pos, $element) {
  * @param {H5P.jQuery} [$element]
  * @returns {boolean}
  */
-H5P.DragNBar.prototype.elementOverlaps = function (x, y, $element) {
+H5P.NDLADragNBar.prototype.elementOverlaps = function (x, y, $element) {
   var self = this;
 
   // Use snap grid
@@ -273,7 +273,7 @@ var snapAmount = 1;
 /**
  * Handle keydown events for the entire frame
  */
-H5P.DragNBar.keydownHandler = function (event) {
+H5P.NDLADragNBar.keydownHandler = function (event) {
   var self = event.data.instance;
   var activeElement = document.activeElement;
 
@@ -367,7 +367,7 @@ H5P.DragNBar.keydownHandler = function (event) {
  * Copy object.
  * @param {Event} event - Event to check for copyable content.
  */
-H5P.DragNBar.prototype.copyHandler = function (event) {
+H5P.NDLADragNBar.prototype.copyHandler = function (event) {
   if (!this.enableCopyPaste) {
     return;
   }
@@ -390,7 +390,7 @@ H5P.DragNBar.prototype.copyHandler = function (event) {
  * Paste object.
  * @param {Event} event - Event to check for pastable content.
  */
-H5P.DragNBar.prototype.pasteHandler = function (event) {
+H5P.NDLADragNBar.prototype.pasteHandler = function (event) {
   var self = event === undefined ? this : event.data.instance;
   var activeElement = document.activeElement;
 
@@ -445,7 +445,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
     }
 
     // Update file URLs
-    H5P.DragNBar.updateFileUrls(clipboardData.specific, function (path) {
+    H5P.NDLADragNBar.updateFileUrls(clipboardData.specific, function (path) {
       var isTmpFile = path.substr(-4, 4) === "#tmp";
       if (!isTmpFile && clipboardData.contentId) {
         // Comes from existing content
@@ -484,7 +484,7 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
  * Set state of paste button.
  * @param {boolean} canPaste - If true, button will be enabled
  */
-H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
+H5P.NDLADragNBar.prototype.setCanPaste = function (canPaste) {
   canPaste = canPaste || false;
   if (this.$pasteButton) {
     this.$pasteButton.toggleClass("disabled", !canPaste);
@@ -497,7 +497,7 @@ H5P.DragNBar.prototype.setCanPaste = function (canPaste) {
  * @param {number} top Offset
  * @param {function} next Next callback
  */
-H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
+H5P.NDLADragNBar.prototype.confirmPasteError = function (message, top, next) {
   // Confirm changing library
   var confirmReplace = new H5P.ConfirmationDialog({
     headerText: H5PEditor.t("core", "pasteError"),
@@ -512,7 +512,7 @@ H5P.DragNBar.prototype.confirmPasteError = function (message, top, next) {
 /**
  * Handle keypress events for the entire frame
  */
-H5P.DragNBar.keypressHandler = function (event) {
+H5P.NDLADragNBar.keypressHandler = function (event) {
   var self = event.data.instance;
   if (
     event.which === BACKSPACE &&
@@ -527,7 +527,7 @@ H5P.DragNBar.keypressHandler = function (event) {
 /**
  * Handle keyup events for the entire frame
  */
-H5P.DragNBar.keyupHandler = function (event) {
+H5P.NDLADragNBar.keyupHandler = function (event) {
   var self = event.data.instance;
 
   if (event.which === CTRL) {
@@ -557,7 +557,7 @@ H5P.DragNBar.keyupHandler = function (event) {
 /**
  * Handle click events for the entire frame
  */
-H5P.DragNBar.clickHandler = function (event) {
+H5P.NDLADragNBar.clickHandler = function (event) {
   var self = event.data.instance;
 
   // Remove pressed on click
@@ -567,7 +567,7 @@ H5P.DragNBar.clickHandler = function (event) {
 /**
  * Initialize click listeners
  */
-H5P.DragNBar.prototype.initClickListeners = function () {
+H5P.NDLADragNBar.prototype.initClickListeners = function () {
   var self = this;
   var index = self.instanceIndex;
 
@@ -576,10 +576,10 @@ H5P.DragNBar.prototype.initClickListeners = function () {
     instance: self,
   };
   H5P.$body
-    .on("keydown.dnb" + index, eventData, H5P.DragNBar.keydownHandler)
-    .on("keypress.dnb" + index, eventData, H5P.DragNBar.keypressHandler)
-    .on("keyup.dnb" + index, eventData, H5P.DragNBar.keyupHandler)
-    .on("click.dnb" + index, eventData, H5P.DragNBar.clickHandler);
+    .on("keydown.dnb" + index, eventData, H5P.NDLADragNBar.keydownHandler)
+    .on("keypress.dnb" + index, eventData, H5P.NDLADragNBar.keypressHandler)
+    .on("keyup.dnb" + index, eventData, H5P.NDLADragNBar.keyupHandler)
+    .on("click.dnb" + index, eventData, H5P.NDLADragNBar.clickHandler);
 
   // Set blur handler element if option has been specified
   var $blurHandlers = this.$container;
@@ -615,14 +615,14 @@ H5P.DragNBar.prototype.initClickListeners = function () {
  * @param {object} params Reference
  * @param {function} handler Modifies the path to work when pasted
  */
-H5P.DragNBar.updateFileUrls = function (params, handler) {
+H5P.NDLADragNBar.updateFileUrls = function (params, handler) {
   for (var prop in params) {
     if (params.hasOwnProperty(prop) && params[prop] instanceof Object) {
       var obj = params[prop];
       if (obj.path !== undefined && obj.mime !== undefined) {
         obj.path = handler(obj.path);
       } else {
-        H5P.DragNBar.updateFileUrls(obj, handler);
+        H5P.NDLADragNBar.updateFileUrls(obj, handler);
       }
     }
   }
@@ -634,7 +634,7 @@ H5P.DragNBar.updateFileUrls = function (params, handler) {
  * @param {jQuery} $wrapper
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.attach = function ($wrapper) {
+H5P.NDLADragNBar.prototype.attach = function ($wrapper) {
   var self = this;
   $wrapper.html("");
   $wrapper.addClass("h5peditor-dragnbar");
@@ -650,7 +650,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
     if (i === this.overflowThreshold) {
       const $buttonMore = H5P.jQuery(
         '<li class="h5p-dragnbar-li"><a href="#" title="' +
-          H5PEditor.t("H5P.DragNBar", "moreElements") +
+          H5PEditor.t("H5P.NDLADragNBar", "moreElements") +
           '" class="h5p-dragnbar-a h5p-dragnbar-more-button"></a><ul class="h5p-dragnbar-li-ul"></ul></li>'
       );
       $list = $buttonMore
@@ -688,7 +688,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
 
     H5P.jQuery("<span>", {
       class: "h5p-dragnbar-tooltip",
-      text: H5PEditor.t("H5P.DragNBar", "paste"),
+      text: H5PEditor.t("H5P.NDLADragNBar", "paste"),
     }).appendTo(this.$pasteButton);
 
     this.$pasteButton
@@ -713,7 +713,7 @@ H5P.DragNBar.prototype.attach = function ($wrapper) {
  * @param {type} $list
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.addButton = function (button, $list) {
+H5P.NDLADragNBar.prototype.addButton = function (button, $list) {
   var that = this;
 
   const hasTitle = button.title && button.title !== "";
@@ -816,7 +816,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
  *
  * @param {jQuery} $container
  */
-H5P.DragNBar.prototype.setContainer = function ($container) {
+H5P.NDLADragNBar.prototype.setContainer = function ($container) {
   this.$container = $container;
   if (this.dnd) {
     this.dnd.$container = $container;
@@ -832,7 +832,7 @@ H5P.DragNBar.prototype.setContainer = function ($container) {
  * @param {Number} left
  * @param {Number} top
  */
-H5P.DragNBar.prototype.stopMoving = function (left, top) {
+H5P.NDLADragNBar.prototype.stopMoving = function (left, top) {
   // Calculate percentage
   top = top / (this.$container.height() / 100);
   left = left / (this.$container.width() / 100);
@@ -864,7 +864,7 @@ H5P.DragNBar.prototype.stopMoving = function (left, top) {
  * @throws 'No element given' if $element is missing
  * @return {SizeNPosition}
  */
-H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
+H5P.NDLADragNBar.prototype.getElementSizeNPosition = function ($element) {
   $element = $element || this.focusedElement.$element;
   if (!$element || !$element.length) {
     throw "No element given";
@@ -908,7 +908,7 @@ H5P.DragNBar.prototype.getElementSizeNPosition = function ($element) {
  * @param {number} x Amount to move on x-axis.
  * @param {number} y Amount to move on y-axis.
  */
-H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
+H5P.NDLADragNBar.prototype.moveWithKeys = function (x, y) {
   /**
    * Ensure that the given value is within the given boundaries.
    *
@@ -971,13 +971,13 @@ H5P.DragNBar.prototype.moveWithKeys = function (x, y) {
  *
  * @param {H5P.jQuery} $element
  * @param {Object} [options]
- * @param {H5P.DragNBarElement} [options.dnbElement] Register new element with dnbelement
+ * @param {H5P.NDLADragNBarElement} [options.dnbElement] Register new element with dnbelement
  * @param {boolean} [options.disableResize] Resize disabled
  * @param {boolean} [options.lock] Lock ratio during resize
  * @param {string} [clipboardData]
- * @returns {H5P.DragNBarElement} Reference to added dnbelement
+ * @returns {H5P.NDLADragNBarElement} Reference to added dnbelement
  */
-H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {  
+H5P.NDLADragNBar.prototype.add = function ($element, clipboardData, options) {  
   options = options || {};
   let newElement = null;
 
@@ -989,7 +989,7 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
   } else {
     options.element = $element;
     options.disableCopy = !this.enableCopyPaste;
-    newElement = new H5P.DragNBarElement(this, clipboardData, options);
+    newElement = new H5P.NDLADragNBarElement(this, clipboardData, options);
     this.elements.push(newElement);
   }
 
@@ -1041,9 +1041,9 @@ H5P.DragNBar.prototype.add = function ($element, clipboardData, options) {
 /**
  * Adding control-box on element (moveable)
  * 
- * @param {H5P.DragNBarElement} element 
+ * @param {H5P.NDLADragNBarElement} element 
  */
-H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
+H5P.NDLADragNBar.prototype.addControlBoxOnElement = function (element) {
   if (window.getComputedStyle(element.$element[0]).getPropertyValue("transform").length !== 0) {
     if (typeof element.$element.attr('class').split(" ").find(cName => cName.startsWith("h5p-dnb-unique-")) !== 'string') {
       const uniqueClassFloat = Math.random();
@@ -1073,7 +1073,7 @@ H5P.DragNBar.prototype.addControlBoxOnElement = function (element) {
 /**
  * Cleaning up all control-boxes which are not in use
  */
-H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
+H5P.NDLADragNBar.prototype.removeControlBoxesNotInUse = function () {
   /**
    * @param {string} uniqueClassPrefix
    * @param {DOMTokenList} classList 
@@ -1111,7 +1111,7 @@ H5P.DragNBar.prototype.removeControlBoxesNotInUse = function () {
 /**
  *  Hiding moveable-control-boxes.
  */
-H5P.DragNBar.prototype.hideControlBoxes = function () {
+H5P.NDLADragNBar.prototype.hideControlBoxes = function () {
   const controlBoxes = document.getElementsByClassName('moveable-control-box');
   for (const controlBox of controlBoxes) {
     controlBox.style.display = 'none';
@@ -1121,10 +1121,10 @@ H5P.DragNBar.prototype.hideControlBoxes = function () {
 /**
  * Adjusting the position of the control-box to overlap the element.
  * 
- * @param {H5P.DragNBarElement} element 
+ * @param {H5P.NDLADragNBarElement} element 
  * @param {String} uniqueControlBoxClass The control-box and element both share this unique id in their classList in order to have a connection since they are placed in different locations in the document.
  */
- H5P.DragNBar.prototype.adjustControlBoxPositionOnElement = function (element, uniqueControlBoxClass) {
+ H5P.NDLADragNBar.prototype.adjustControlBoxPositionOnElement = function (element, uniqueControlBoxClass) {
   const elementBCR = element.$element[0].getBoundingClientRect();
   const theControlBoxElement = document.getElementsByClassName(uniqueControlBoxClass)[0];
 
@@ -1137,9 +1137,9 @@ H5P.DragNBar.prototype.hideControlBoxes = function () {
 /**
  * Remove given element in the UI.
  *
- * @param {H5P.DragNBarElement} dnbElement
+ * @param {H5P.NDLADragNBarElement} dnbElement
  */
-H5P.DragNBar.prototype.removeElement = function (dnbElement) {
+H5P.NDLADragNBar.prototype.removeElement = function (dnbElement) {
   dnbElement.removeElement();
 };
 
@@ -1149,7 +1149,7 @@ H5P.DragNBar.prototype.removeElement = function (dnbElement) {
  * @param {jQuery} $element
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.focus = function ($element) {
+H5P.NDLADragNBar.prototype.focus = function ($element) {
   var self = this;
 
   // Blur last focused
@@ -1191,9 +1191,9 @@ H5P.DragNBar.prototype.focus = function ($element) {
 /**
  * Get dnbElement from $element
  * @param {jQuery} $element
- * @returns {H5P.DragNBarElement} dnbElement with matching $element
+ * @returns {H5P.NDLADragNBarElement} dnbElement with matching $element
  */
-H5P.DragNBar.prototype.getDragNBarElement = function ($element) {
+H5P.NDLADragNBar.prototype.getDragNBarElement = function ($element) {
   var foundElement;
   // Find object with matching element
   this.elements.forEach(function (element) {
@@ -1209,7 +1209,7 @@ H5P.DragNBar.prototype.getDragNBarElement = function ($element) {
  *
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.blurAll = function () {
+H5P.NDLADragNBar.prototype.blurAll = function () {
   this.elements.forEach(function (element) {
     element.blur();
   });
@@ -1219,7 +1219,7 @@ H5P.DragNBar.prototype.blurAll = function () {
 /**
  * Resize DnB, make sure context menu is positioned correctly.
  */
-H5P.DragNBar.prototype.resize = function () {
+H5P.NDLADragNBar.prototype.resize = function () {
   this.updateCoordinates();
 
   if (this.focusedElement) {
@@ -1238,7 +1238,7 @@ H5P.DragNBar.prototype.resize = function () {
  * @param {Number} [y]
  * @returns {undefined}
  */
-H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
+H5P.NDLADragNBar.prototype.updateCoordinates = function (left, top, x, y) {
   if (!this.focusedElement) {
     return;
   }
@@ -1268,7 +1268,7 @@ H5P.DragNBar.prototype.updateCoordinates = function (left, top, x, y) {
  * @param {string} [generic] Which part of the parameters can be used by other libraries
  * @returns {string} JSON
  */
-H5P.DragNBar.clipboardify = function (from, params, generic) {
+H5P.NDLADragNBar.clipboardify = function (from, params, generic) {
   var clipboardData = {
     from: from,
     specific: params,
@@ -1292,7 +1292,7 @@ H5P.DragNBar.clipboardify = function (from, params, generic) {
  * @param {SizeNPosition} sizeNPosition For the element
  * @returns {SizeNPosition} Only the properties which require change
  */
-H5P.DragNBar.fitElementInside = function (sizeNPosition) {
+H5P.NDLADragNBar.fitElementInside = function (sizeNPosition) {
   var style = {};
 
   if (sizeNPosition.left < 0) {
@@ -1334,17 +1334,17 @@ H5P.DragNBar.fitElementInside = function (sizeNPosition) {
 /**
  * Clean up any event listeners
  */
-H5P.DragNBar.prototype.remove = function () {
+H5P.NDLADragNBar.prototype.remove = function () {
   var index = this.instanceIndex;
 
   H5P.$body
-    .off("keydown.dnb" + index, H5P.DragNBar.keydownHandler)
-    .off("keypress.dnb" + index, H5P.DragNBar.keypressHandler)
-    .off("keyup.dnb" + index, H5P.DragNBar.keyupHandler)
-    .off("click.dnb" + index, H5P.DragNBar.clickHandler);
+    .off("keydown.dnb" + index, H5P.NDLADragNBar.keydownHandler)
+    .off("keypress.dnb" + index, H5P.NDLADragNBar.keypressHandler)
+    .off("keyup.dnb" + index, H5P.NDLADragNBar.keyupHandler)
+    .off("click.dnb" + index, H5P.NDLADragNBar.clickHandler);
 };
 
-H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distance) {
+H5P.NDLADragNBar.prototype.findNewPoint = function (originX, originY, angle, distance) {
   let result = [];
 
   result.push(Math.cos(angle * Math.PI / 180) * distance + originX);
@@ -1360,7 +1360,7 @@ H5P.DragNBar.prototype.findNewPoint = function (originX, originY, angle, distanc
  * @param {H5P.jQuery} $element 
  * @param {string} uniqueClassName 
  */
- H5P.DragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
+ H5P.NDLADragNBar.prototype.createMoveableControlBoxOnElement = function ($element, uniqueClassName) {
 
   const isImage = $element.find("img").length > 0;
   const isShape = $element[0].querySelector('.h5p-shape-element') != null;

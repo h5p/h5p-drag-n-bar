@@ -4,13 +4,13 @@
    * Allows different forms to be places on top of each other instead of
    * in a dialog.
    *
-   * @class H5P.DragNBar.FormManager
+   * @class H5P.NDLADragNBar.FormManager
    * @extends H5P.EventDispatcher
    * @param {*} parent
    * @param {Object} l10n
    */
   DragNBar.FormManager = function (parent, l10n, customIconClass) {
-    /** @alias H5P.DragNBar.FormManager# */
+    /** @alias H5P.NDLADragNBar.FormManager# */
     var self = this;
 
     // Initialize event inheritance
@@ -830,4 +830,4 @@
     return callback;
   };
 
-})(H5P.DragNBar, H5P.EventDispatcher);
+})(H5P.NDLADragNBar, H5P.EventDispatcher);

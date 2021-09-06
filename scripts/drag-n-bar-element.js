@@ -3,13 +3,13 @@
 /**
  * Create Drag N Bar Element. Connects a DragNBar element to a context menu
  */
-H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
+H5P.NDLADragNBarElement = (function ($, ContextMenu, EventDispatcher) {
 
   /**
    * Constructor DragNBarElement
    *
    * @class
-   * @param {H5P.DragNBar} dragNBar Parent dragNBar toolbar
+   * @param {H5P.NDLADragNBar} dragNBar Parent dragNBar toolbar
    * @param {object} [clipboardData]
    * @param {Object} [options] Button object that the element is created from
    * @param {Boolean} [options.disableContextMenu] Decides if element should have editor functionality
@@ -224,4 +224,4 @@ H5P.DragNBarElement = (function ($, ContextMenu, EventDispatcher) {
 
   return DragNBarElement;
 
-})(H5P.jQuery, H5P.DragNBarContextMenu, H5P.EventDispatcher);
+})(H5P.jQuery, H5P.NDLADragNBarContextMenu, H5P.EventDispatcher);
