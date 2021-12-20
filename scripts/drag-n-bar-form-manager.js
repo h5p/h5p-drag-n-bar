@@ -26,6 +26,8 @@
      * @private
      */
     const initialize = () => {
+      console.info("Initialize Form Manager", { self, parent, customIconClass });
+      
       self.isMainLibrary = !(parent instanceof H5PEditor.Library)
 
       // Locate target container
