@@ -433,15 +433,18 @@ H5P.DragNBar.prototype.pasteHandler = function (event) {
       if (!isTmpFile && clipboardData.contentId) {
         // Comes from existing content
 
+        let prefix;
         if (H5PEditor.contentId) {
           // .. to existing content
-          return '../' + clipboardData.contentId + '/' + path;
+          prefix = '../' + clipboardData.contentId + '/';
         }
         else {
           // .. to new content
-          return (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/' + path;
+          prefix = (H5PEditor.contentRelUrl ? H5PEditor.contentRelUrl : '../content/') + clipboardData.contentId + '/';
         }
+        return path.substr(0, prefix.length) === prefix ? path : prefix + path;
       }
+
       return path; // Will automatically be looked for in tmp folder
     });
 
