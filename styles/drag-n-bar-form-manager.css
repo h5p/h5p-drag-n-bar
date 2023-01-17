@@ -539,6 +539,7 @@
 .form-manager-coursepresentation.form-manager-icon-dragtext:before,
 .form-manager-coursepresentation.form-manager-icon-gotoslide:before,
 .form-manager-coursepresentation.form-manager-icon-singlechoiceset:before,
+.form-manager-coursepresentation.form-manager-icon-multimediachoice:before,
 .form-manager-coursepresentation.form-manager-icon-dialogcards:before {
   font-family: 'H5PCoursePresentation';
 }
@@ -577,6 +578,9 @@
 }
 .form-manager-coursepresentation.form-manager-icon-dialogcards:before {
   content: "\e900";
+}
+.form-manager-coursepresentation.form-manager-icon-multimediachoice:before {
+  content: "\e901";
 }
 .form-manager-coursepresentation.form-manager-icon-shape:before {
   font-family: 'H5PFontIcons';
