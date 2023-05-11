@@ -736,14 +736,17 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         }
       }
       else {
-        that.newElement = true;
-        that.pressed = true;
-        var createdElement = button.createElement();
-        that.$element = createdElement;
-        that.$container.css('overflow', 'visible');
-        // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
-        that.dnd.press(that.$element, event.pageX, 0);
-        that.focus(that.$element);
+        // If the button has been pressed already, don't trigger any new events. (prevent double click that break content)
+        if (that.pressed !== true) {
+          that.newElement = true;
+          that.pressed = true;
+          var createdElement = button.createElement();
+          that.$element = createdElement;
+          that.$container.css('overflow', 'visible');
+          // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
+          that.dnd.press(that.$element, event.pageX, 0);
+          that.focus(that.$element);
+        }
       }
     });
 };
