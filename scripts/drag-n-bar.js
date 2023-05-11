@@ -736,7 +736,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         }
       }
       else {
-        // If the button has been pressed already, don't trigger any new events. (prevent double click that break content)
+        // If the button has been pressed already, don't trigger any new events.
         if (that.pressed !== true) {
           that.newElement = true;
           that.pressed = true;
