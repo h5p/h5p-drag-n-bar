@@ -716,31 +716,28 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     .click(function () {
       return false;
     }).mousedown(function (event) {
-      if (event.which !== 1) {
-        return;
-      }
-
-      // Switch between normal button and dropdown button group
-      if (button.type === 'group') {
-        if ($buttonGroup !== undefined) {
-          // Set position here, because content types might add buttons out of order
-          const offset = parseFloat($button.closest('.h5p-dragnbar').css('padding-left'));
-          const position = $button.position().left - $buttonGroup.position().left - offset;
-          if (position > 0) {
-            $buttonGroup.css('left', position);
-          }
-
-          // Show dropdown and hide buttons tooltip
-          $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
-          $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+      if (!$button.hasClass('disabled')) {
+        // Disable button on mousedown to prevent double clicking
+        $button.addClass('disabled');
+        if (event.which !== 1) {
+          return;
         }
-      }
-      if (button.type !== 'group' && typeof that.pressed === 'undefined') {
-        that.pressed = false;
-      }
-      else {
-        // If the button has been pressed already, don't trigger any new events.
-        if (that.pressed !== true) {
+        // Switch between normal button and dropdown button group
+        if (button.type === 'group') {
+          if ($buttonGroup !== undefined) {
+            // Set position here, because content types might add buttons out of order
+            const offset = parseFloat($button.closest('.h5p-dragnbar').css('padding-left'));
+            const position = $button.position().left - $buttonGroup.position().left - offset;
+            if (position > 0) {
+              $buttonGroup.css('left', position);
+            }
+
+            // Show dropdown and hide buttons tooltip
+            $buttonGroup.toggleClass('h5peditor-dragnbar-gone');
+            $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
+          }
+        }
+        else {
           that.newElement = true;
           that.pressed = true;
           var createdElement = button.createElement();
@@ -750,7 +747,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
           that.dnd.press(that.$element, event.pageX, 0);
           that.focus(that.$element);
         }
-      }
+      }   
     });
 };
 
