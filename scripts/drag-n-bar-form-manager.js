@@ -397,7 +397,7 @@
      */
     const closeForm = function () {
       const activeManager = formTargets.pop();
-
+      
       // Close any open CKEditors
       if (H5PEditor.Html) {
         H5PEditor.Html.removeWysiwyg();

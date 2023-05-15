@@ -720,6 +720,20 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         return;
       }
 
+      // Disable buttons on mousedown to prevent double clicking
+      const buttonChildElements = document.querySelectorAll('.h5p-cp-navigation + .h5p-dragnbar .h5p-dragnbar-ul li.h5p-dragnbar-li > .h5p-dragnbar-a:not(.h5p-dragnbar-shape-button, .h5p-dragnbar-more-button, .h5p-dragnbar-paste-button)')
+      const buttonElements = Array.from(buttonChildElements).map(element => element.parentElement);
+
+      buttonElements.forEach((element) => {
+        element.style.pointerEvents = 'none'
+      })
+
+      setTimeout(() => {
+        buttonElements.forEach((element) => {
+          element.style.pointerEvents = 'inherit';
+        })
+      }, 500);
+
       // Switch between normal button and dropdown button group
       if (button.type === 'group') {
         if ($buttonGroup !== undefined) {
@@ -736,17 +750,14 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
         }
       }
       else {
-        // If the button has been pressed already, don't trigger any new events.
-        if (that.pressed !== true) {
-          that.newElement = true;
-          that.pressed = true;
-          var createdElement = button.createElement();
-          that.$element = createdElement;
-          that.$container.css('overflow', 'visible');
-          // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
-          that.dnd.press(that.$element, event.pageX, 0);
-          that.focus(that.$element);
-        }
+        that.newElement = true;
+        that.pressed = true;
+        var createdElement = button.createElement();
+        that.$element = createdElement;
+        that.$container.css('overflow', 'visible');
+        // y = 0 will make sure this press is regarded as outside of canvas to place element correctly
+        that.dnd.press(that.$element, event.pageX, 0);
+        that.focus(that.$element);
       }
     });
 };
