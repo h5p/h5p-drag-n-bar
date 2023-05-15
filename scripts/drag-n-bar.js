@@ -717,11 +717,13 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
       return false;
     }).mousedown(function (event) {
       if (!$button.hasClass('disabled')) {
+
         // Disable button on mousedown to prevent double clicking
         $button.addClass('disabled');
         if (event.which !== 1) {
           return;
         }
+
         // Switch between normal button and dropdown button group
         if (button.type === 'group') {
           if ($buttonGroup !== undefined) {
@@ -747,7 +749,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
           that.dnd.press(that.$element, event.pageX, 0);
           that.focus(that.$element);
         }
-      }   
+      }
     });
 };
 
