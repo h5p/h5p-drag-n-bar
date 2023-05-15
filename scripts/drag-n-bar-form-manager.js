@@ -397,10 +397,12 @@
      */
     const closeForm = function () {
       const activeManager = formTargets.pop();
-      const elementButton = document.querySelector('.h5p-dragnbar-li.disabled:not(.paste-button)');
-      
-      // Enable button disabled to prevent double clicks
-      elementButton.classList.remove('disabled');
+      const buttonElements = document.querySelectorAll('.h5p-dragnbar-li.disabled:not(.paste-button)');
+
+      // Enable buttons disabled to prevent double clicking
+      buttonElements.forEach((element) => {
+        element.classList.remove('disabled');
+      })
 
       // Close any open CKEditors
       if (H5PEditor.Html) {

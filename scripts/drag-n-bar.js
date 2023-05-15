@@ -718,8 +718,12 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     }).mousedown(function (event) {
       if (!$button.hasClass('disabled')) {
 
-        // Disable button on mousedown to prevent double clicking
-        $button.addClass('disabled');
+        // Disable buttons on mousedown to prevent double clicking
+        const buttonElements = document.querySelectorAll('.h5p-dragnbar-li:not(.paste-button)');
+        buttonElements.forEach((element) => {
+          element.classList.add('disabled');
+        })
+
         if (event.which !== 1) {
           return;
         }
