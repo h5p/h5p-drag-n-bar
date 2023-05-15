@@ -397,13 +397,7 @@
      */
     const closeForm = function () {
       const activeManager = formTargets.pop();
-      const buttonElements = document.querySelectorAll('.h5p-dragnbar-li.disabled:not(.paste-button)');
-
-      // Enable buttons disabled to prevent double clicking
-      buttonElements.forEach((element) => {
-        element.classList.remove('disabled');
-      })
-
+      
       // Close any open CKEditors
       if (H5PEditor.Html) {
         H5PEditor.Html.removeWysiwyg();
