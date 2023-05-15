@@ -735,7 +735,7 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
           $button.find('.h5p-dragnbar-tooltip').toggleClass('h5peditor-dragnbar-gone');
         }
       }
-      if (typeof that.pressed === 'undefined') {
+      if (button.type !== 'group' && typeof that.pressed === 'undefined') {
         that.pressed = false;
       }
       else {
