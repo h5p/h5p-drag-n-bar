@@ -105,6 +105,8 @@ H5P.DragNBar.prototype.initEditor = function () {
   this.dnr = new H5P.DragNResize(this.$container);
   this.dnr.snap = 10;
 
+  delete H5P.dragnbar_mousedowned;
+
   // Update coordinates when element is resized
   this.dnr.on('moveResizing', function () {
     var offset = that.$element.offset();
@@ -716,23 +718,10 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     .click(function () {
       return false;
     }).mousedown(function (event) {
-      if (event.which !== 1) {
+      if (event.which !== 1 || H5P.dragnbar_mousedowned) {
         return;
       }
-
-      // Disable buttons on mousedown to prevent double clicking
-      const buttonChildElements = document.querySelectorAll('.h5p-cp-navigation + .h5p-dragnbar .h5p-dragnbar-ul li.h5p-dragnbar-li > .h5p-dragnbar-a:not(.h5p-dragnbar-shape-button, .h5p-dragnbar-more-button, .h5p-dragnbar-paste-button)')
-      const buttonElements = Array.from(buttonChildElements).map(element => element.parentElement);
-
-      buttonElements.forEach((element) => {
-        element.style.pointerEvents = 'none'
-      })
-
-      setTimeout(() => {
-        buttonElements.forEach((element) => {
-          element.style.pointerEvents = 'inherit';
-        })
-      }, 500);
+      H5P.dragnbar_mousedowned = true;
 
       // Switch between normal button and dropdown button group
       if (button.type === 'group') {

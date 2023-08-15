@@ -506,6 +506,7 @@
 
       // Scroll parent manager header into view
       manager.formButtons.scrollIntoView();
+      delete H5P.dragnbar_mousedowned;
     };
 
     /**
