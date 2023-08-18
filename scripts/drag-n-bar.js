@@ -26,6 +26,7 @@ H5P.DragNBar = (function (EventDispatcher) {
     this.dnd = new H5P.DragNDrop(this, $container);
     this.dnd.snap = 10;
     this.newElement = false;
+    this.enabled = true;
     var defaultOptions = {
       disableEditor: false,
       enableCopyPaste: true
@@ -716,23 +717,9 @@ H5P.DragNBar.prototype.addButton = function (button, $list) {
     .click(function () {
       return false;
     }).mousedown(function (event) {
-      if (event.which !== 1) {
+      if (event.which !== 1 || !that.enabled) {
         return;
       }
-
-      // Disable buttons on mousedown to prevent double clicking
-      const buttonChildElements = document.querySelectorAll('.h5p-cp-navigation + .h5p-dragnbar .h5p-dragnbar-ul li.h5p-dragnbar-li > .h5p-dragnbar-a:not(.h5p-dragnbar-shape-button, .h5p-dragnbar-more-button, .h5p-dragnbar-paste-button)')
-      const buttonElements = Array.from(buttonChildElements).map(element => element.parentElement);
-
-      buttonElements.forEach((element) => {
-        element.style.pointerEvents = 'none'
-      })
-
-      setTimeout(() => {
-        buttonElements.forEach((element) => {
-          element.style.pointerEvents = 'inherit';
-        })
-      }, 500);
 
       // Switch between normal button and dropdown button group
       if (button.type === 'group') {
@@ -1198,3 +1185,16 @@ H5P.DragNBar.prototype.remove = function () {
     .off('keyup.dnb' + index, H5P.DragNBar.keyupHandler)
     .off('click.dnb' + index, H5P.DragNBar.clickHandler);
 };
+
+/**
+ * Toggle dragging on/off.
+ * When off can not start dragging in any new elements until turned on.
+ */
+H5P.DragNBar.prototype.toggleDrag = function (enabled = true) {
+  if (enabled === undefined) {
+    this.enabled = !this.enabled;
+  }
+  else {
+    this.enabled = enabled;
+  }
+}
