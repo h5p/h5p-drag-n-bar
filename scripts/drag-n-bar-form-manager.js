@@ -270,7 +270,7 @@
           return getText(libraryField.metadata ? libraryField.metadata.title : libraryField.params.metadata.title);
         }
         else {
-          if (libraryField.$select !== undefined) {
+          if (libraryField.$select !== undefined && libraryField.$select.css('display') !== 'none') {
             return libraryField.$select.children(':selected').text();
           }
           else {
