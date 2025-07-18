@@ -1,0 +1,17 @@
+{
+  "libraryStrings": {
+    "transformLabel": "Transformare",
+    "editLabel": "Editare",
+    "removeLabel": "Eliminare",
+    "bringToFrontLabel": "Aducere în față",
+    "sendToBackLabel": "Trimitere în spate",
+    "unableToPaste": "Acest obiect nu poate fi lipit. Din păcate, obiectul pe care încercați să-l lipiți nu este acceptat de acest tip de conținut sau de această versiune.",
+    "sizeLabel": "Dimensiune",
+    "positionLabel": "Poziție",
+    "heightLabel": "Înălțime",
+    "widthLabel": "Lățime",
+    "copyLabel": "Copiere",
+    "paste": "Lipire",
+    "moreElements": "Mai multe elemente"
+  }
+}
