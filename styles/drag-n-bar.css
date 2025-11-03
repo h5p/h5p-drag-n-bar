@@ -3,11 +3,6 @@
   opacity: 0.6;
 }
 
-.h5peditor .h5p-dragnbar-element.focused,
-.h5peditor .h5p-dragnbar-element:hover {
-  outline: 1px solid #0099ff;
-}
-
 /* Display outline on label for h5p nil */
 .h5p-dragnbar-element.h5p-nil-interaction.focused,
 .h5p-dragnbar-element.h5p-nil-interaction:hover {
